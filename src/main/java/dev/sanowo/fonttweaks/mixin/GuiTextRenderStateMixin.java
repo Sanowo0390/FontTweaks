@@ -45,19 +45,7 @@ public abstract class GuiTextRenderStateMixin {
             case DEFAULT -> settings.scaleFor(mc.gui.screen() != null);
         };
 
-        int guiScale = mc.getWindow().getGuiScale();
-        boolean pixelFix = settings.unifontPixelPerfect && guiScale == 3
-                && fonttweaks$hasEastAsianGlyphs(text);
-        if (pixelFix) {
-            // Unihex/Unifont glyphs are 16 source pixels tall but displayed at
-            // about 8 GUI units. At GUI scale 3, vanilla uses 1.5 physical
-            // pixels per source dot. Choose exactly 1 or 2 pixels per dot.
-            double existingScale = Math.hypot(inputPose.m00(), inputPose.m01());
-            if (existingScale > 0.001) {
-                multiplier = settings.unifontPixelsPerDot * 2.0 / (guiScale * existingScale);
-            }
-        }
-        if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelFix) return;
+        if (Math.abs(multiplier - 1.0) < 0.000001) return;
 
         float scale = (float) FontTweaksSettings.bounded(multiplier, 0.05, 8.0);
         // Button text is centered in the widget: preserve its center.
@@ -67,32 +55,7 @@ public abstract class GuiTextRenderStateMixin {
         Matrix3x2f adjusted = new Matrix3x2f(inputPose);
         adjusted.translate(anchorX, y).scale(scale, scale).translate(-anchorX, -y);
 
-        if (pixelFix) {
-            // Snap screen-space origin to the physical pixel grid to prevent
-            // subpixel shimmer when the rest of the GUI contains translations.
-            float guiX = adjusted.m00() * anchorX + adjusted.m10() * y + adjusted.m20();
-            float guiY = adjusted.m01() * anchorX + adjusted.m11() * y + adjusted.m21();
-            adjusted.translateLocal(
-                    Math.round(guiX * guiScale) / (float) guiScale - guiX,
-                    Math.round(guiY * guiScale) / (float) guiScale - guiY);
-        }
         this.pose = adjusted;
     }
 
-    private static boolean fonttweaks$hasEastAsianGlyphs(FormattedCharSequence sequence) {
-        final boolean[] found = {false};
-        sequence.accept((index, style, cp) -> {
-            if ((cp >= 0x3000 && cp <= 0x30FF)
-                    || (cp >= 0x3400 && cp <= 0x9FFF)
-                    || (cp >= 0xAC00 && cp <= 0xD7AF)
-                    || (cp >= 0xF900 && cp <= 0xFAFF)
-                    || (cp >= 0xFF00 && cp <= 0xFFEF)
-                    || (cp >= 0x20000 && cp <= 0x3134F)) {
-                found[0] = true;
-                return false;
-            }
-            return true;
-        });
-        return found[0];
-    }
 }
