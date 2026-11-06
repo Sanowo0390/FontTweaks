@@ -43,6 +43,15 @@ public final class FontTweaksFonts {
         if (!FontDescription.DEFAULT.equals(requested) || !cfg.shouldReplace(codepoint)) {
             return requested;
         }
+        if (cfg.hasGuiProfiles()) {
+            GuiScaleProfile profile = cfg.profileFor(guiScale);
+            if (!profile.useExistingFont) return requested;
+            // Explicit rule requested by user: 3px + existing font ON
+            // selects bundled Misaki for EVERY GUI scale, including 1 and 5+.
+            if (profile.effectivePixels() == 3
+                    || "misaki".equals(profile.legacyExistingFont)) return MISAKI;
+            return PIXELMPLUS;
+        }
         // This works even if normal font replacement is off: GUI 3 can use
         // processed vanilla Unifont, while GUI 2 immediately uses crisp Misaki.
         // No font atlas rebuild or resource reload is necessary.
