@@ -32,10 +32,22 @@ public final class FontTweaksFonts {
         };
     }
 
+    /** Dynamic font fallback: GUI 3+ keeps the normal configuration, GUI 1/2 uses Misaki. */
+    public static boolean useCompactGuiFallback(FontTweaksSettings cfg, int guiScale) {
+        return cfg.guiScaleDependentFont && cfg.pixelationEnabled && guiScale > 0 && guiScale < 3;
+    }
+
     public static FontDescription select(FontDescription requested, int codepoint,
                                          FontTweaksSettings cfg, int guiScale, boolean forceUnicode) {
-        if (!cfg.resourcePackEnabled || !FontDescription.DEFAULT.equals(requested)
-                || !cfg.shouldReplace(codepoint)) return requested;
+        // Respect explicitly selected fonts and per-codepoint exclusions.
+        if (!FontDescription.DEFAULT.equals(requested) || !cfg.shouldReplace(codepoint)) {
+            return requested;
+        }
+        // This works even if normal font replacement is off: GUI 3 can use
+        // processed vanilla Unifont, while GUI 2 immediately uses crisp Misaki.
+        // No font atlas rebuild or resource reload is necessary.
+        if (useCompactGuiFallback(cfg, guiScale)) return MISAKI;
+        if (!cfg.resourcePackEnabled) return requested;
         return activePackFont(cfg, guiScale, forceUnicode);
     }
 }
