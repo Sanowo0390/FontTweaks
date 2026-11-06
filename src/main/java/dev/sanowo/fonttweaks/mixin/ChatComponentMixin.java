@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
@@ -20,6 +21,12 @@ public abstract class ChatComponentMixin {
     @ModifyReturnValue(method = "getScale", at = @At("RETURN"))
     private double fonttweaks$chatSize(double original) {
         FontTweaksSettings settings = FontTweaksSettings.get();
+        Minecraft mc = Minecraft.getInstance();
+        if (mc != null && settings.isPixelModeActive(mc.getWindow().getGuiScale())) {
+            // Scale the entire chat widget so backgrounds, line wrapping and
+            // hit regions track the 2-physical-pixel font glyph size.
+            return settings.targetGuiFontScale(mc.getWindow().getGuiScale());
+        }
         return Math.max(0.01, original * settings.globalScale * settings.chatScale);
     }
 
