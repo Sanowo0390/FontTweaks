@@ -6,6 +6,42 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnifontPixelationTest {
+    @Test void guiThreeOnePixelKeepsTheExistingRaster() {
+        int[] rows = new int[16];
+        rows[1] = 1 << 30;
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 1);
+        // Existing 0.4.4 raster fixture: four adjacent 1px cells, not one 2px cell.
+        for (int y = 0; y < 48; y++) {
+            for (int x = 0; x < 48; x++) {
+                assertEquals(x >= 2 && x < 6 && y >= 2 && y < 6 ? -1 : 0, result[y * 48 + x]);
+            }
+        }
+    }
+
+    @Test void enclosedSourceGapDoesNotBecomeSolidAtGuiThreeTwoPixels() {
+        int[] rows = new int[16];
+        for (int y = 0; y < 4; y++) rows[y] = 0xF0000000;
+        rows[1] &= ~(1 << 30);
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 2);
+        // Source hole x=1,y=1 collided with surrounding ink in the old center mapping.
+        assertEquals(0, result[4 * 48 + 4]);
+        assertEquals(-1, result[0]);
+        assertEquals(-1, result[8 * 48 + 8]);
+    }
+
+    @Test void gapProtectionDoesNotEraseStraightThinStroke() {
+        int[] rows = new int[16];
+        for (int y = 0; y < 7; y++) rows[y] = (1 << 31) | (1 << 25);
+        rows[1] = rows[3] = 0xFE000000;
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 2);
+        // The narrow source gap and the upper bar map to the same output row.
+        // Keep both bars instead of deleting a thin stroke to force a gap.
+        for (int x = 0; x < 20; x++) {
+            assertEquals(-1, result[4 * 48 + x]);
+            assertEquals(-1, result[8 * 48 + x]);
+        }
+    }
+
     @Test void guiThreeTwoPixelsDoesNotSpreadOneStrokeAcrossFourCells() {
         int[] rows = new int[16];
         rows[1] = 1 << 30;
