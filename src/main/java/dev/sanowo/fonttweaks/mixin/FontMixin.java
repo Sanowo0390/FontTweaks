@@ -26,7 +26,7 @@ public abstract class FontMixin {
             at = @At(value = "INVOKE",
                 target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F"))
     private float fonttweaks$horizontalTrackingWidth(float original, int codepoint, Style style) {
-        return FontTweaksLetterSpacing.apply(original);
+        return FontTweaksLetterSpacing.apply(original, codepoint);
     }
 
     // Rendering and StringSplitter width measurement must choose the same font per codepoint.
