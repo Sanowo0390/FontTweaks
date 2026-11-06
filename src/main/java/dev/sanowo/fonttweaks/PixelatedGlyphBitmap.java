@@ -11,12 +11,19 @@ public final class PixelatedGlyphBitmap implements GlyphBitmap {
     /** Keep the atlas immutable across GUI-scale changes. GUI 3 is the target. */
     public static final int ATLAS_RASTER_GUI_SCALE = 3;
 
+    /** Legacy GUI3 reference for unit tests and helper callers. */
     public static GlyphBitmap process(GlyphBitmap original, int[] rows, int left,
                                       FontTweaksSettings settings) {
-        // Exclusion lists select fonts only. Pixel processing is controlled solely by its own switch.
-        return settings.pixelationEnabled
-                ? new PixelatedGlyphBitmap(original, rows, left, ATLAS_RASTER_GUI_SCALE,
-                        settings.effectivePixelBlockSize()) : original;
+        return process(original, rows, left, settings, ATLAS_RASTER_GUI_SCALE);
+    }
+
+    /** Skip rasterization entirely when native glyph pixels already fit. */
+    public static GlyphBitmap process(GlyphBitmap original, int[] rows, int left,
+                                      FontTweaksSettings settings, int actualGuiScale) {
+        int requestedPixels = settings.pixelRasterSignature(actualGuiScale);
+        if (requestedPixels == 0) return original;
+        return new PixelatedGlyphBitmap(original, rows, left,
+                ATLAS_RASTER_GUI_SCALE, requestedPixels);
     }
     private final GlyphBitmap original;
     private final int[] pixels;
