@@ -23,6 +23,9 @@ dependencies {
 }
 
 processResources {
+    from('THIRD_PARTY_NOTICES.md') {
+        into 'META-INF'
+    }
     inputs.property 'version', project.version
     filesMatching('fabric.mod.json') {
         expand version: project.version
