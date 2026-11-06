@@ -3,7 +3,7 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 /** Isolated Fabric preLaunch test: exits before any game window/world is created. */
 public final class Smoke implements PreLaunchEntrypoint {
  public void onPreLaunch() {
-  String[] names={"net.minecraft.client.gui.Font","net.minecraft.client.renderer.state.gui.GuiTextRenderState","net.minecraft.client.gui.GuiGraphicsExtractor","net.minecraft.client.gui.components.ChatComponent","net.minecraft.client.gui.components.MultiLineLabel$2","net.minecraft.client.gui.components.MultiLineTextWidget","net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip"};
+  String[] names={"net.minecraft.client.gui.Font","net.minecraft.client.gui.Font$PreparedTextBuilder","net.minecraft.client.renderer.state.gui.GuiTextRenderState","net.minecraft.client.gui.GuiGraphicsExtractor","net.minecraft.client.gui.components.ChatComponent","net.minecraft.client.gui.components.MultiLineLabel$2","net.minecraft.client.gui.components.MultiLineTextWidget","net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip"};
   try {
    for(String name:names) {
     Class<?> c=Class.forName(name,false,Thread.currentThread().getContextClassLoader());
