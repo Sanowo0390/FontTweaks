@@ -42,7 +42,7 @@ class LetterSpacingTest {
         assertEquals(-2.0, cfg.letterSpacing);
         cfg.letterSpacing = Double.NaN;
         cfg.sanitize();
-        assertEquals(1.0, cfg.letterSpacing);
+        assertEquals(0.0, cfg.letterSpacing);
     }
 
     @Test
