@@ -34,7 +34,7 @@ public final class FontTweaksFonts {
 
     /** Dynamic font fallback: GUI 3+ keeps the normal configuration, GUI 1/2 uses Misaki. */
     public static boolean useCompactGuiFallback(FontTweaksSettings cfg, int guiScale) {
-        return cfg.guiScaleDependentFont && cfg.pixelationEnabled && guiScale > 0 && guiScale < 3;
+        return cfg.guiScaleDependentFont && guiScale > 0 && guiScale < 3;
     }
 
     public static FontDescription select(FontDescription requested, int codepoint,
