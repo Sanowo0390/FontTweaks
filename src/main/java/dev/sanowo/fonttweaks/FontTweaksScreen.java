@@ -51,26 +51,21 @@ public final class FontTweaksScreen extends Screen {
 
         int half = (w - 8) / 2;
         this.addRenderableWidget(Button.builder(pixelToggleLabel(cfg), b -> {
-            cfg.pixelGlyphEnabled = !cfg.pixelGlyphEnabled;
+            cfg.pixelPerfectMode = !cfg.pixelPerfectMode;
             b.setMessage(pixelToggleLabel(cfg));
             FontTweaksSettings.save();
-            if (this.minecraft != null) this.minecraft.reloadResourcePacks();
+            if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
         }).bounds(x, startY + 7 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
-            cfg.pixelGlyphBlockSize = cfg.pixelGlyphBlockSize == 4
-                    ? 2 : cfg.pixelGlyphBlockSize + 1;
+            cfg.pixelsPerFontDot = cfg.pixelsPerFontDot == 3 ? 1 : cfg.pixelsPerFontDot + 1;
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
-            if (cfg.pixelGlyphEnabled && this.minecraft != null) this.minecraft.reloadResourcePacks();
+            if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
         }).bounds(x + half + 8, startY + 7 * gap, half, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
-            boolean pixelEffectWasEnabled = FontTweaksSettings.get().pixelGlyphEnabled;
             FontTweaksSettings.reset();
-            if (this.minecraft != null) {
-                this.minecraft.gui.hud.getChat().rescaleChat();
-                if (pixelEffectWasEnabled) this.minecraft.reloadResourcePacks();
-            }
+            if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             this.rebuildWidgets();
         }).bounds(x, startY + 8 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
@@ -78,12 +73,12 @@ public final class FontTweaksScreen extends Screen {
     }
 
     private static Component pixelToggleLabel(FontTweaksSettings cfg) {
-        return Component.translatable(cfg.pixelGlyphEnabled
-                ? "fonttweaks.pixel_effect_on" : "fonttweaks.pixel_effect_off");
+        return Component.translatable(cfg.pixelPerfectMode
+                ? "fonttweaks.pixel_mode_on" : "fonttweaks.pixel_mode_off");
     }
 
     private static Component pixelSizeLabel(FontTweaksSettings cfg) {
-        return Component.translatable("fonttweaks.pixel_strength", cfg.pixelGlyphBlockSize, cfg.pixelGlyphBlockSize);
+        return Component.translatable("fonttweaks.pixel_density", cfg.pixelsPerFontDot);
     }
 
     /**
