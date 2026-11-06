@@ -41,6 +41,19 @@ public final class FontTweaksSettings {
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
     public double tooltipLineSpacing = 1.0;
+    /** Shared multiplier for standard multiline text, tooltips and chat. */
+    public double globalLineSpacing = 1.0;
+
+    public double wrappedSpacing() { return globalLineSpacing * wrappedLineSpacing; }
+    public double tooltipSpacing() { return globalLineSpacing * tooltipLineSpacing; }
+    public int lineStep(int original) {
+        return Math.max(1, (int) Math.round(original * globalLineSpacing));
+    }
+    public double chatSpacingOption(double vanilla) {
+        return (vanilla + 1.0) * globalLineSpacing - 1.0;
+    }
+    public double buttonTextScale() { return bounded(globalScale * screenScale * buttonScale, 0.05, 8.0); }
+    public double chatTextScale() { return bounded(globalScale * chatScale, 0.05, 8.0); }
 
     public static FontTweaksSettings get() {
         return INSTANCE;
@@ -118,6 +131,7 @@ public final class FontTweaksSettings {
         if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 2;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
+        globalLineSpacing = bounded(globalLineSpacing, 0.5, 2.0);
     }
 
     public static double bounded(double value, double min, double max) {

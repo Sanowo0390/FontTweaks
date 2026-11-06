@@ -16,8 +16,20 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public final class FontTweaksScreen extends Screen {
+public final class FontTweaksScreen extends Screen implements PreviewScaleSource {
     private final Screen parent;
+    private String previewKey = "fonttweaks.screen";
+
+    public double previewScale() {
+        FontTweaksSettings cfg = FontTweaksSettings.get();
+        return switch (previewKey) {
+            case "fonttweaks.hud" -> cfg.scaleFor(false);
+            case "fonttweaks.button" -> cfg.buttonTextScale();
+            case "fonttweaks.chat" -> cfg.chatTextScale();
+            default -> cfg.scaleFor(true);
+        };
+    }
+
     private final List<AbstractWidget> scaleControls = new ArrayList<>();
     private final List<AbstractWidget> spacingControls = new ArrayList<>();
     private Button pixelSizeButton;
@@ -33,8 +45,8 @@ public final class FontTweaksScreen extends Screen {
         spacingControls.clear();
         int w = Math.min(350, this.width - 24);
         int x = (this.width - w) / 2;
-        int gap = this.height < 275 ? 21 : 24;
-        int startY = Math.max(24, (this.height - (9 * gap + 14)) / 2);
+        int gap = this.height < 300 ? 20 : 24;
+        int startY = Math.max(26, (this.height - (10 * gap + 44)) / 2);
         FontTweaksSettings cfg = FontTweaksSettings.get();
 
         addSettingRow(x, startY, w, "fonttweaks.global", 0.5, 2.0,
@@ -53,9 +65,14 @@ public final class FontTweaksScreen extends Screen {
                     cfg.chatScale = v;
                     if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
                 });
-        addSettingRow(x, startY + gap * 5, w, "fonttweaks.spacing", 0.5, 2.0,
+        addSettingRow(x, startY + gap * 5, w, "fonttweaks.global_spacing", 0.5, 2.0,
+                () -> cfg.globalLineSpacing, v -> {
+                    cfg.globalLineSpacing = v;
+                    if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+                });
+        addSettingRow(x, startY + gap * 6, w, "fonttweaks.spacing", 0.5, 2.0,
                 () -> cfg.wrappedLineSpacing, v -> cfg.wrappedLineSpacing = v);
-        addSettingRow(x, startY + gap * 6, w, "fonttweaks.tooltip_spacing", 0.5, 2.0,
+        addSettingRow(x, startY + gap * 7, w, "fonttweaks.tooltip_spacing", 0.5, 2.0,
                 () -> cfg.tooltipLineSpacing, v -> cfg.tooltipLineSpacing = v);
 
         int half = (w - 8) / 2;
@@ -66,20 +83,24 @@ public final class FontTweaksScreen extends Screen {
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             reloadPixelation();
             this.rebuildWidgets();
-        }).bounds(x, startY + 7 * gap, half, 20).build());
+        }).bounds(x, startY + 8 * gap, half, 20).build());
         pixelSizeButton = this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
             cfg.pixelBlockSize = cfg.nextPixelBlockSize();
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             reloadPixelation();
-        }).bounds(x + half + 8, startY + 7 * gap, half, 20).build());
+        }).bounds(x + half + 8, startY + 8 * gap, half, 20).build());
 
+        int third = (w - 16) / 3;
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.font_settings"), b -> {
             this.minecraft.gui.setScreen(new FontTweaksFontScreen(this));
-        }).bounds(x, startY + 8 * gap, half, 20).build());
+        }).bounds(x, startY + 9 * gap, third, 20).build());
+        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.preview"), b -> {
+            this.minecraft.gui.setScreen(new FontTweaksPreviewScreen(this));
+        }).bounds(x + third + 8, startY + 9 * gap, third, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-                .bounds(x + half + 8, startY + 8 * gap, half, 20).build());
+                .bounds(x + (third + 8) * 2, startY + 9 * gap, third, 20).build());
         updateControlAvailability();
     }
 
@@ -94,7 +115,7 @@ public final class FontTweaksScreen extends Screen {
 
     private void reloadPixelation() {
         // Uploaded glyphs are cached in atlases. Rebuild them for ON/OFF and block changes.
-        this.minecraft.reloadResourcePacks();
+        FontTweaksReload.request();
     }
 
     private static Component pixelToggleLabel(FontTweaksSettings cfg) {
@@ -112,6 +133,12 @@ public final class FontTweaksScreen extends Screen {
      */
     private void addSettingRow(int x, int y, int width, String key, double min, double max,
                                Supplier<Double> getter, Consumer<Double> setter) {
+        Consumer<Double> apply = value -> {
+            if (key.equals("fonttweaks.global") || key.equals("fonttweaks.screen")
+                    || key.equals("fonttweaks.hud") || key.equals("fonttweaks.button")
+                    || key.equals("fonttweaks.chat")) previewKey = key;
+            setter.accept(value);
+        };
         int inputWidth = Math.min(112, Math.max(86, width / 3));
         int sliderWidth = width - inputWidth - 8;
 
@@ -122,7 +149,7 @@ public final class FontTweaksScreen extends Screen {
 
         SettingSlider slider = new SettingSlider(x, y, sliderWidth, key, min, max,
                 getter, value -> {
-                    setter.accept(value);
+                    apply.accept(value);
                     input.setValue(formatNumber(value));
                     FontTweaksSettings.save();
                 });
@@ -137,7 +164,7 @@ public final class FontTweaksScreen extends Screen {
                     return;
                 }
                 input.setTextColor(0xFFFFFF);
-                setter.accept(exact);
+                apply.accept(exact);
                 slider.updateFromField(exact);
                 FontTweaksSettings.save();
             } catch (NumberFormatException ignored) {
@@ -147,7 +174,7 @@ public final class FontTweaksScreen extends Screen {
 
         this.addRenderableWidget(slider);
         this.addRenderableWidget(input);
-        List<AbstractWidget> controls = key.equals("fonttweaks.spacing")
+        List<AbstractWidget> controls = key.equals("fonttweaks.global_spacing") || key.equals("fonttweaks.spacing")
                 || key.equals("fonttweaks.tooltip_spacing") ? spacingControls : scaleControls;
         controls.add(slider);
         controls.add(input);
@@ -160,19 +187,19 @@ public final class FontTweaksScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
-        int gap = this.height < 275 ? 21 : 24;
-        int startY = Math.max(24, (this.height - (9 * gap + 14)) / 2);
+        int gap = this.height < 300 ? 20 : 24;
+        int startY = Math.max(26, (this.height - (10 * gap + 44)) / 2);
         graphics.centeredText(this.font, this.title, this.width / 2, startY - 18, 0xFFFFFFFF);
-        if (this.height >= 250) {
-            graphics.centeredText(this.font, Component.translatable("fonttweaks.help"),
-                    this.width / 2, startY + 9 * gap + 2, 0xFFAAAAAA);
+        if (this.height >= 270) {
+            graphics.centeredText(this.font, Component.translatable("fonttweaks.preview_current", Component.translatable(previewKey), Math.round(previewScale() * 100)),
+                    this.width / 2, startY + 10 * gap + 2, 0xFFAAAAAA);
 
             // The sample uses the independent text size; bitmap processing is global.
             FontTweaksRenderContext.Kind prev =
                     FontTweaksRenderContext.push(FontTweaksRenderContext.Kind.PREVIEW);
             try {
                 graphics.centeredText(this.font, Component.literal("日本語 ABC 012345"),
-                        this.width / 2, startY + 9 * gap + 19, 0xFFFFFF55);
+                        this.width / 2, startY + 10 * gap + 19, 0xFFFFFF55);
             } finally {
                 FontTweaksRenderContext.pop(prev);
             }
@@ -189,7 +216,7 @@ public final class FontTweaksScreen extends Screen {
             if (FontTweaksSettings.get().resourcePackEnabled) statusKey = "fonttweaks.status_pixelmplus";
             graphics.centeredText(this.font, Component.translatable(statusKey,
                     guiScale, FontTweaksSettings.get().pixelBlockSize),
-                    this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);
+                    this.width / 2, startY + 10 * gap + 34, 0xFF88FFFF);
         }
     }
 

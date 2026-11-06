@@ -23,6 +23,9 @@
   "fonttweaks.english_on": "英字フォントを置き換える：ON",
   "fonttweaks.english_off": "英字フォントを置き換える：OFF",
   "fonttweaks.blacklist": "除外する文字（ブラックリスト）",
-  "fonttweaks.blacklist_help": "対象外にしたい文字をそのまま入力します。例：！？★　登録文字はフォント置換・ピクセル加工をせず、元のフォントで表示します。「完了」で再読み込みします。英字OFFでは半角英数字・記号とラテン文字を元のフォントで表示します。",
-  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular（除外文字は標準）"
+  "fonttweaks.blacklist_help": "対象外にしたい文字をそのまま入力します。例：！？★　登録文字はフォント置換・ピクセル加工をせず、元のフォントで表示します。入力を止めると反映します。英字OFFでは半角英数字・記号とラテン文字を元のフォントで表示します。",
+  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular（除外文字は標準）",
+  "fonttweaks.global_spacing": "行間全体",
+  "fonttweaks.preview": "プレビュー",
+  "fonttweaks.preview_current": "プレビュー：%s %s%%"
 }

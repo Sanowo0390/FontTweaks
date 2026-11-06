@@ -23,6 +23,9 @@
   "fonttweaks.english_on": "Replace English font: ON",
   "fonttweaks.english_off": "Replace English font: OFF",
   "fonttweaks.blacklist": "Excluded characters (blacklist)",
-  "fonttweaks.blacklist_help": "Enter literal characters, e.g. !?*. Excluded characters keep their original font and bypass pixel processing. Done reloads resources. English OFF preserves printable ASCII and Latin characters.",
-  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular (exclusions use default)"
+  "fonttweaks.blacklist_help": "Enter literal characters, e.g. !?*. Exclusions retain their original font and bypass pixel processing. Reloads after you stop typing. English OFF preserves printable ASCII and Latin characters.",
+  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular (exclusions use default)",
+  "fonttweaks.global_spacing": "Global Line Spacing",
+  "fonttweaks.preview": "Preview",
+  "fonttweaks.preview_current": "Preview: %s %s%%"
 }

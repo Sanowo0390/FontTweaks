@@ -9,9 +9,16 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Font.class)
 public abstract class FontMixin {
+    @ModifyConstant(method = "wordWrapHeight", constant = @Constant(intValue = 9))
+    private int fonttweaks$wrappedHeight(int original) {
+        return Math.max(1, (int) Math.round(original * FontTweaksSettings.get().wrappedSpacing()));
+    }
+
     // Rendering and StringSplitter width measurement must choose the same font per codepoint.
     @ModifyExpressionValue(method = {"getGlyph", "lambda$new$0"}, at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/chat/Style;getFont()Lnet/minecraft/network/chat/FontDescription;"))

@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 /** Dedicated font page keeps the main size controls usable at GUI 3/4. */
 public final class FontTweaksFontScreen extends Screen {
     private final Screen parent;
-    private boolean changed;
 
     public FontTweaksFontScreen(Screen parent) {
         super(Component.translatable("fonttweaks.font_settings"));
@@ -23,14 +22,14 @@ public final class FontTweaksFontScreen extends Screen {
         this.addRenderableWidget(Button.builder(packLabel(), button -> {
             cfg.resourcePackEnabled = !cfg.resourcePackEnabled;
             button.setMessage(packLabel());
-            changed = true;
             FontTweaksSettings.save();
+            FontTweaksReload.request();
         }).bounds(x, 45, width, 20).build());
         this.addRenderableWidget(Button.builder(englishLabel(), button -> {
             cfg.replaceEnglish = !cfg.replaceEnglish;
             button.setMessage(englishLabel());
-            changed = true;
             FontTweaksSettings.save();
+            FontTweaksReload.request();
         }).bounds(x, 69, width, 20).build());
         EditBox blacklist = new EditBox(this.font, x, 115, width, 20,
                 Component.translatable("fonttweaks.blacklist"));
@@ -38,14 +37,14 @@ public final class FontTweaksFontScreen extends Screen {
         blacklist.setValue(cfg.blacklistedCharacters);
         blacklist.setResponder(value -> {
             cfg.blacklistedCharacters = value;
-            changed = true;
             FontTweaksSettings.save();
+            FontTweaksReload.requestAfterTyping();
         });
         this.addRenderableWidget(blacklist);
         int half = (width - 8) / 2;
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), button -> {
             FontTweaksSettings.reset();
-            changed = true;
+            FontTweaksReload.request();
             this.rebuildWidgets();
         }).bounds(x, this.height - 30, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
@@ -75,9 +74,6 @@ public final class FontTweaksFontScreen extends Screen {
     @Override public void onClose() {
         FontTweaksSettings.save();
         this.minecraft.gui.setScreen(parent);
-        if (changed) {
-            this.minecraft.reloadResourcePacks();
-            this.minecraft.gui.hud.getChat().rescaleChat();
-        }
+        FontTweaksReload.flush();
     }
 }

@@ -10,7 +10,9 @@
     "ClientTextTooltipMixin",
     "UnihexBitmapMixin",
     "FontMixin",
-    "UnihexProviderMixin"
+    "UnihexProviderMixin",
+    "MultiLineLabelMixin",
+    "MultiLineTextWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ClientTextTooltipMixin {
     @Inject(method = "getHeight", at = @At("RETURN"), cancellable = true)
     private void fonttweaks$height(Font font, CallbackInfoReturnable<Integer> cir) {
-        double spacing = FontTweaksSettings.get().tooltipLineSpacing;
+        double spacing = FontTweaksSettings.get().tooltipSpacing();
         if (Math.abs(spacing - 1.0f) < 0.001f) return;
         cir.setReturnValue(Math.max(1, (int) Math.round(cir.getReturnValue() * spacing)));
     }
