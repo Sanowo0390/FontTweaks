@@ -5,7 +5,7 @@ package dev.sanowo.fonttweaks;
  * global flag. This makes nested text render calls deterministic.
  */
 public final class FontTweaksRenderContext {
-    public enum Kind { DEFAULT, BUTTON, CHAT }
+    public enum Kind { DEFAULT, BUTTON, CHAT, PREVIEW }
 
     private static final ThreadLocal<Kind> ACTIVE =
             ThreadLocal.withInitial(() -> Kind.DEFAULT);
