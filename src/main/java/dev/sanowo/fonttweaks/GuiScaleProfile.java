@@ -9,6 +9,12 @@ public final class GuiScaleProfile {
     /** Migration-only preference: preserves an old explicit font selection. */
     public String legacyExistingFont;
 
+    /** Per-scale Unifont processing; null means inherit pre-0.12 global setting. */
+    public Boolean unifontProcessing;
+
+    /** Per-scale English font replacement; null inherits pre-0.12 global setting. */
+    public Boolean replaceEnglish;
+
     public GuiScaleProfile() {}
 
     public GuiScaleProfile(int pixelBlockSize, boolean useExistingFont, String legacyExistingFont) {
