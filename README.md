@@ -1,5 +1,12 @@
 # FontTweaks
 
+## v0.3.1 — Live pixel preview and diagnostics
+
+**Fixes the misleading settings screen.** The previous settings UI deliberately excluded itself from all font-scale transforms, so toggling pixel mode or cycling 1/2/3 pixels per dot showed no visible feedback until exiting the screen. Now it includes a dedicated sample row (`美咲ドット 日本語 ABC 012345`) that uses the real renderer while retaining readable controls, plus a runtime status line (`Hook OK | GUI 3 | Mode ON | Dot 2px | Applied 0.6667x`). The status is obtained from the actual text render-state hook, not guessed from a saved setting. If the screen says `Hook: NOT DETECTED`, the hook is not firing.
+
+**Important when comparing ON/OFF:** If your global text scale is already `0.6666666666666667`, turning pixel mode ON with the 2px target produces the *same* 2/3 text size as OFF. The isolated live preview instead compares with the normal 3px-per-dot display, so you can always see a difference. The font glyph assets and button layout are not resized by this preview.
+
+
 **Minecraft Java Edition 26.3 / Fabric / client-only**
 
 日本語の美咲ゴシック第2を内蔵し、GUIスケールを**3に保ったまま、8×8ドットフォントの1ドットを画面上のちょうど2×2ピクセル**で表示できるクライアントModです。
