@@ -1,10 +1,10 @@
 {
   "fonttweaks.title": "FontTweaks - Text Display",
   "fonttweaks.global": "Global Text Scale",
-  "fonttweaks.screen": "Screen Text Multiplier",
-  "fonttweaks.hud": "HUD Text Multiplier",
-  "fonttweaks.spacing": "Wrapped Text Line Spacing",
+  "fonttweaks.screen": "Screen Text Scale",
+  "fonttweaks.hud": "HUD Text Scale",
+  "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "Use vanilla Chat Settings to adjust chat text size and line spacing"
+  "fonttweaks.help": "Enter decimals directly (e.g. 0.6666666666666667)"
 }
