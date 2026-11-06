@@ -6,5 +6,10 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "Enter decimals directly (e.g. 0.6666666666666667)"
+  "fonttweaks.help": "At GUI scale 3: 1px = smaller, 2px = larger CJK pixel glyphs",
+  "fonttweaks.button": "Button text",
+  "fonttweaks.chat": "Chat text",
+  "fonttweaks.pixel_on": "Unifont pixels: ON",
+  "fonttweaks.pixel_off": "Unifont pixels: OFF",
+  "fonttweaks.pixel_size": "Unifont: %s px / dot"
 }
