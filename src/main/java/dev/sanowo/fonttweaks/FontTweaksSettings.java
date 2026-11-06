@@ -27,9 +27,13 @@ public final class FontTweaksSettings {
     public double hudScale = 1.0;
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
+    /** Horizontal glyph tracking in GUI units, added to each glyph advance. */
+    public double letterSpacing = 0.0;
     public boolean resourcePackEnabled = false;
     public String resourcePackFont = "pixelmplus12";
     public boolean replaceEnglish = false;
+    /** Use bundled Misaki Gothic when Minecraft automatically reduces GUI scale below 3. */
+    public boolean guiScaleDependentFont = false;
     /** Each entry is one codepoint excluded from font replacement only. */
     public java.util.List<String> blacklistedEntries = new java.util.ArrayList<>();
     /** Read old configs, migrate on sanitize, then omit this legacy field on save. */
@@ -39,7 +43,7 @@ public final class FontTweaksSettings {
     public boolean pixelationEnabled = true;
     /** Physical display pixels per dot at text scale 100%; GUI scale is compensated. */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
-    public int pixelBlockSize = 2;
+    public int pixelBlockSize = 1;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
@@ -174,7 +178,8 @@ public final class FontTweaksSettings {
         hudScale = bounded(hudScale, 0.5, 2.0);
         buttonScale = bounded(buttonScale, 0.5, 2.0);
         chatScale = bounded(chatScale, 0.5, 2.0);
-        if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 2;
+        letterSpacing = bounded(letterSpacing, -2.0, 4.0);
+        if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 1;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
         globalLineSpacing = bounded(globalLineSpacing, 0.5, 2.0);
