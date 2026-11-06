@@ -4,6 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "GuiGraphicsExtractorMixin",
+    "GuiTextRenderStateMixin",
+    "AbstractWidgetMixin",
+    "ChatComponentMixin",
     "ClientTextTooltipMixin"
   ],
   "injectors": {
