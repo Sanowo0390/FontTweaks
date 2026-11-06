@@ -3,6 +3,7 @@ package dev.sanowo.fonttweaks.mixin;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.FontTweaksSpacingPolicy;
 import dev.sanowo.fonttweaks.FontTweaksFontScreen;
 import dev.sanowo.fonttweaks.FontTweaksBlacklistScreen;
 import net.minecraft.client.Minecraft;
@@ -34,12 +35,13 @@ public abstract class GuiGraphicsExtractorMixin {
         }
 
         int wrapWidth = Math.max(1, Math.round(width / scale));
-        int lineStep = Math.max(1, (int) Math.round(font.lineHeight * spacing * scale));
+        int vanillaStep = Math.max(1, Math.round(font.lineHeight * scale));
         GuiGraphicsExtractor graphics = (GuiGraphicsExtractor) (Object) this;
         int nextY = y;
         for (FormattedCharSequence line : font.split(text, wrapWidth)) {
             graphics.text(font, line, x, nextY, color, shadow);
-            nextY += lineStep;
+            nextY += FontTweaksSpacingPolicy.lineStep(vanillaStep, spacing, line,
+                    settings.excludeEnglishFromSpacing);
         }
         return nextY;
     }
