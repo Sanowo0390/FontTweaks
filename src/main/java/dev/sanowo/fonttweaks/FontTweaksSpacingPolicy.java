@@ -39,3 +39,4 @@ public final class FontTweaksSpacingPolicy {
         return Math.max(1, (int) Math.round(vanilla * factor));
     }
 }
+

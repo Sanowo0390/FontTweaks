@@ -149,3 +149,4 @@ class GuiProfilesTest {
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', restored, 3, false));
     }
 }
+

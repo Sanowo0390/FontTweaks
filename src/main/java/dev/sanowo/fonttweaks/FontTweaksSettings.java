@@ -296,3 +296,4 @@ public final class FontTweaksSettings {
         return Math.min(max, Math.max(min, value));
     }
 }
+

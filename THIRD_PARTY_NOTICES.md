@@ -72,3 +72,4 @@ or without modification, either commercially or noncommercially.
 THESE FONTS ARE PROVIDED "AS IS" WITHOUT WARRANTY.
 
 http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/
+

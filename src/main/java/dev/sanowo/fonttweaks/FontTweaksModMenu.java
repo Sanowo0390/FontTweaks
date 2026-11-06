@@ -9,3 +9,4 @@ public final class FontTweaksModMenu implements ModMenuApi {
         return FontTweaksYaclScreen::create;
     }
 }
+

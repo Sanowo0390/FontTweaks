@@ -1,5 +1,15 @@
 # FontTweaks 変更履歴
 
+## 0.12.4 — リロードなしの切り替えとプリセット表示の修正
+
+- GUIサイズ・ドット加工・プリセット変更でも全リソースを読み直さず、文字単位の加工画像キャッシュを切り替える方式へ変更。
+- 旧リロードキューを削除。標準画像と4種類の加工画像を必要時にだけ生成し、実際のリソース再読み込み時に破棄。
+- 保存・同期・再表示時に未変更のプリセットがカスタムになる問題を修正。実際にGUI別の値が変わった場合のみカスタムと表示。
+- プリセット適用時には見えない旧フォント指定もクリア。
+- 「1ドットの画面px」を「ドットの粗さ」に変更。全項目の日英説明とプリセット別の概要を追加・改善。
+- 自動テストでプリセットの保存と再表示、加工画像の再利用とリソース更新後の再生成を検証。
+
+
 ## 0.12.3 — 旧実装の整理
 
 - 到達不能な旧設定画面5クラスと専用プレビューインターフェースを削除。
@@ -265,3 +275,4 @@ PixelMplus12 Regularは公式固定コミットd89b95f04eeb95bf98bb09cb9234a2f99
 Bundled font attribution and full MIT notice are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and included under `META-INF/` in the built JAR.
 
 - **PixelMplus12 Regular:** Copyright (C) 2013 itouhiro / Copyright (C) 2002-2013 M+ FONTS PROJECT — M+ FONT LICENSE。公式: https://github.com/itouhiro/PixelMplus 。ライセンス全文はTHIRD_PARTY_NOTICES.mdとJAR内META-INF/に同梱します。
+

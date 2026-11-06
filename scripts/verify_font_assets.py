@@ -34,3 +34,4 @@ with zipfile.ZipFile(jars[0]) as jar, zipfile.ZipFile(vendor) as upstream:
     assert pixel_definition["providers"][-1] == {"type": "reference", "id": "minecraft:default"}
     assert b"Copyright (C) 2013 itouhiro" in jar.read("META-INF/THIRD_PARTY_NOTICES.md")
 print(f"Verified {jars[0].name}: no default override; original font bytes and notices intact")
+

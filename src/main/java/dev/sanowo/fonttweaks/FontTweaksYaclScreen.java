@@ -135,6 +135,13 @@ public final class FontTweaksYaclScreen {
             english.requestSet(Boolean.TRUE.equals(values.replaceEnglish));
         }
 
+        boolean matches(GuiScaleProfile values) {
+            return pixels.pendingValue().pixels == values.pixelBlockSize
+                    && existing.pendingValue() == values.useExistingFont
+                    && unifont.pendingValue().equals(values.unifontProcessing)
+                    && english.pendingValue().equals(values.replaceEnglish);
+        }
+
         void onManualChange(Runnable listener) {
             pixels.addEventListener((option, event) -> {
                 if (event == OptionEventListener.Event.STATE_CHANGE) listener.run();
@@ -153,19 +160,19 @@ public final class FontTweaksYaclScreen {
 
     /** Independent GUI1/2/3/4+ YACL groups. */
     private static ProfileControls profileGroup(FontTweaksSettings cfg, int scale) {
-        GuiScaleProfile profile = cfg.profileFor(scale);
+        cfg.profileFor(scale);
         Option<PixelSizeChoice> pixels = Option.<PixelSizeChoice>createBuilder()
                 .name(Component.translatable("fonttweaks.ui.dot_count"))
                 .description(illustrated("fonttweaks.ui.desc.profile_dots"))
                 .binding(PixelSizeChoice.ONE,
-                        () -> PixelSizeChoice.fromPixels(profile.pixelBlockSize),
+                        () -> PixelSizeChoice.fromPixels(cfg.profileFor(scale).pixelBlockSize),
                         value -> cfg.setProfilePixelSize(scale, value.pixels))
                 .controller(option -> EnumControllerBuilder.create(option)
                         .enumClass(PixelSizeChoice.class))
                 .build();
         Option<Boolean> existing = toggle("fonttweaks.ui.existing_font",
                 "fonttweaks.ui.desc.existing_font", false,
-                () -> profile.useExistingFont,
+                () -> cfg.profileFor(scale).useExistingFont,
                 value -> cfg.setProfileExistingFont(scale, value));
         Option<Boolean> unifont = toggle("fonttweaks.profile.unifont_processing",
                 "fonttweaks.ui.desc.profile.unifont_processing", true,
@@ -190,144 +197,55 @@ public final class FontTweaksYaclScreen {
 
     /** Separate option-state creation from drawing so pending UI changes are testable. */
     static YetAnotherConfigLib buildConfig(FontTweaksSettings cfg, int initialGuiScale) {
-        final int initialRasterSignature = cfg.pixelRasterSignature(initialGuiScale);
+        return buildConfig(cfg, initialGuiScale, FontTweaksSettings::save);
+    }
+
+    static YetAnotherConfigLib buildConfig(FontTweaksSettings cfg, int initialGuiScale, Runnable persist) {
         ProfileControls gui1 = profileGroup(cfg, 1);
         ProfileControls gui2 = profileGroup(cfg, 2);
         ProfileControls gui3 = profileGroup(cfg, 3);
         ProfileControls gui4 = profileGroup(cfg, 4);
         List<ProfileControls> profiles = List.of(gui1, gui2, gui3, gui4);
 
-        Option<PresetChoice> preset = Option.<PresetChoice>createBuilder()
-                .name(Component.translatable("fonttweaks.ui.preset"))
-                .description(description("fonttweaks.ui.desc.presets"))
-                .binding(PresetChoice.CUSTOM,
-                        () -> PresetChoice.fromId(cfg.activePreset),
-                        value -> cfg.activePreset = value.id)
-                .controller(option -> EnumControllerBuilder.create(option)
-                        .enumClass(PresetChoice.class))
-                .build();
+      …4827 tokens truncated…ate static boolean sourceInk(int[] rows, int left, int width, int x, int y) {
+        int bit = 31 - left - x;
+        return x >= 0 && x < width && y >= 0 && y < 16 && bit >= 0 && bit < 32
+                && ((rows[y] >>> bit) & 1) != 0;
+    }
 
-        final boolean[] syncingPreset = {false};
-        preset.addEventListener((option, event) -> {
-            if (event != OptionEventListener.Event.STATE_CHANGE || syncingPreset[0]) return;
-            PresetChoice choice = option.pendingValue();
-            if (choice == PresetChoice.CUSTOM) return;
-
-            // Preview a preset in a separate in-memory config. Do NOT touch
-            // the saved config (and therefore keep Cancel fully reversible).
-            FontTweaksSettings proposed = new FontTweaksSettings();
-            FontTweaksPresets.apply(proposed, choice.id);
-            syncingPreset[0] = true;
-            try {
-                for (ProfileControls profile : profiles) {
-                    profile.showPreset(proposed.profileFor(profile.scale()));
+    private static boolean safeToClear(boolean[] ink, int columns, int lines, int index) {
+        int x = index % columns, y = index / columns;
+        // Keep raster boundaries, isolated dots, endpoints and thin bridges.
+        if (x == 0 || y == 0 || x == columns - 1 || y == lines - 1) return false;
+        boolean[] neighbors = new boolean[9];
+        int count = 0, start = -1;
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int local = (dy + 1) * 3 + dx + 1;
+                if (ink[(y + dy) * columns + x + dx]) {
+                    neighbors[local] = true;
+                    count++;
+                    start = local;
                 }
-            } finally {
-                syncingPreset[0] = false;
             }
-        });
-        for (ProfileControls profile : profiles) {
-            profile.onManualChange(() -> {
-                if (!syncingPreset[0] && preset.pendingValue() != PresetChoice.CUSTOM) {
-                    // A manual profile edit is now a custom configuration.
-                    // Keep the edited options; only update the preset label.
-                    preset.requestSet(PresetChoice.CUSTOM);
-                }
-            });
         }
-
-        return YetAnotherConfigLib.createBuilder()
-                .title(Component.translatable("fonttweaks.ui.title"))
-                // The primary workflow is choosing one of three presets.
-                // Advanced per-GUI controls remain available for custom setups.
-                .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.fonts"))
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("fonttweaks.ui.group.presets"))
-                                .option(preset)
-                                .build())
-                        .group(gui1.group())
-                        .group(gui2.group())
-                        .group(gui3.group())
-                        .group(gui4.group())
-                        .build())
-                // Text tab: font sizes and letter/line spacing share one category.
-                .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.text"))
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("fonttweaks.ui.group.sizes"))
-                                .option(number("fonttweaks.global", "fonttweaks.ui.desc.global",
-                                        () -> cfg.globalScale, value -> cfg.globalScale = value))
-                                .option(number("fonttweaks.screen", "fonttweaks.ui.desc.screen",
-                                        () -> cfg.screenScale, value -> cfg.screenScale = value))
-                                .option(number("fonttweaks.hud", "fonttweaks.ui.desc.hud",
-                                        () -> cfg.hudScale, value -> cfg.hudScale = value))
-                                .option(number("fonttweaks.button", "fonttweaks.ui.desc.button",
-                                        () -> cfg.buttonScale, value -> cfg.buttonScale = value))
-                                .option(number("fonttweaks.chat", "fonttweaks.ui.desc.chat",
-                                        () -> cfg.chatScale, value -> cfg.chatScale = value))
-                                .build())
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("fonttweaks.ui.group.spacing"))
-                                .option(Option.<Double>createBuilder()
-                                        .name(Component.translatable("fonttweaks.letter_spacing"))
-                                        .description(description("fonttweaks.ui.desc.letter_spacing"))
-                                        .binding(0.0, () -> cfg.letterSpacing,
-                                                value -> cfg.letterSpacing = value)
-                                        .controller(option -> DoubleFieldControllerBuilder.create(option)
-                                                .range(-2.0, 4.0))
-                                        .build())
-                                .option(toggle("fonttweaks.english_exclusion",
-                                        "fonttweaks.ui.desc.english_exclusion", false,
-                                        () -> cfg.excludeEnglishFromSpacing,
-                                        value -> cfg.excludeEnglishFromSpacing = value))
-                                .option(number("fonttweaks.global_spacing",
-                                        "fonttweaks.ui.desc.global_line",
-                                        () -> cfg.globalLineSpacing,
-                                        value -> cfg.globalLineSpacing = value))
-                                .option(number("fonttweaks.spacing",
-                                        "fonttweaks.ui.desc.wrapped",
-                                        () -> cfg.wrappedLineSpacing,
-                                        value -> cfg.wrappedLineSpacing = value))
-                                .option(number("fonttweaks.tooltip_spacing",
-                                        "fonttweaks.ui.desc.tooltip",
-                                        () -> cfg.tooltipLineSpacing,
-                                        value -> cfg.tooltipLineSpacing = value))
-                                .build())
-                        .build())
-                // Single exclusions tab with YACL's scrollable list editor.
-                .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.blacklist"))
-                        .option(ListOption.<String>createBuilder()
-                                .name(Component.translatable("fonttweaks.blacklist"))
-                                .description(description("fonttweaks.ui.desc.blacklist"))
-                                .binding(List.of(),
-                                        () -> new ArrayList<>(cfg.blacklistedEntries),
-                                        values -> cfg.blacklistedEntries = new ArrayList<>(values))
-                                .controller(StringControllerBuilder::create)
-                                .initial("")
-                                .build())
-                        .build())
-                .save(() -> {
-                    // Compare baked atlas output, not the raw enum sentinel:
-                    // Auto (0) and manual 2 use identical GUI3 texture pixels.
-                    Minecraft currentClient = Minecraft.getInstance();
-                    int currentGuiScale = currentClient == null ? 3 : currentClient.getWindow().getGuiScale();
-                    // YACL has already committed the synchronized per-GUI
-                    // pending values. Per-profile setters may set 'custom'
-                    // during that commit; restore the actual selected label.
-                    cfg.activePreset = preset.pendingValue().id;
-                    if (preset.pendingValue() != PresetChoice.CUSTOM) {
-                        cfg.pixelationEnabled = true;
-                        cfg.replaceEnglish = false;
-                    }
-                    boolean mustReload =
-                            initialRasterSignature != cfg.pixelRasterSignature(currentGuiScale);
-                    FontTweaksSettings.save();
-                    if (mustReload) FontTweaksReload.request();
-                    Minecraft mc = Minecraft.getInstance();
-                    if (mc != null && mc.gui != null) mc.gui.hud.getChat().rescaleChat();
-                })
-                .build();
+        if (count < 3) return false;
+        int[] queue = new int[8];
+        int head = 0, tail = 0;
+        queue[tail++] = start;
+        neighbors[start] = false;
+        while (head < tail) {
+            int current = queue[head++];
+            for (int next = 0; next < 9; next++) {
+                if (neighbors[next] && Math.abs(current % 3 - next % 3) <= 1
+                        && Math.abs(current / 3 - next / 3) <= 1) {
+                    neighbors[next] = false;
+                    queue[tail++] = next;
+                }
+            }
+        }
+        return tail == count;
     }
 }
+

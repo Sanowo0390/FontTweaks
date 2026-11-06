@@ -45,3 +45,4 @@ public abstract class GuiGraphicsExtractorMixin {
         return nextY;
     }
 }
+

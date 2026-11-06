@@ -2,6 +2,7 @@ package dev.sanowo.fonttweaks.mixin;
 
 import com.mojang.blaze3d.font.GlyphBitmap;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.UnifontGlyph;
 import net.minecraft.client.Minecraft;
 import dev.sanowo.fonttweaks.PixelatedGlyphBitmap;
 import net.minecraft.client.gui.font.providers.UnihexProvider;
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(targets = "net.minecraft.client.gui.font.providers.UnihexProvider$Glyph")
-public abstract class UnihexBitmapMixin {
+public abstract class UnihexBitmapMixin implements UnifontGlyph {
     @Shadow @Final private UnihexProvider.LineData contents;
     @Shadow @Final private int left;
 
@@ -31,3 +32,4 @@ public abstract class UnihexBitmapMixin {
         return PixelatedGlyphBitmap.process(bitmap, rows, left, cfg, guiScale);
     }
 }
+
