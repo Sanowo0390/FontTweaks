@@ -24,8 +24,10 @@ public final class FontTweaksSettings {
     public double hudScale = 1.0;
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
-    public boolean unifontPixelPerfect = false;
-    public int unifontPixelsPerDot = 1;
+    /** Pixelate the actual Unifont glyph bitmap before it is uploaded to its atlas. */
+    public boolean pixelGlyphEnabled = false;
+    /** Native glyph pixels per block, without changing the text's render size. */
+    public int pixelGlyphBlockSize = 2;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
@@ -84,7 +86,7 @@ public final class FontTweaksSettings {
         hudScale = bounded(hudScale, 0.5, 2.0);
         buttonScale = bounded(buttonScale, 0.5, 2.0);
         chatScale = bounded(chatScale, 0.5, 2.0);
-        if (unifontPixelsPerDot != 1 && unifontPixelsPerDot != 2) unifontPixelsPerDot = 1;
+        if (pixelGlyphBlockSize < 2 || pixelGlyphBlockSize > 4) pixelGlyphBlockSize = 2;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
     }
