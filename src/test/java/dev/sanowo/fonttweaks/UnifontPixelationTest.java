@@ -136,6 +136,46 @@ class UnifontPixelationTest {
         assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, settings));
     }
 
+    @Test void nativeGuiTwoAndFourAtOnePxAndGuiThreeCorrectionSwitch() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.pixelBlockSize = 1;
+        assertEquals(0, cfg.pixelRasterSignature(2));
+        assertEquals(0, cfg.pixelRasterSignature(4));
+        assertFalse(cfg.shouldPixelateAt(2));
+        assertFalse(cfg.shouldPixelateAt(4));
+        assertEquals(1, cfg.pixelRasterSignature(3));
+        cfg.pixelBlockSize = 2;
+        assertEquals(2, cfg.pixelRasterSignature(3));
+        assertEquals(2, cfg.pixelRasterSignature(2));
+        cfg.gui3DotCorrection = false;
+        assertEquals(0, cfg.pixelRasterSignature(3));
+        assertEquals(2, cfg.pixelRasterSignature(4));
+        cfg.gui3DotCorrection = true;
+        assertEquals(2, cfg.pixelRasterSignature(3));
+        cfg.pixelationEnabled = false;
+        assertEquals(0, cfg.pixelRasterSignature(3));
+    }
+
+    @Test void nativePixelCasesDoNotReplaceGlyphBitmapButGuiThreeTwoPxDoes() {
+        com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
+            public int getPixelWidth() { return 16; }
+            public int getPixelHeight() { return 16; }
+            public float getOversample() { return 2; }
+            public boolean isColored() { return true; }
+            public void upload(int x, int y, com.mojang.renderpearl.api.textures.GpuTexture t) {
+                fail("Unexpected GPU upload");
+            }
+        };
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.pixelBlockSize = 1;
+        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 2));
+        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 4));
+        cfg.pixelBlockSize = 2;
+        assertNotSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 3));
+        cfg.gui3DotCorrection = false;
+        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 3));
+    }
+
     @Test void rasterResolutionChangesWithoutChangingGlyphBounds() {
         com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
             public int getPixelWidth() { return 13; }
