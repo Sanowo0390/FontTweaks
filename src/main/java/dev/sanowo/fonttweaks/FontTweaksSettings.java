@@ -22,6 +22,10 @@ public final class FontTweaksSettings {
     public double screenScale = 1.0;
     /** Extra multiplier when no screen is open, including the HUD. */
     public double hudScale = 1.0;
+    public double buttonScale = 1.0;
+    public double chatScale = 1.0;
+    public boolean unifontPixelPerfect = false;
+    public int unifontPixelsPerDot = 1;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
@@ -78,6 +82,9 @@ public final class FontTweaksSettings {
         globalScale = bounded(globalScale, 0.5, 2.0);
         screenScale = bounded(screenScale, 0.5, 2.0);
         hudScale = bounded(hudScale, 0.5, 2.0);
+        buttonScale = bounded(buttonScale, 0.5, 2.0);
+        chatScale = bounded(chatScale, 0.5, 2.0);
+        if (unifontPixelsPerDot != 1 && unifontPixelsPerDot != 2) unifontPixelsPerDot = 1;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
     }
