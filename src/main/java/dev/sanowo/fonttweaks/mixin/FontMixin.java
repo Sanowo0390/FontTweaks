@@ -2,6 +2,7 @@ package dev.sanowo.fonttweaks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.sanowo.fonttweaks.FontTweaksFonts;
+import dev.sanowo.fonttweaks.FontTweaksLetterSpacing;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -17,6 +18,15 @@ public abstract class FontMixin {
     @ModifyConstant(method = "wordWrapHeight", constant = @Constant(intValue = 9))
     private int fonttweaks$wrappedHeight(int original) {
         return Math.max(1, (int) Math.round(original * FontTweaksSettings.get().wrappedSpacing()));
+    }
+
+    // Match StringSplitter's measurement to actual glyph positioning.
+    // MC 26.3 constructs its width provider inside Font.lambda$new$0.
+    @ModifyExpressionValue(method = "lambda$new$0",
+            at = @At(value = "INVOKE",
+                target = "Lcom/mojang/blaze3d/font/GlyphInfo;getAdvance(Z)F"))
+    private float fonttweaks$horizontalTrackingWidth(float original, int codepoint, Style style) {
+        return FontTweaksLetterSpacing.apply(original);
     }
 
     // Rendering and StringSplitter width measurement must choose the same font per codepoint.
