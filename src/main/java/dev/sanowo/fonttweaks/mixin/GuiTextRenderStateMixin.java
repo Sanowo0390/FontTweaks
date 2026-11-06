@@ -3,6 +3,7 @@ package dev.sanowo.fonttweaks.mixin;
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
 import dev.sanowo.fonttweaks.FontTweaksScreen;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.PixelGridMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -53,8 +54,8 @@ public abstract class GuiTextRenderStateMixin {
         if (pixelMode) {
             double existingScale = Math.hypot(inputPose.m00(), inputPose.m01());
             if (existingScale > 0.00001) {
-                multiplier = settings.targetGuiFontScale(mc.getWindow().getGuiScale())
-                        / existingScale;
+                multiplier = PixelGridMath.multiplier(
+                        settings.pixelsPerFontDot, mc.getWindow().getGuiScale(), existingScale);
             }
         }
         if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelMode) return;
@@ -75,8 +76,8 @@ public abstract class GuiTextRenderStateMixin {
             float gx = adjusted.m00() * x + adjusted.m10() * y + adjusted.m20();
             float gy = adjusted.m01() * x + adjusted.m11() * y + adjusted.m21();
             adjusted.translateLocal(
-                    Math.round(gx * guiScale) / (float) guiScale - gx,
-                    Math.round(gy * guiScale) / (float) guiScale - gy);
+                    PixelGridMath.snapDelta(gx, guiScale),
+                    PixelGridMath.snapDelta(gy, guiScale));
         }
 
         this.pose = adjusted;
