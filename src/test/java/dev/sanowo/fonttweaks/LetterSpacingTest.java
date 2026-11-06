@@ -46,6 +46,36 @@ class LetterSpacingTest {
     }
 
     @Test
+    void englishExclusionKeepsLatinGlyphSpacingButChangesJapaneseGlyphSpacing() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.letterSpacing = 1.5;
+        cfg.excludeEnglishFromSpacing = true;
+        assertEquals(6.0f, FontTweaksLetterSpacing.adjustedAdvance(
+                6.0f, cfg.letterSpacing, 'A', true));
+        assertEquals(6.0f, FontTweaksLetterSpacing.adjustedAdvance(
+                6.0f, cfg.letterSpacing, '9', true));
+        assertEquals(7.5f, FontTweaksLetterSpacing.adjustedAdvance(
+                6.0f, cfg.letterSpacing, '日', true));
+        assertEquals(7.5f, FontTweaksLetterSpacing.adjustedAdvance(
+                6.0f, cfg.letterSpacing, 'A', false));
+    }
+
+    @Test
+    void englishOnlyLinesKeepVanillaPitchWhileJapaneseLinesUseConfiguredPitch() {
+        assertFalse(FontTweaksSpacingPolicy.containsNonEnglish("Sodium settings: performance"));
+        assertFalse(FontTweaksSpacingPolicy.containsNonEnglish("YACL options 123"));
+        assertTrue(FontTweaksSpacingPolicy.containsNonEnglish("日本語 / English"));
+        assertTrue(FontTweaksSpacingPolicy.containsNonEnglish("漢字とかな"));
+        assertFalse(FontTweaksSpacingPolicy.containsNonEnglish("123!? "));
+        assertEquals(9, FontTweaksSpacingPolicy.lineStep(9, 1.5,
+                net.minecraft.util.FormattedCharSequence.forward("English text",
+                        net.minecraft.network.chat.Style.EMPTY), true));
+        assertEquals(14, FontTweaksSpacingPolicy.lineStep(9, 1.5,
+                net.minecraft.util.FormattedCharSequence.forward("日本語",
+                        net.minecraft.network.chat.Style.EMPTY), true));
+    }
+
+    @Test
     void pixelProcessingNowDefaultsToOneWithoutMigratingExistingConfigs() {
         Gson gson = new Gson();
         assertEquals(1, new FontTweaksSettings().pixelBlockSize);
