@@ -1,33 +1,44 @@
 package dev.sanowo.fonttweaks;
 
-import dev.isxander.yacl3.gui.YACLScreen;
 import net.minecraft.client.Minecraft;
 
 /**
- * Horizontal tracking (letter spacing) in GUI units.
- *
- * Both the StringSplitter's per-codepoint width provider and the glyph
- * renderer must call this function. Otherwise wrapping, chat clicks,
- * centering and actual glyph positions disagree.
+ * Horizontal tracking shared by both glyph measurement and the draw pen.
+ * The codepoint parameter ensures the English-exclusion toggle behaves the
+ * same in wrapping, centering, hovering, and glyph emission.
  */
 public final class FontTweaksLetterSpacing {
     private FontTweaksLetterSpacing() {}
 
     public static float adjustedAdvance(float original, double letterSpacing) {
         if (!Double.isFinite(letterSpacing) || letterSpacing == 0.0) return original;
-        // Prevent negative/zero glyph advances on narrow fonts.
         return Math.max(0.5f, (float) (original + letterSpacing));
     }
 
-    public static float apply(float original) {
-        double letterSpacing = FontTweaksSettings.get().letterSpacing;
-        if (letterSpacing == 0.0) return original;
+    public static float adjustedAdvance(float original, double spacing,
+                                        int codepoint, boolean excludeEnglish) {
+        if (excludeEnglish && codepoint >= 0 && FontTweaksSettings.isEnglish(codepoint)) {
+            return original;
+        }
+        return adjustedAdvance(original, spacing);
+    }
+
+    /** Used by both the StringSplitter and the actual PreparedTextBuilder. */
+    public static float apply(float original, int codepoint) {
+        FontTweaksSettings cfg = FontTweaksSettings.get();
+        if (cfg.letterSpacing == 0.0) return original;
         Minecraft mc = Minecraft.getInstance();
-        // Do not distort the configuration UI's own hitboxes and labels.
-        if (mc != null && mc.gui != null && mc.gui.screen() instanceof YACLScreen
+        if (mc != null && mc.gui != null
+                && FontTweaksUiContext.isOwnYaclScreen(mc.gui.screen())
                 && FontTweaksRenderContext.current() != FontTweaksRenderContext.Kind.PREVIEW) {
             return original;
         }
-        return adjustedAdvance(original, letterSpacing);
+        return adjustedAdvance(original, cfg.letterSpacing,
+                codepoint, cfg.excludeEnglishFromSpacing);
+    }
+
+    /** Compatibility for glyphs produced directly without a source codepoint. */
+    public static float apply(float original) {
+        return apply(original, -1);
     }
 }
