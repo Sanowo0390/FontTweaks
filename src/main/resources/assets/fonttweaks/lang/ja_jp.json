@@ -6,10 +6,10 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "Unifontの字形をドット絵風に加工します（文字サイズは維持）",
+  "fonttweaks.help": "美咲ゴシック第2内蔵。GUI3で文字ドットを2pxに固定（倍率設定より優先）",
   "fonttweaks.button": "ボタン文字",
   "fonttweaks.chat": "チャット文字",
-  "fonttweaks.pixel_effect_on": "文字ピクセル化：オン",
-  "fonttweaks.pixel_effect_off": "文字ピクセル化：オフ",
-  "fonttweaks.pixel_strength": "ドット粗さ：%s×%s"
+  "fonttweaks.pixel_mode_on": "GUI3 ドット補正：ON",
+  "fonttweaks.pixel_mode_off": "GUI3 ドット補正：OFF",
+  "fonttweaks.pixel_density": "1ドット：%s画面px"
 }
