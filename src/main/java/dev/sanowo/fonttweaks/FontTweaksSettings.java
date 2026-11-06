@@ -178,7 +178,9 @@ public final class FontTweaksSettings {
         hudScale = bounded(hudScale, 0.5, 2.0);
         buttonScale = bounded(buttonScale, 0.5, 2.0);
         chatScale = bounded(chatScale, 0.5, 2.0);
-        letterSpacing = bounded(letterSpacing, -2.0, 4.0);
+        // Tracking is additive, so its neutral value is 0 (not the multiplier default 1).
+        letterSpacing = Double.isFinite(letterSpacing)
+                ? bounded(letterSpacing, -2.0, 4.0) : 0.0;
         if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 1;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
