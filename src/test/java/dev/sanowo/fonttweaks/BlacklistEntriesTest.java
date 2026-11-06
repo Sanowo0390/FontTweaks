@@ -50,8 +50,8 @@ class BlacklistEntriesTest {
             public boolean isColored() { return true; }
             public void upload(int x, int y, GpuTexture texture) { fail("No GPU upload expected"); }
         };
-        assertInstanceOf(PixelatedGlyphBitmap.class, PixelatedGlyphBitmap.process(original, new int[16], 0, 3, cfg));
+        assertInstanceOf(PixelatedGlyphBitmap.class, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg));
         cfg.pixelationEnabled = false;
-        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, 3, cfg));
+        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg));
     }
 }
