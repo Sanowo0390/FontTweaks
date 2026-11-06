@@ -77,7 +77,7 @@ public abstract class GuiGraphicsExtractorMixin {
     private int fonttweaks$textWithWordWrap(Font font, FormattedText text, int x, int y,
                                            int width, int color, boolean shadow, Operation<Integer> original) {
         FontTweaksSettings cfg = FontTweaksSettings.get();
-        float spacing = cfg.wrappedLineSpacing;
+        double spacing = cfg.wrappedLineSpacing;
         float scale = fonttweaks$scale();
         if (Math.abs(spacing - 1.0f) < 0.001f && Math.abs(scale - 1.0f) < 0.001f) {
             return original.call(font, text, x, y, width, color, shadow);
