@@ -6,5 +6,10 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "数値を直接入力可能（例：0.6666666666666667）"
+  "fonttweaks.help": "GUIサイズ3で日本語のUnifontを整数ピクセル表示（1px=小 / 2px=大）",
+  "fonttweaks.button": "ボタン文字",
+  "fonttweaks.chat": "チャット文字",
+  "fonttweaks.pixel_on": "Unifont補正：オン",
+  "fonttweaks.pixel_off": "Unifont補正：オフ",
+  "fonttweaks.pixel_size": "Unifont：1ドット %s px"
 }
