@@ -6,34 +6,67 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnifontPixelationTest {
-    @Test void oneLeavesEveryPixelUntouched() {
-        int[] data = {-1, 0, -1, 0};
-        UnifontPixelation.apply(IntBuffer.wrap(data), 2, 2, 1);
-        assertArrayEquals(new int[]{-1, 0, -1, 0}, data);
+    @Test void rasterResolutionChangesWithoutChangingGlyphBounds() {
+        com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
+            public int getPixelWidth() { return 13; }
+            public int getPixelHeight() { return 16; }
+            public float getOversample() { return 2; }
+            public boolean isColored() { return true; }
+            public void upload(int x, int y, com.mojang.renderpearl.api.textures.GpuTexture t) {
+                fail("No GPU upload expected in metrics test");
+            }
+        };
+        for (int gui = 1; gui <= 4; gui++) {
+            PixelatedGlyphBitmap processed = new PixelatedGlyphBitmap(original, new int[16], 0, gui, 3);
+            assertEquals(original.getLeft(), processed.getLeft());
+            assertEquals(original.getRight(), processed.getRight());
+            assertEquals(original.getTop(), processed.getTop());
+            assertEquals(original.getBottom(), processed.getBottom());
+            assertEquals(6.5, processed.getPixelWidth() / (double) processed.getOversample());
+            assertEquals(8.0, processed.getPixelHeight() / (double) processed.getOversample());
+        }
     }
 
-    @Test void twoUsesMajorityCoverageAndKeepsDimensions() {
-        int[] data = {-1, 0, -1, 0, -1, 0, 0, 0};
-        IntBuffer buffer = IntBuffer.wrap(data);
-        UnifontPixelation.apply(buffer, 4, 2, 2);
-        assertArrayEquals(new int[]{-1, -1, 0, 0, -1, -1, 0, 0}, data);
-        assertEquals(0, buffer.position());
-        assertEquals(8, buffer.limit());
+    @Test void thinMinorityStrokesSurvive() {
+        int[] rows = new int[16];
+        rows[0] = 0x80000000;
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 3);
+        // One lit source pixel in a 2x2 source block used to disappear.
+        assertEquals(64, result[0] >>> 24);
+        assertEquals(result[0], result[5 * 48 + 5]);
+        assertEquals(0, result[6]);
     }
 
-    @Test void threeClipsEdgesAndPreservesBufferOutsideBitmap() {
-        int[] data = {123, -1, -1, -1, 0, -1, -1, 0, -1, 456};
-        IntBuffer buffer = IntBuffer.wrap(data);
-        buffer.position(1).limit(9);
-        UnifontPixelation.apply(buffer, 4, 2, 3);
-        assertArrayEquals(new int[]{123, -1, -1, -1, -1, -1, -1, -1, -1, 456}, data);
-        assertEquals(1, buffer.position());
-        assertEquals(9, buffer.limit());
+    @Test void requestedDotSizeUsesDisplayPixelsAtEveryGuiScale() {
+        int[] rows = new int[16];
+        rows[0] = 0x80000000;
+        for (int gui = 1; gui <= 4; gui++) {
+            for (int target = 1; target <= 3; target++) {
+                int[] result = UnifontPixelation.rasterize(rows, 0, 16, gui, target);
+                assertEquals(16 * gui * 16 * gui, result.length);
+                int block = target * 2;
+                for (int y = 0; y < block; y++) {
+                    for (int x = 0; x < block; x++) assertEquals(result[0], result[y * 16 * gui + x]);
+                }
+                assertTrue((result[0] >>> 24) > 0);
+                // Output uses 2*gui texels per GUI unit: exactly target screen px.
+                assertEquals(target, block / (2.0 * gui) * gui, 1e-12);
+            }
+        }
     }
 
-    @Test void bitmapDimensionsMustMatch() {
+    @Test void croppedOddWidthAndBlankGlyphAreHandled() {
+        int[] rows = new int[16];
+        assertArrayEquals(new int[7 * 3 * 16 * 3],
+                UnifontPixelation.rasterize(rows, 5, 7, 3, 2));
+        rows[15] = 1 << (31 - 11);
+        int[] raster = UnifontPixelation.rasterize(rows, 5, 7, 3, 2);
+        assertTrue((raster[raster.length - 1] >>> 24) > 0);
+    }
+
+    @Test void invalidDimensionsAreRejected() {
         assertThrows(IllegalArgumentException.class,
-                () -> UnifontPixelation.apply(IntBuffer.allocate(7), 4, 2, 2));
+                () -> UnifontPixelation.rasterize(new int[15], 0, 16, 3, 3));
     }
 
     @Test void effectToggleAndRoughnessDoNotChangeSizeOrSpacing() {

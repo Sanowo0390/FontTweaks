@@ -30,7 +30,7 @@ public final class FontTweaksSettings {
     /** Bitmap effect only, independent of all text sizing. */
     @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
     public boolean pixelationEnabled = true;
-    /** Source bitmap pixels per block, independent of GUI scale. */
+    /** Physical display pixels per dot at text scale 100%; GUI scale is compensated. */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
     public int pixelBlockSize = 2;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */

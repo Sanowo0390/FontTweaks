@@ -6,11 +6,11 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "Unifontのピクセル化と文字サイズは別々に調整できます。",
+  "fonttweaks.help": "GUI基準のドット表示。文字サイズは別に調整できます。",
   "fonttweaks.button": "ボタン文字",
   "fonttweaks.chat": "チャット文字",
   "fonttweaks.pixel_mode_on": "ピクセル化：ON",
   "fonttweaks.pixel_mode_off": "ピクセル化：OFF",
-  "fonttweaks.pixel_density": "粗さ：%s元画像px",
-  "fonttweaks.pixel_help": "1：元のドット、2／3：粗いドット。文字サイズは維持。変更時にリソースを再読み込みします。"
+  "fonttweaks.pixel_density": "1ドット：%s画面px",
+  "fonttweaks.pixel_help": "文字倍率100%時の画面px数。GUIスケールに合わせて変換します。細線は透明度で保持します。"
 }
