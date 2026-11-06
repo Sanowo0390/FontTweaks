@@ -78,12 +78,18 @@ def downloadMisaki = tasks.register('downloadMisaki', DefaultTask) {
     }
 }
 
-def prepareMisaki = tasks.register('prepareMisaki', Copy) {
+def prepareMisaki = tasks.register('prepareMisaki', Sync) {
     dependsOn downloadMisaki
     from({ zipTree(misakiZip.get().asFile) }) {
         include 'assets/minecraft/font/default.json'
         include 'assets/misakigothic2/font/**'
         include 'assets/misakigothic2/textures/**'
+        eachFile { details ->
+            if (details.path == 'assets/minecraft/font/default.json') {
+                details.path = 'assets/fonttweaks/font/misaki.json'
+            }
+        }
+        includeEmptyDirs = false
     }
     into misakiResources
 }
@@ -91,4 +97,8 @@ def prepareMisaki = tasks.register('prepareMisaki', Copy) {
 sourceSets.main.resources.srcDir(misakiResources)
 tasks.named('processResources').configure {
     dependsOn prepareMisaki
+    // Remove the old override even on an incremental upgrade from 0.3.1.
+    doFirst {
+        delete layout.buildDirectory.file('resources/main/assets/minecraft/font/default.json')
+    }
 }

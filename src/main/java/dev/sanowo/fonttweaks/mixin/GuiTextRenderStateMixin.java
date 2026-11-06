@@ -45,6 +45,13 @@ public abstract class GuiTextRenderStateMixin {
                 && context != FontTweaksRenderContext.Kind.PREVIEW) return;
 
         FontTweaksSettings settings = FontTweaksSettings.get();
+        if (!settings.pixelPerfectMode) {
+            if (context == FontTweaksRenderContext.Kind.PREVIEW) {
+                FontTweaksDiagnostics.recordPreview(mc.getWindow().getGuiScale(), false,
+                        settings.pixelsPerFontDot, 1.0);
+            }
+            return;
+        }
         double multiplier = switch (context) {
             case BUTTON -> settings.globalScale * settings.screenScale * settings.buttonScale;
             // Vanilla chat already scales its own pose, including backgrounds.
@@ -66,7 +73,7 @@ public abstract class GuiTextRenderStateMixin {
             }
         }
         if (context == FontTweaksRenderContext.Kind.PREVIEW) {
-            FontTweaksDiagnostics.recordPreview(mc.getWindow().getGuiScale(), pixelMode,
+            FontTweaksDiagnostics.recordPreview(mc.getWindow().getGuiScale(), settings.pixelPerfectMode,
                     settings.pixelsPerFontDot, multiplier);
         }
         if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelMode) return;

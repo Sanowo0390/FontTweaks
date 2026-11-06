@@ -6,10 +6,12 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "Built-in Misaki Gothic 2. GUI3 pixel lock overrides text size sliders",
+  "fonttweaks.help": "ON: Misaki / OFF: default. Dot size applies at GUI 3.",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
-  "fonttweaks.pixel_mode_on": "GUI3 Pixel Mode: ON",
-  "fonttweaks.pixel_mode_off": "GUI3 Pixel Mode: OFF",
-  "fonttweaks.pixel_density": "Dot: %s screen px"
+  "fonttweaks.pixel_mode_on": "FontTweaks: ON (Misaki)",
+  "fonttweaks.pixel_mode_off": "FontTweaks: OFF (Default)",
+  "fonttweaks.pixel_density": "Dot: %s screen px",
+  "fonttweaks.scale_help": "Custom scale: ON at GUI scales other than 3. GUI 3 uses the selected dot size.",
+  "fonttweaks.pixel_help": "ON + GUI 3: 1 / 2 / 3 physical pixels per font dot."
 }

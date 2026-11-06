@@ -13,7 +13,9 @@ import java.nio.file.StandardCopyOption;
 
 public final class FontTweaksSettings {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("fonttweaks.json");
+    private static Path configFile() {
+        return FabricLoader.getInstance().getConfigDir().resolve("fonttweaks.json");
+    }
     private static volatile FontTweaksSettings INSTANCE = new FontTweaksSettings();
 
     /** Scale applied to the HUD and screen text (except the mod's own config screen). */
@@ -24,7 +26,7 @@ public final class FontTweaksSettings {
     public double hudScale = 1.0;
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
-    /** Align native 8x8 Misaki Gothic and vanilla bitmap texels to physical pixels at GUI scale 3. */
+    /** Master switch: Misaki and adjustments ON, vanilla behavior OFF. Legacy JSON key retained. */
     public boolean pixelPerfectMode = true;
     /** Physical screen pixels per 8x8 font texel when GUI scale is 3. Default: exactly 2x2. */
     public int pixelsPerFontDot = 2;
@@ -46,10 +48,12 @@ public final class FontTweaksSettings {
     }
 
     public float scaleFor(boolean screenOpen) {
+        if (!pixelPerfectMode) return 1.0f;
         return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
     }
 
     public static synchronized void load() {
+        Path FILE = configFile();
         try {
             if (Files.isRegularFile(FILE)) {
                 try (Reader reader = Files.newBufferedReader(FILE, StandardCharsets.UTF_8)) {
@@ -66,6 +70,7 @@ public final class FontTweaksSettings {
     }
 
     public static synchronized void save() {
+        Path FILE = configFile();
         INSTANCE.sanitize();
         try {
             Files.createDirectories(FILE.getParent());

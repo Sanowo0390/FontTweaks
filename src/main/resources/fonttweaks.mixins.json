@@ -3,6 +3,7 @@
   "package": "dev.sanowo.fonttweaks.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
+    "FontMixin",
     "GuiGraphicsExtractorMixin",
     "GuiTextRenderStateMixin",
     "AbstractWidgetMixin",

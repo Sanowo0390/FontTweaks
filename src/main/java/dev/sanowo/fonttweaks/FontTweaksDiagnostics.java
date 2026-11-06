@@ -21,7 +21,7 @@ public final class FontTweaksDiagnostics {
     public static String debugStatus() {
         if (previewSamples == 0) return "FontTweaks hook: NOT DETECTED";
         return String.format(java.util.Locale.ROOT,
-                "Hook OK | GUI %d | Mode %s | Dot %dpx | Applied %.4fx",
-                lastGuiScale, lastMode ? "ON" : "OFF", lastTargetPixels, lastEffectiveTextScale);
+                "Hook OK | GUI %d | Font %s | Target %dpx | Applied %.4fx",
+                lastGuiScale, lastMode ? "Misaki" : "Default", lastTargetPixels, lastEffectiveTextScale);
     }
 }

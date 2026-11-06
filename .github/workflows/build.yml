@@ -20,11 +20,12 @@ jobs:
       - name: Verify installed font assets and copyright notices
         run: |
           set -euo pipefail
+          python3 scripts/verify_font_assets.py
           mkdir -p build/distribution
           JAR=$(find build/libs -maxdepth 1 -type f -name 'fonttweaks-*.jar' ! -name '*sources*' ! -name '*dev*' | head -1)
           test -n "$JAR"
           for path in \
-            assets/minecraft/font/default.json \
+            assets/fonttweaks/font/misaki.json \
             assets/misakigothic2/font/shift_jis.json \
             assets/misakigothic2/textures/font/shift_jis.png \
             META-INF/THIRD_PARTY_NOTICES.md; do

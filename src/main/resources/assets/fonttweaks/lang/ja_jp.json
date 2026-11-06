@@ -6,10 +6,12 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "美咲ゴシック第2内蔵。GUI3で文字ドットを2pxに固定（倍率設定より優先）",
+  "fonttweaks.help": "ON：美咲 ／ OFF：標準。ドット指定はGUI3で適用",
   "fonttweaks.button": "ボタン文字",
   "fonttweaks.chat": "チャット文字",
-  "fonttweaks.pixel_mode_on": "GUI3 ドット補正：ON",
-  "fonttweaks.pixel_mode_off": "GUI3 ドット補正：OFF",
-  "fonttweaks.pixel_density": "1ドット：%s画面px"
+  "fonttweaks.pixel_mode_on": "FontTweaks：ON（美咲）",
+  "fonttweaks.pixel_mode_off": "FontTweaks：OFF（標準）",
+  "fonttweaks.pixel_density": "1ドット：%s画面px",
+  "fonttweaks.scale_help": "ON・GUI3以外で適用。GUI3では選んだドット数を優先します。",
+  "fonttweaks.pixel_help": "ON・GUI3で1ドットを1／2／3画面pxにします。"
 }

@@ -4,16 +4,23 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class FontTweaksScreen extends Screen {
     private final Screen parent;
+    private final List<AbstractWidget> scaleControls = new ArrayList<>();
+    private final List<AbstractWidget> spacingControls = new ArrayList<>();
+    private Button pixelSizeButton;
 
     public FontTweaksScreen(Screen parent) {
         super(Component.translatable("fonttweaks.title"));
@@ -22,6 +29,8 @@ public final class FontTweaksScreen extends Screen {
 
     @Override
     protected void init() {
+        scaleControls.clear();
+        spacingControls.clear();
         int w = Math.min(350, this.width - 24);
         int x = (this.width - w) / 2;
         int gap = this.height < 275 ? 21 : 24;
@@ -55,8 +64,9 @@ public final class FontTweaksScreen extends Screen {
             b.setMessage(pixelToggleLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+            this.rebuildWidgets();
         }).bounds(x, startY + 7 * gap, half, 20).build());
-        this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
+        pixelSizeButton = this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
             cfg.pixelsPerFontDot = cfg.pixelsPerFontDot == 3 ? 1 : cfg.pixelsPerFontDot + 1;
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
@@ -70,6 +80,19 @@ public final class FontTweaksScreen extends Screen {
         }).bounds(x, startY + 8 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(x + half + 8, startY + 8 * gap, half, 20).build());
+        updateControlAvailability();
+    }
+
+    private void updateControlAvailability() {
+        FontTweaksSettings cfg = FontTweaksSettings.get();
+        boolean pixelActive = cfg.isPixelModeActive(this.minecraft.getWindow().getGuiScale());
+        for (AbstractWidget widget : scaleControls) {
+            widget.active = cfg.pixelPerfectMode && !pixelActive;
+            widget.setTooltip(Tooltip.create(Component.translatable("fonttweaks.scale_help")));
+        }
+        for (AbstractWidget widget : spacingControls) widget.active = cfg.pixelPerfectMode;
+        pixelSizeButton.active = pixelActive;
+        pixelSizeButton.setTooltip(Tooltip.create(Component.translatable("fonttweaks.pixel_help")));
     }
 
     private static Component pixelToggleLabel(FontTweaksSettings cfg) {
@@ -122,6 +145,10 @@ public final class FontTweaksScreen extends Screen {
 
         this.addRenderableWidget(slider);
         this.addRenderableWidget(input);
+        List<AbstractWidget> controls = key.equals("fonttweaks.spacing")
+                || key.equals("fonttweaks.tooltip_spacing") ? spacingControls : scaleControls;
+        controls.add(slider);
+        controls.add(input);
     }
 
     private static String formatNumber(double value) {
