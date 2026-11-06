@@ -29,7 +29,10 @@ public final class FontTweaksScreen extends Screen {
         FontTweaksSettings cfg = FontTweaksSettings.get();
 
         addSettingRow(x, startY, w, "fonttweaks.global", 0.5, 2.0,
-                () -> cfg.globalScale, v -> cfg.globalScale = v);
+                () -> cfg.globalScale, v -> {
+                    cfg.globalScale = v;
+                    if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+                });
         addSettingRow(x, startY + gap, w, "fonttweaks.screen", 0.5, 2.0,
                 () -> cfg.screenScale, v -> cfg.screenScale = v);
         addSettingRow(x, startY + gap * 2, w, "fonttweaks.hud", 0.5, 2.0,
