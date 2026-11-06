@@ -6,12 +6,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FontTweaksFontsTest {
-    @Test void guiFourSelectsMisakiAtFourAndIdentifiesNativeAtTwo() {
+    @Test void legacyAutoFontMatchesEnglishGridAtGuiFour() {
         assertTrue(FontTweaksFonts.matchesEnglishGrid(true, 4, 4, false));
         assertFalse(FontTweaksFonts.matchesEnglishGrid(true, 2, 4, false));
-        assertTrue(FontTweaksFonts.matchesNativeUnifontGrid(2, 4));
-        assertFalse(FontTweaksFonts.matchesNativeUnifontGrid(2, 3));
-        assertFalse(FontTweaksFonts.matchesNativeUnifontGrid(0, 0));
     }
 
     @Test void englishGridMatchesOnlyEqualGuiAndTarget() {

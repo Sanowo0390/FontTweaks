@@ -12,9 +12,61 @@ public final class Smoke implements PreLaunchEntrypoint {
     System.out.println("FONT_SMOKE_OK "+name+" hooks="+count);
    }
    spacingProbe();
+   glyphVariantProbe();
    System.out.println("FONT_SMOKE_COMPLETE");
    System.exit(0);
   } catch(Throwable e) {e.printStackTrace();System.exit(12);}
+ }
+ static void glyphVariantProbe() throws Exception {
+  ClassLoader loader=Thread.currentThread().getContextClassLoader();
+  Class<?> delayed=Class.forName("net.minecraft.client.gui.font.FontSet$DelayedBake",true,loader);
+  Class<?> glyphType=Class.forName("net.minecraft.client.gui.font.providers.UnihexProvider$Glyph",true,loader);
+  if(java.util.Arrays.stream(delayed.getDeclaredMethods()).noneMatch(m->m.getName().contains("fonttweaks")))
+   throw new AssertionError("Missing variant cache hook");
+  Class<?> marker=Class.forName("dev.sanowo.fonttweaks.UnifontGlyph",true,loader);
+  Class<?> lines=Class.forName("net.minecraft.client.gui.font.providers.UnihexProvider$LineData",true,loader);
+  Object contents=java.lang.reflect.Proxy.newProxyInstance(loader,new Class[]{lines},(p,m,a)->
+      m.getName().equals("bitWidth") ? 16 : 0x80000000);
+  java.lang.reflect.Constructor<?> glyphCtor=glyphType.getDeclaredConstructors()[0];glyphCtor.setAccessible(true);
+  Object glyph=glyphCtor.newInstance(contents,0,15);
+  if(!marker.isInstance(glyph))throw new AssertionError("Unihex marker missing");
+  Class<?> settings=Class.forName("dev.sanowo.fonttweaks.FontTweaksSettings",true,loader);
+  Object cfg=settings.getMethod("get").invoke(null);
+  settings.getField("guiScaleProfiles").set(cfg,new java.util.LinkedHashMap<>());
+  java.lang.reflect.Field enabled=settings.getField("pixelationEnabled"), pixels=settings.getField("pixelBlockSize");
+  Class<?> fontSet=Class.forName("net.minecraft.client.gui.font.FontSet",true,loader);
+  java.lang.reflect.Field unsafeField=Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
+  unsafeField.setAccessible(true);Object unsafe=unsafeField.get(null);
+  Object owner=unsafe.getClass().getMethod("allocateInstance",Class.class).invoke(unsafe,fontSet);
+  Class<?> stitcher=Class.forName("com.mojang.blaze3d.font.UnbakedGlyph$Stitcher",true,loader);
+  Class<?> baked=Class.forName("net.minecraft.client.gui.font.glyphs.BakedGlyph",true,loader);
+  int[] bakes={0};
+  Object fakeStitcher=java.lang.reflect.Proxy.newProxyInstance(loader,new Class[]{stitcher},(p,m,a)->{
+   if(!m.getName().equals("stitch"))return null;
+   bakes[0]++;
+   com.mojang.blaze3d.font.GlyphBitmap bitmap=(com.mojang.blaze3d.font.GlyphBitmap)a[1];
+   if(bitmap.getPixelWidth()!=(enabled.getBoolean(cfg)?48:16))
+    throw new AssertionError("Wrong raster variant dimensions: "+bitmap.getPixelWidth());
+   return java.lang.reflect.Proxy.newProxyInstance(loader,new Class[]{baked},(p2,m2,a2)->null);
+  });
+  java.lang.reflect.Field wrapped=fontSet.getDeclaredField("wrappedStitcher");wrapped.setAccessible(true);wrapped.set(owner,fakeStitcher);
+  java.lang.reflect.Constructor<?> ctor=delayed.getDeclaredConstructors()[0];ctor.setAccessible(true);
+  Object supplier=ctor.newInstance(owner,glyph);
+  java.lang.reflect.Method get=delayed.getDeclaredMethod("get");get.setAccessible(true);
+  Object[] variants=new Object[5];
+  for(int pass=0;pass<3;pass++)for(int signature=0;signature<=4;signature++){
+   enabled.setBoolean(cfg,signature!=0);pixels.setInt(cfg,Math.max(1,signature));
+   Object result=get.invoke(supplier);
+   if(pass==0)variants[signature]=result;
+   else if(result!=variants[signature])throw new AssertionError("Variant rebaked on switch");
+  }
+  if(bakes[0]!=5)throw new AssertionError("Expected five lazy bakes, got "+bakes[0]);
+  enabled.setBoolean(cfg,true);pixels.setInt(cfg,0);
+  if(get.invoke(supplier)!=variants[2]||bakes[0]!=5)throw new AssertionError("Auto must reuse 2px");
+  // A real font reload creates a new DelayedBake: no stale texture survives.
+  Object replacement=ctor.newInstance(owner,glyph);
+  if(get.invoke(replacement)==variants[2]||bakes[0]!=6)throw new AssertionError("New atlas reused stale glyph");
+  System.out.println("FONT_VARIANTS_SMOKE native+1/2/3/4 cached across switches; Auto reuses 2; new atlas rebakes");
  }
  static void spacingProbe() throws Exception {
   ClassLoader loader=Thread.currentThread().getContextClassLoader();
@@ -86,3 +138,4 @@ public final class Smoke implements PreLaunchEntrypoint {
   System.out.println("FONT_SPACING_SMOKE labels=[10,19] -> [10,28]; English skip and Japanese pitch verified; tooltip="+normal+" -> "+scaled);
  }
 }
+

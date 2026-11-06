@@ -9,6 +9,7 @@
     "ChatComponentMixin",
     "ClientTextTooltipMixin",
     "UnihexBitmapMixin",
+    "DelayedGlyphBakeMixin",
     "FontMixin",
     "FontPreparedTextBuilderMixin",
     "MultiLineLabelMixin",
@@ -18,3 +19,4 @@
     "defaultRequire": 1
   }
 }
+

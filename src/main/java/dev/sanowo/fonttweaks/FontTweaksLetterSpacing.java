@@ -37,8 +37,4 @@ public final class FontTweaksLetterSpacing {
                 codepoint, cfg.excludeEnglishFromSpacing);
     }
 
-    /** Compatibility for glyphs produced directly without a source codepoint. */
-    public static float apply(float original) {
-        return apply(original, -1);
-    }
 }

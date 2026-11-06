@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 /**
- * Lightweight live font sample in YACL's native description image panel.
+ * Lightweight applied-settings font sample in YACL's native description image panel.
  * Follows the ImageRenderer contract exposed by Zoomify 2.17.0's demos;
  * no Zoomify runtime classes or assets are used.
  */
@@ -58,7 +58,7 @@ public final class FontTweaksFontImage implements ImageRenderer {
                     || "misaki".equals(profile.legacyExistingFont) ? " / Misaki" : " / PixelMplus";
         }
         graphics.text(minecraft.font,
-                Component.literal("GUI " + gui + " / " + pixelStatus),
+                Component.translatable("fonttweaks.ui.preview.applied", gui, pixelStatus),
                 x + 7, y + height - 15, 0xFFA5AFC3);
         return height;
     }

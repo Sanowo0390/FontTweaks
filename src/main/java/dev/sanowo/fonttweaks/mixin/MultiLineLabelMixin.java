@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
 import dev.sanowo.fonttweaks.FontTweaksSpacingPolicy;
 import dev.sanowo.fonttweaks.FontTweaksUiContext;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.util.FormattedCharSequence;
@@ -25,18 +24,11 @@ public abstract class MultiLineLabelMixin {
     /** [vanillaStep, cumulativeExtraY]. Scoped to nested visitLines calls. */
     @Unique private static final ThreadLocal<int[]> fonttweaks$lineFrame = new ThreadLocal<>();
 
-    @Unique
-    private boolean fonttweaks$isOwnSettingsScreen() {
-        Minecraft mc = Minecraft.getInstance();
-        return mc != null && mc.gui != null
-                && FontTweaksUiContext.isOwnYaclScreen(mc.gui.screen());
-    }
-
     @ModifyVariable(method = "visitLines", at = @At("HEAD"), argsOnly = true, index = 4)
     private int fonttweaks$lineStep(int original) {
         FontTweaksSettings cfg = FontTweaksSettings.get();
         // The per-line handler below handles English exclusion.
-        return cfg.excludeEnglishFromSpacing || fonttweaks$isOwnSettingsScreen()
+        return cfg.excludeEnglishFromSpacing || FontTweaksUiContext.isOwnSettingsScreen()
                 ? original : cfg.lineStep(original);
     }
 
@@ -45,7 +37,7 @@ public abstract class MultiLineLabelMixin {
                                           int lineHeight, ActiveTextCollector output,
                                           Operation<Integer> original) {
         FontTweaksSettings cfg = FontTweaksSettings.get();
-        if (!cfg.excludeEnglishFromSpacing || fonttweaks$isOwnSettingsScreen()) {
+        if (!cfg.excludeEnglishFromSpacing || FontTweaksUiContext.isOwnSettingsScreen()) {
             return original.call(alignment, x, y, lineHeight, output);
         }
         int[] old = fonttweaks$lineFrame.get();

@@ -13,6 +13,80 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Real YACL options must refresh within the SAME screen, without a save/reopen. */
 class YaclLivePresetTest {
+    private static Option<?> presetOption(YetAnotherConfigLib config) {
+        return config.categories().get(0).groups().stream()
+                .flatMap(group -> group.options().stream())
+                .filter(option -> option.pendingValue() instanceof Enum<?> value
+                        && value.getDeclaringClass().getSimpleName().equals("PresetChoice"))
+                .findFirst().orElseThrow();
+    }
+
+    private static void save(YetAnotherConfigLib config) {
+        config.categories().forEach(category -> category.groups().forEach(group ->
+                group.options().forEach(Option::applyValue)));
+        config.saveFunction().run();
+    }
+
+    @Test
+    void everyPresetSurvivesSaveSyncSerializationAndReopening() {
+        for (String name : List.of("PIXEL_CORRECTION", "PIXEL_AND_FONTS", "ALWAYS_MISAKI")) {
+            FontTweaksSettings cfg = new FontTweaksSettings();
+            YetAnotherConfigLib config = FontTweaksYaclScreen.buildConfig(cfg, 3, () -> {});
+            Option<?> preset = presetOption(config);
+            selectEnum(preset, name);
+            save(config);
+            assertEquals(name, enumName(preset), "after saving");
+            String savedId = cfg.activePreset;
+            assertNotEquals(FontTweaksPresets.CUSTOM, savedId);
+            // Repeated save/apply/sync, including unchanged controls, must not
+            // turn a preset into custom as the real YACL save path runs.
+            guiGroups(config).forEach(group -> group.options().forEach(Option::forgetPendingValue));
+            assertEquals(name, enumName(preset), "after synchronizing unchanged rows");
+            save(config);
+            assertEquals(savedId, cfg.activePreset);
+            com.google.gson.Gson gson = new com.google.gson.Gson();
+            FontTweaksSettings restored = gson.fromJson(gson.toJson(cfg), FontTweaksSettings.class);
+            restored.sanitize();
+            YetAnotherConfigLib reopened = FontTweaksYaclScreen.buildConfig(restored, 2, () -> {});
+            assertEquals(name, enumName(presetOption(reopened)), "after reopening at another GUI size");
+        }
+    }
+
+    @Test
+    void redundantEventsAndUnrelatedTextChangesKeepPresetButRealProfileEditDoesNot() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        FontTweaksPresets.apply(cfg, FontTweaksPresets.ALWAYS_MISAKI);
+        YetAnotherConfigLib config = FontTweaksYaclScreen.buildConfig(cfg, 3, () -> {});
+        Option<?> preset = presetOption(config);
+        selectBool(guiGroups(config).get(1).options().get(2), true);
+        assertEquals("ALWAYS_MISAKI", enumName(preset));
+        @SuppressWarnings("unchecked")
+        Option<Double> size = (Option<Double>) config.categories().get(1).groups().stream()
+                .flatMap(group -> group.options().stream())
+                .filter(option -> option.pendingValue() instanceof Double).findFirst().orElseThrow();
+        size.requestSet(1.25);
+        save(config);
+        assertEquals(FontTweaksPresets.ALWAYS_MISAKI, cfg.activePreset);
+        assertEquals(1.25, cfg.globalScale);
+        selectBool(guiGroups(config).get(1).options().get(2), false);
+        assertEquals("CUSTOM", enumName(preset));
+        save(config);
+        assertEquals(FontTweaksPresets.CUSTOM, cfg.activePreset);
+        assertFalse(cfg.unifontProcessingAt(2));
+    }
+
+    @Test
+    void savingPresetClearsInvisibleLegacyFontOverride() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        FontTweaksPresets.apply(cfg, FontTweaksPresets.PIXEL_AND_FONTS);
+        cfg.profileFor(3).legacyExistingFont = "misaki";
+        YetAnotherConfigLib config = FontTweaksYaclScreen.buildConfig(cfg, 3, () -> {});
+        save(config);
+        assertNull(cfg.profileFor(3).legacyExistingFont);
+        assertSame(FontTweaksFonts.PIXELMPLUS, FontTweaksFonts.select(
+                net.minecraft.network.chat.FontDescription.DEFAULT, '日', cfg, 3, false));
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void selectEnum(Option<?> option, String value) {
         Enum<?> current = (Enum<?>) option.pendingValue();
@@ -103,3 +177,4 @@ class YaclLivePresetTest {
         assertEquals(Boolean.TRUE, gui.get(2).options().get(1).pendingValue());
     }
 }
+

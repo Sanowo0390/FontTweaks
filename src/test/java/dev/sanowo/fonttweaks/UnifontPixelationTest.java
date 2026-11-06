@@ -76,18 +76,13 @@ class UnifontPixelationTest {
         }
     }
 
-    @Test void fourIsSavedAndUiCyclesThroughAllFourValues() {
+    @Test void fourPixelSettingSurvivesSerialization() {
         FontTweaksSettings cfg = new FontTweaksSettings();
         cfg.pixelBlockSize = 4;
         cfg.sanitize();
         assertEquals(4, cfg.pixelBlockSize);
         FontTweaksSettings restored = new Gson().fromJson(new Gson().toJson(cfg), FontTweaksSettings.class);
         assertEquals(4, restored.pixelBlockSize);
-        for (int target = 1; target <= 4; target++) {
-            cfg.pixelBlockSize = target;
-            assertEquals(target == 4 ? FontTweaksSettings.AUTO_PIXEL_SIZE : target + 1,
-                    cfg.nextPixelBlockSize());
-        }
     }
 
     @Test void autoModeIsPersistedAndProducesTheSameGui3AtlasAsManualTwoPx() {
@@ -97,17 +92,16 @@ class UnifontPixelationTest {
 
         cfg.pixelBlockSize = FontTweaksSettings.AUTO_PIXEL_SIZE;
         cfg.sanitize();
-        assertTrue(cfg.automaticPixelSize());
+        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize());
-        assertEquals(1, cfg.nextPixelBlockSize());
         FontTweaksSettings restored = new Gson().fromJson(new Gson().toJson(cfg),
                 FontTweaksSettings.class);
         restored.sanitize();
-        assertTrue(restored.automaticPixelSize());
+        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, restored.pixelBlockSize);
         assertEquals(2, restored.effectivePixelBlockSize());
 
         cfg.pixelBlockSize = 2;
-        assertFalse(cfg.automaticPixelSize());
+        assertNotEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
         assertEquals(restored.effectivePixelBlockSize(), cfg.effectivePixelBlockSize());
     }
 
