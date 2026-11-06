@@ -1,58 +1,55 @@
-# FontTweaks — Minecraft 26.3 / Fabric
+# FontTweaks
 
-A **client-only** experimental Fabric mod for independently adjusting screen/HUD text scale, word-wrapped text line spacing, and item tooltip text row spacing.
+**Minecraft Java Edition 26.3 / Fabric / client-only**
 
-## Status
+日本語の美咲ゴシック第2を内蔵し、GUIスケールを**3に保ったまま、8×8ドットフォントの1ドットを画面上のちょうど2×2ピクセル**で表示できるクライアントModです。
 
-GitHub Actions build has succeeded for the original prototype. Subsequent commits must pass their own workflow build; in-game runtime behavior remains unverified.
+## 主な機能
 
-## New in 0.2.1 — actual font bitmap pixelation
+- **MisakiGothic2forMC (26.3) 内蔵** — 作者KabanFriends氏の日本語ピクセルフォントを別リソースパックなしで使えます。
+- **GUIスケール3・1ドット2画面px** — 標準の8×8ドットフォントはGUIスケール3で1ドット3画面px。文字の拡大率を正確に2/3に合わせ、座標も実画面ピクセル単位に揃えます。
+- ドットの大きさは **1 / 2 / 3画面px** から選択可能。**デフォルト2px**。
+- **ピクセル固定モード** はオン・オフ可能（デフォルトはオン）。GUIスケール3でのみ適用されます。ほかのGUIスケールでは従来のFontTweaks倍率を使います。
+- 全体、画面、HUD、ボタン、チャットの文字サイズと、折り返し文章・ツールチップの行間を個別に設定できます。
+- 倍率はスライダーと数値入力を併用し、`0.6666666666666667` のような小数も設定ファイルに保持します。
+- チャットはMinecraft本体の描画倍率も変更するため、文字と背景・折り返し・クリック範囲の整合性を保ちます。
+- Mod Menu経由の日本語/英語設定画面、`config/fonttweaks.json` への自動保存、初期化ボタン。
 
-The previous 0.2.0 **GUI-scale-3 pixel alignment/size adjustment has been removed**, because it changed the appearance and size of a text run rather than making the glyph itself blockier.
+**重要:** GUI3でピクセル固定をオンにしている間は、厳密な1ドット2pxを守るため、各文字サイズの数値設定よりも固定モードが優先されます。文字サイズを独自に指定するときは固定モードをオフにしてください。FontTweaksの設定画面自体は操作しやすいように固定モードの対象から除外しています。
 
-- **Unifont glyph pixelation** is a separate, optional font effect. It changes the **source glyph bitmap data** before the glyph is uploaded to Minecraft's font texture atlas. It does not adjust GUI scale, font size, character advance or layout.
-- Settings: `pixelGlyphEnabled` (default `false`) and `pixelGlyphBlockSize` (default `2`, switch between `2×2`, `3×3` and `4×4` source texel blocks).
-- The algorithm thresholds glyph pixels within each source block and fills that block with a single solid glyph color/alpha. This creates genuinely block-shaped letter strokes rather than stretching or repositioning the font.
-- Any GUI scale (including scale 3) may use the effect. Turning it on/off or changing strength triggers a **resource reload**, rebuilding cached glyph atlas textures.
-- Only **vanilla Unihex/Unifont glyphs** currently go through the pixelation hook. Other providers (bitmap, TTF, sprite fonts and resource-pack replacements) are not modified by this effect. Existing text size and line spacing controls work as before.
-- Extremely coarse pixelation can obscure detailed kanji; start with `2×2` blocks.
-- The old JSON config keys `unifontPixelPerfect` and `unifontPixelsPerDot` are retired. They are ignored and disappear the next time config is saved.
+## 使い方
 
-## Previous 0.2.0 features
+1. Fabric 26.3、対応版のFabric API、Mod Menuを導入します。
+2. GitHub Actionsから**fonttweaks-0.3.0+26.3.jar**（通常のMod JAR）を取得し、`mods` フォルダーに入れます。追加の美咲ゴシック用リソースパックは不要です。
+3. MinecraftのGUIスケールを`3`にします。
+4. Mod Menu → FontTweaks → 「GUI3 ドット補正」をオン、「1ドット：2画面px」を選択します。
+5. ほかの倍率や行間は必要に応じて調整してください。ピクセル固定中、GUI3の文字倍率は2pxが優先です。
 
-- Button text scaling and independent chat scaling, without changing their surrounding UI widgets.
-- Decimal values such as `0.6666666666666667` remain supported by all numeric controls.
+**旧版の「文字を2×2／3×3で潰す」処理は削除しました。** 文字をぼかしたり、字形を粗く2値化したりしません。美咲ゴシック第2の元の8×8字形を使います。
 
-## Features
+## 制約と互換性
 
-- Global text scale: 50–200% (default 100%)
-- Extra screen/UI text scale: 50–200% (default 100%)
-- Extra HUD text scale: 50–200% (default 100%)
-- Word-wrapped text line spacing: 50–200% (default 100%)
-- Item tooltip text line spacing: 50–200% (default 100%)
-- Sliders support 0.001 increments; number fields permit precise decimal entry such as `0.6666666666666667` (= two thirds, about 66.67%).\n- Values use double-precision in config; graphical rendering still uses floats.\n- Mod Menu settings screen, Japanese and English labels, JSON config and reset
-- Config path: config/fonttweaks.json
+- 画面上の**8px高のビットマップフォント**の各ドットを整数倍で描くことを目的にしています。MisakiGothic2forMCがカバーしない字（Unifont/Unihex等の別の元解像度の字形）は必ずしも2px/ドットになりません。
+- 独自TTF、リソースパックによる別フォント、特殊なシェーダー/GUI Modなどは異なる見え方になる場合があります。
+- フォントだけの倍率補正なので、ボタンそのものの縦横サイズは変わりません。
+- JARのコンパイル・自動テスト・内蔵アセットのZIP検証はGitHub Actionsで実施していますが、**Minecraft実機上での表示品質は未検証**です。
+- FabricのModリソースパック優先順位によっては、ほかのフォント変更リソースパックと競合します。
 
-## Limitations
+## Build / 開発者向け
 
-- Glyph rendering changes, but button hitboxes and layout containers do not change. Large text may overlap or clip.
-- Not every tooltip, other mod's custom text rendering or rendering path will respond to scaling. Tooltip text and background geometry may not align.
-- Wrapped line spacing covers the GuiGraphicsExtractor textWithWordWrap path. Chat scale and spacing have native Minecraft settings.
-- Chat uses the native chat zoom multiplied by global/chat-specific settings; it does not inherit the HUD multiplier.
-- Mixin targets need runtime testing against Minecraft 26.3; compatibility with GUI overhaul mods is not assured.
+Requires JDK 25 / Gradle 9.7.1. Run `gradle clean build`.
 
-## Build
+During the build, Gradle downloads the exact official 26.3 resource-pack archive from Modrinth, verifies its pinned SHA-256 and bundles the **font JSON and bitmap PNG** directly into the mod JAR. The ZIP is downloaded only for builds, not when players launch Minecraft.
 
-Requires **JDK 25**, **Gradle 9.7.1** and internet access to download Fabric dependencies.
+Upstream resource-pack ZIP SHA-256:
+`a09b2f0ea1e911fe4dd83fac39953a447a69c42fecc544d9af723a84954eee8d`
 
-Run: gradle clean build
+The bundled assets include `assets/minecraft/font/default.json`, `assets/misakigothic2/font/shift_jis.json`, and `assets/misakigothic2/textures/font/shift_jis.png`.
 
-GitHub Actions runs on each push and can produce a downloadable JAR artifact in the workflow run if successful. Do not use any JAR until compilation and Minecraft runtime behavior have been confirmed.
+## Licenses / 権利表示
 
-## Install
+- **FontTweaks:** Copyright (c) 2026 Sanowo — MIT.
+- **MisakiGothic2forMC:** Copyright (c) KabanFriends — MIT. [公式配布ページ](https://modrinth.com/resourcepack/misakigothic2formc) / [作者ページ](https://kaban.sh/minecraft/misaki2/)
+- **美咲ゴシック第2:** Copyright (C) 2002-2019 Num Kadoma (門真なむ)。商用・非商用で利用・改変・再配布が許可されています。[原作者公式ページ](https://littlelimit.net/misaki.htm)
 
-Build the project and put the non-sources JAR in your Fabric 26.3 instance's mods folder. Install compatible Fabric Loader, Fabric API and Mod Menu for settings access. This is a client-only mod, not a dedicated-server plugin.
-
-## 26.3-specific approach
-
-Minecraft 26.1+ uses the unobfuscated/no-remap Fabric setup. Minecraft 26.3 moved GUI text extraction into GuiGraphicsExtractor; older DrawContext or GuiGraphics Mixins cannot be copied over directly.
+Bundled font attribution and full MIT notice are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and included under `META-INF/` in the built JAR.
