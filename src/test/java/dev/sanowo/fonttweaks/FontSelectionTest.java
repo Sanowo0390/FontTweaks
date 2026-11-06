@@ -25,6 +25,48 @@ class FontSelectionTest {
         }
     }
 
+    @Test void guiScaleDependentFallbackSwitchesToMisakiAtGuiTwoWithoutReload() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.pixelationEnabled = true;
+        cfg.pixelBlockSize = 2;
+        cfg.guiScaleDependentFont = true;
+        cfg.resourcePackEnabled = false; // GUI3 uses processed vanilla Unifont.
+        assertFalse(FontTweaksFonts.useCompactGuiFallback(cfg, 3));
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
+        // A resized window may force GUI scale 3 -> 2; lookup changes immediately.
+        assertTrue(FontTweaksFonts.useCompactGuiFallback(cfg, 2));
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 1, false));
+        // Restoring the window returns to processed vanilla immediately.
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
+        cfg.guiScaleDependentFont = false;
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+    }
+
+    @Test void guiScaleFallbackHonorsBlacklistEnglishAndDisablingProcessing() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.guiScaleDependentFont = true;
+        cfg.pixelationEnabled = true;
+        cfg.blacklistedEntries.add("日");
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, 'A', cfg, 2, false));
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '語', cfg, 2, false));
+        cfg.replaceEnglish = true;
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, 'A', cfg, 2, false));
+        cfg.pixelationEnabled = false;
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '語', cfg, 2, false));
+    }
+
     @Test void enabledPackHonorsFontChoiceAndGatesAutoMode() {
         FontTweaksSettings cfg = new FontTweaksSettings();
         cfg.resourcePackEnabled = true;
