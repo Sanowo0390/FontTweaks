@@ -31,7 +31,7 @@ public final class FontTweaksBlacklistScreen extends Screen {
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.blacklist_add"), button -> {
             if (cfg.addBlacklistCharacters(draft)) {
                 FontTweaksSettings.save();
-                FontTweaksReload.request();
+                if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             }
             draft = "";
             page = Math.max(0, (cfg.blacklistedEntries.size() - 1) / rows);
@@ -50,7 +50,7 @@ public final class FontTweaksBlacklistScreen extends Screen {
             this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.blacklist_delete"), button -> {
                 cfg.blacklistedEntries.remove(index);
                 FontTweaksSettings.save();
-                FontTweaksReload.request();
+                if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
                 this.rebuildWidgets();
             }).bounds(x + w - 60, y, 60, 20).build());
         }
@@ -78,6 +78,5 @@ public final class FontTweaksBlacklistScreen extends Screen {
     @Override public void onClose() {
         FontTweaksSettings.save();
         this.minecraft.gui.setScreen(parent);
-        FontTweaksReload.flush();
     }
 }

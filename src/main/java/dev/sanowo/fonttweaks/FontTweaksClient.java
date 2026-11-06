@@ -10,8 +10,11 @@ public final class FontTweaksClient implements ClientModInitializer {
         int[] previousGuiScale = {-1};
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             int scale = client.getWindow().getGuiScale();
+            // Font atlases use a fixed GUI-3 raster resolution. Changing the
+            // window's GUI scale no longer requires reloading resource packs.
+            // Re-layout chat once, since wrapping/width can change with scale.
             if (previousGuiScale[0] > 0 && previousGuiScale[0] != scale
-                    && FontTweaksSettings.get().pixelationEnabled) FontTweaksReload.request();
+                    && client.gui != null) client.gui.hud.getChat().rescaleChat();
             previousGuiScale[0] = scale;
             FontTweaksReload.tick(client);
         });

@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.6.0 - Text Display",
+  "fonttweaks.title": "FontTweaks 0.6.1 - Text Display",
   "fonttweaks.global": "Global Text Scale",
   "fonttweaks.screen": "Screen Text Scale",
   "fonttweaks.hud": "HUD Text Scale",
@@ -12,7 +12,7 @@
   "fonttweaks.pixel_mode_on": "Pixel Processing: ON",
   "fonttweaks.pixel_mode_off": "Pixel Processing: OFF",
   "fonttweaks.pixel_density": "Dot: %s screen px",
-  "fonttweaks.pixel_help": "Screen px at 100% text size. Choose 1–4. Matching standard English grid selects Misaki.",
+  "fonttweaks.pixel_help": "Screen pixels per dot at GUI scale 3 (1–4). No reload on GUI-size changes; density may differ at other GUI scales.",
   "fonttweaks.status_off": "GUI %s | Pixel processing OFF",
   "fonttweaks.status_misaki": "GUI %s | Misaki Gothic 2 (exclusions use default)",
   "fonttweaks.status_native": "GUI %s | %spx: same as native Unifont",

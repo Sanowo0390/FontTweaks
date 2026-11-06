@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.6.0 - 文字表示設定",
+  "fonttweaks.title": "FontTweaks 0.6.1 - 文字表示設定",
   "fonttweaks.global": "文字全体",
   "fonttweaks.screen": "画面の文字",
   "fonttweaks.hud": "HUDの文字",
@@ -12,7 +12,7 @@
   "fonttweaks.pixel_mode_on": "ピクセル加工：ON",
   "fonttweaks.pixel_mode_off": "ピクセル加工：OFF",
   "fonttweaks.pixel_density": "1ドット：%s画面px",
-  "fonttweaks.pixel_help": "文字倍率100%時の画面px。1〜4から選択。標準英字と同じ幅なら美咲へ自動切替。",
+  "fonttweaks.pixel_help": "GUI3で文字倍率100%時の画面px（1〜4）。GUIサイズ変更では再読み込みしません。ほかのGUI倍率では画面pxが変わる場合があります。",
   "fonttweaks.status_off": "GUI %s | ピクセル加工 OFF",
   "fonttweaks.status_misaki": "GUI %s | 美咲ゴシック第2（除外文字は標準）",
   "fonttweaks.status_native": "GUI %s | %spx：元のUnifontと同じ",

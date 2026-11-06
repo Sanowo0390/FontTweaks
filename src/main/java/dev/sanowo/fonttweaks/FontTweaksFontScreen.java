@@ -46,7 +46,11 @@ public final class FontTweaksFontScreen extends Screen {
         return main;
     }
     private void changed() {
-        FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
+        // Font selection and exclusions are decided for each glyph, so no
+        // resource-pack reload or atlas rebuild is needed.
+        FontTweaksSettings.save();
+        if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+        this.rebuildWidgets();
     }
     @Override public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
@@ -55,6 +59,6 @@ public final class FontTweaksFontScreen extends Screen {
         graphics.textWithWordWrap(this.font, Component.translatable("fonttweaks.blacklist_help"), x, 150, w, 0xFFAAAAAA);
     }
     @Override public void onClose() {
-        FontTweaksSettings.save(); this.minecraft.gui.setScreen(parent); FontTweaksReload.flush();
+        FontTweaksSettings.save(); this.minecraft.gui.setScreen(parent);
     }
 }

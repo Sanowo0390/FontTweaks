@@ -89,6 +89,31 @@ class UnifontPixelationTest {
         }
     }
 
+    @Test void productionPixelationUsesFixedGuiThreeAtlasInsteadOfLiveGuiScale() {
+        com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
+            public int getPixelWidth() { return 16; }
+            public int getPixelHeight() { return 16; }
+            public float getOversample() { return 2; }
+            public boolean isColored() { return true; }
+            public void upload(int x, int y, com.mojang.renderpearl.api.textures.GpuTexture t) {
+                fail("Unexpected GPU call");
+            }
+        };
+        FontTweaksSettings settings = new FontTweaksSettings();
+        settings.pixelationEnabled = true;
+        settings.pixelBlockSize = 2;
+        com.mojang.blaze3d.font.GlyphBitmap processed =
+                PixelatedGlyphBitmap.process(original, new int[16], 0, settings);
+        assertEquals(3, PixelatedGlyphBitmap.ATLAS_RASTER_GUI_SCALE);
+        assertEquals(48, processed.getPixelWidth());
+        assertEquals(48, processed.getPixelHeight());
+        assertEquals(6.0f, processed.getOversample());
+        // No live GUI scale is accepted: a GUI scale change cannot change
+        // these cached atlas dimensions or require a rebuild.
+        settings.pixelationEnabled = false;
+        assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, settings));
+    }
+
     @Test void rasterResolutionChangesWithoutChangingGlyphBounds() {
         com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
             public int getPixelWidth() { return 13; }
