@@ -42,3 +42,50 @@ java {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+
+//
+// Bundled 8x8 Misaki Gothic 2 resource-pack assets (Minecraft 26.3).
+// Fetch a PINNED immutable upstream release and verify its exact SHA-256.
+// The resulting JAR contains the font; users do not install a second pack.
+//
+def misakiUrl = 'https://cdn.modrinth.com/data/4M0C1Ypo/versions/ce2snAzP/MisakiGothic2forMC_26_3.zip'
+def misakiSha256 = 'a09b2f0ea1e911fe4dd83fac39953a447a69c42fecc544d9af723a84954eee8d'
+def misakiZip = layout.buildDirectory.file('vendor/MisakiGothic2forMC_26_3.zip')
+def misakiResources = layout.buildDirectory.dir('generated/misaki-font')
+
+def downloadMisaki = tasks.register('downloadMisaki', DefaultTask) {
+    outputs.file(misakiZip)
+    doLast {
+        File dest = misakiZip.get().asFile
+        dest.parentFile.mkdirs()
+        def conn = new URI(misakiUrl).toURL().openConnection()
+        conn.setConnectTimeout(20000)
+        conn.setReadTimeout(45000)
+        conn.setRequestProperty('User-Agent', 'FontTweaks/0.3.0 (+https://github.com/Sanowo0390/FontTweaks)')
+        try (def input = conn.getInputStream(); def output = new FileOutputStream(dest)) {
+            input.transferTo(output)
+        }
+        def digester = java.security.MessageDigest.getInstance('SHA-256')
+        def actual = java.util.HexFormat.of().formatHex(digester.digest(java.nio.file.Files.readAllBytes(dest.toPath())))
+        if (actual != misakiSha256) {
+            dest.delete()
+            throw new GradleException("Misaki archive SHA-256 mismatch: ${actual}")
+        }
+    }
+}
+
+def prepareMisaki = tasks.register('prepareMisaki', Copy) {
+    dependsOn downloadMisaki
+    from({ zipTree(misakiZip.get().asFile) }) {
+        include 'assets/minecraft/font/default.json'
+        include 'assets/misakigothic2/font/**'
+        include 'assets/misakigothic2/textures/**'
+    }
+    into misakiResources
+}
+
+sourceSets.main.resources.srcDir(misakiResources)
+tasks.named('processResources').configure {
+    dependsOn prepareMisaki
+}
