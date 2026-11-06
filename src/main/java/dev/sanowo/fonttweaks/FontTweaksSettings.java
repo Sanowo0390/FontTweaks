@@ -52,6 +52,55 @@ public final class FontTweaksSettings {
     public int pixelBlockSize = 1;
     /** Correct pixel density only at GUI scale 3; native glyphs at GUI3 when disabled. */
     public boolean gui3DotCorrection = true;
+    /** GUI1/2/3/4/5+ each has its own dot count and built-in-font switch. */
+    public java.util.Map<String, GuiScaleProfile> guiScaleProfiles = new java.util.LinkedHashMap<>();
+
+    public static int profileScale(int guiScale) {
+        return Math.min(5, Math.max(1, guiScale));
+    }
+
+    public boolean hasGuiProfiles() {
+        return guiScaleProfiles != null && !guiScaleProfiles.isEmpty();
+    }
+
+    /** Lazily migrates old settings as each GUI profile is first accessed. */
+    public GuiScaleProfile profileFor(int guiScale) {
+        if (guiScaleProfiles == null) guiScaleProfiles = new java.util.LinkedHashMap<>();
+        int scale = profileScale(guiScale);
+        return guiScaleProfiles.computeIfAbsent(Integer.toString(scale), key -> {
+            boolean useExisting = guiScaleDependentFont ? scale < 3 : resourcePackEnabled;
+            String previousFont = null;
+            if (useExisting) {
+                if (guiScaleDependentFont || "misaki".equals(resourcePackFont)
+                        || ("auto".equals(resourcePackFont) && pixelationEnabled
+                        && effectivePixelBlockSize() == scale)) previousFont = "misaki";
+                else previousFont = "pixelmplus12";
+            }
+            return new GuiScaleProfile(pixelBlockSize, useExisting, previousFont);
+        });
+    }
+
+    public int pixelBlockSizeFor(int guiScale) {
+        return hasGuiProfiles() ? profileFor(guiScale).pixelBlockSize : pixelBlockSize;
+    }
+
+    public int effectivePixelBlockSize(int guiScale) {
+        int size = pixelBlockSizeFor(guiScale);
+        return size == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : size;
+    }
+
+    /** Explicit profile edits clear the old internal font choice. */
+    public void setProfilePixelSize(int guiScale, int pixels) {
+        GuiScaleProfile p = profileFor(guiScale);
+        p.pixelBlockSize = pixels;
+        p.legacyExistingFont = null;
+    }
+
+    public void setProfileExistingFont(int guiScale, boolean enabled) {
+        GuiScaleProfile p = profileFor(guiScale);
+        p.useExistingFont = enabled;
+        p.legacyExistingFont = null;
+    }
 
     public static final int AUTO_PIXEL_SIZE = 0;
     public static final int AUTO_REFERENCE_PIXEL_SIZE = 2;
@@ -70,9 +119,9 @@ public final class FontTweaksSettings {
         if (!pixelationEnabled) return 0;
         // At 1px, GUI 2 and 4 have a naturally aligned pixel grid.
         // Avoid overwriting their original glyph bitmap.
-        if (effectivePixelBlockSize() == 1 && (guiScale == 2 || guiScale == 4)) return 0;
+        if (effectivePixelBlockSize(guiScale) == 1 && (guiScale == 2 || guiScale == 4)) return 0;
         if (guiScale == 3 && !gui3DotCorrection) return 0;
-        return effectivePixelBlockSize();
+        return effectivePixelBlockSize(guiScale);
     }
 
     public boolean shouldPixelateAt(int guiScale) {
@@ -216,6 +265,25 @@ public final class FontTweaksSettings {
         letterSpacing = Double.isFinite(letterSpacing)
                 ? bounded(letterSpacing, -2.0, 4.0) : 0.0;
         if (pixelBlockSize < AUTO_PIXEL_SIZE || pixelBlockSize > 4) pixelBlockSize = 1;
+        if (guiScaleProfiles == null) guiScaleProfiles = new java.util.LinkedHashMap<>();
+        guiScaleProfiles.entrySet().removeIf(entry -> {
+            if (entry.getValue() == null || entry.getKey() == null) return true;
+            try {
+                int scale = Integer.parseInt(entry.getKey());
+                return scale < 1 || scale > 5;
+            } catch (NumberFormatException exception) {
+                return true;
+            }
+        });
+        for (GuiScaleProfile profile : guiScaleProfiles.values()) {
+            if (profile.pixelBlockSize < AUTO_PIXEL_SIZE || profile.pixelBlockSize > 4) {
+                profile.pixelBlockSize = 1;
+            }
+            if (!"misaki".equals(profile.legacyExistingFont)
+                    && !"pixelmplus12".equals(profile.legacyExistingFont)) {
+                profile.legacyExistingFont = null;
+            }
+        }
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
         globalLineSpacing = bounded(globalLineSpacing, 0.5, 2.0);
