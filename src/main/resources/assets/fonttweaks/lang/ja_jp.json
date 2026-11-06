@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.7.0 - 文字表示設定",
+  "fonttweaks.title": "FontTweaks 0.8.0 - 文字表示設定",
   "fonttweaks.global": "文字全体",
   "fonttweaks.screen": "画面の文字",
   "fonttweaks.hud": "HUDの文字",
@@ -12,7 +12,7 @@
   "fonttweaks.pixel_mode_on": "ピクセル加工：ON",
   "fonttweaks.pixel_mode_off": "ピクセル加工：OFF",
   "fonttweaks.pixel_density": "1ドット：%s画面px",
-  "fonttweaks.pixel_help": "GUI3で文字倍率100%時の画面px（1〜4）。GUIサイズ変更では再読み込みしません。ほかのGUI倍率では画面pxが変わる場合があります。",
+  "fonttweaks.pixel_help": "GUI3基準で1〜4px。新規設定の初期値は1px。GUIスケール変更時に再読み込みは行いません。",
   "fonttweaks.status_off": "GUI %s | ピクセル加工 OFF",
   "fonttweaks.status_misaki": "GUI %s | 美咲ゴシック第2（除外文字は標準）",
   "fonttweaks.status_native": "GUI %s | %spx：元のUnifontと同じ",
@@ -40,9 +40,9 @@
   "fonttweaks.preview_sizes": "文字サイズの確認",
   "fonttweaks.preview_spacing": "行間の確認",
   "fonttweaks.preview_spacing_hint": "「プレビュー」で実際の複数行表示を確認できます。",
-  "fonttweaks.ui.title": "FontTweaks 0.7.1 - 文字表示設定",
+  "fonttweaks.ui.title": "FontTweaks 0.8.0 - 文字表示設定",
   "fonttweaks.ui.tab.size": "サイズ",
-  "fonttweaks.ui.tab.spacing": "行間",
+  "fonttweaks.ui.tab.spacing": "文字間隔・行間",
   "fonttweaks.ui.tab.pixels": "ドット",
   "fonttweaks.ui.tab.fonts": "フォント",
   "fonttweaks.ui.tab.blacklist": "除外文字",
@@ -74,7 +74,11 @@
   "fonttweaks.ui.desc.font_english": "半角英数字とラテン文字を置き換えるか指定します。",
   "fonttweaks.ui.desc.blacklist": "登録文字だけ内蔵フォントへの置換から除外します。YACLの一覧から追加・編集・並べ替え・削除できます。",
   "fonttweaks.ui.group.sizes": "文字倍率",
-  "fonttweaks.ui.group.spacing": "行間の調整",
+  "fonttweaks.ui.group.spacing": "文字間隔・行間",
   "fonttweaks.ui.group.pixels": "Unifontのドット加工",
-  "fonttweaks.ui.group.fonts": "内蔵フォントの置換"
+  "fonttweaks.ui.group.fonts": "内蔵フォントの置換",
+  "fonttweaks.letter_spacing": "文字間隔（横）",
+  "fonttweaks.ui.desc.letter_spacing": "文字と文字の横方向の間隔を変更します。0＝標準、正の値で広げ、負の値で詰めます。行間とは別の設定です。文字幅・中央揃え・折り返しも調整されます。",
+  "fonttweaks.gui_scale_font": "GUIサイズに応じて美咲に切替",
+  "fonttweaks.ui.desc.gui_scale_font": "ピクセル加工ON時、GUIスケール3以上は通常のフォント設定、GUIスケール1〜2では美咲ゴシック第2に自動切替します。ウィンドウ縮小でGUI3→2になっても再読み込み不要。英字設定と除外文字を優先します。"
 }
