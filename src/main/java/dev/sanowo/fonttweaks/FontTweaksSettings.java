@@ -147,6 +147,19 @@ public final class FontTweaksSettings {
         INSTANCE = new FontTweaksSettings();
         save();
     }
+    /** A deep copy so the settings UI can restore all values, including blacklist entries. */
+    public static synchronized FontTweaksSettings snapshot() {
+        return GSON.fromJson(GSON.toJson(INSTANCE), FontTweaksSettings.class);
+    }
+
+    /** Restore the copy captured when the user opened the settings dashboard. */
+    public static synchronized void restore(FontTweaksSettings snapshot) {
+        if (snapshot == null) return;
+        INSTANCE = GSON.fromJson(GSON.toJson(snapshot), FontTweaksSettings.class);
+        INSTANCE.sanitize();
+        save();
+    }
+
 
     public void sanitize() {
         if (!"pixelmplus12".equals(resourcePackFont) && !"misaki".equals(resourcePackFont)
