@@ -17,22 +17,22 @@ public final class FontTweaksSettings {
     private static volatile FontTweaksSettings INSTANCE = new FontTweaksSettings();
 
     /** Scale applied to the HUD and screen text (except the mod's own config screen). */
-    public float globalScale = 1.0f;
+    public double globalScale = 1.0;
     /** Extra multiplier for main menu, inventory, and other screen text. */
-    public float screenScale = 1.0f;
+    public double screenScale = 1.0;
     /** Extra multiplier when no screen is open, including the HUD. */
-    public float hudScale = 1.0f;
+    public double hudScale = 1.0;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
-    public float wrappedLineSpacing = 1.0f;
+    public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
-    public float tooltipLineSpacing = 1.0f;
+    public double tooltipLineSpacing = 1.0;
 
     public static FontTweaksSettings get() {
         return INSTANCE;
     }
 
     public float scaleFor(boolean screenOpen) {
-        return bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.4f, 2.5f);
+        return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
     }
 
     public static synchronized void load() {
@@ -75,15 +75,15 @@ public final class FontTweaksSettings {
     }
 
     public void sanitize() {
-        globalScale = bounded(globalScale, 0.5f, 2.0f);
-        screenScale = bounded(screenScale, 0.5f, 2.0f);
-        hudScale = bounded(hudScale, 0.5f, 2.0f);
-        wrappedLineSpacing = bounded(wrappedLineSpacing, 0.75f, 2.0f);
-        tooltipLineSpacing = bounded(tooltipLineSpacing, 0.75f, 2.0f);
+        globalScale = bounded(globalScale, 0.5, 2.0);
+        screenScale = bounded(screenScale, 0.5, 2.0);
+        hudScale = bounded(hudScale, 0.5, 2.0);
+        wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
+        tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
     }
 
-    public static float bounded(float value, float min, float max) {
-        if (!Float.isFinite(value)) return 1.0f;
+    public static double bounded(double value, double min, double max) {
+        if (!Double.isFinite(value)) return 1.0;
         return Math.min(max, Math.max(min, value));
     }
 }
