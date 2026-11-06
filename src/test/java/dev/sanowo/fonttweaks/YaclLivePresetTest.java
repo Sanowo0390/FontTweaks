@@ -111,6 +111,16 @@ class YaclLivePresetTest {
     }
 
     @Test
+    void pixelDensityChoicesAreExactlyOneTwoThreeAndFour() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        YetAnotherConfigLib yacl = FontTweaksYaclScreen.buildConfig(cfg, 3, () -> {});
+        Enum<?> value = (Enum<?>) guiGroups(yacl).get(0).options().get(0).pendingValue();
+        List<String> names = Arrays.stream(value.getDeclaringClass().getEnumConstants())
+                .map(Enum::name).toList();
+        assertEquals(List.of("ONE", "TWO", "THREE", "FOUR"), names);
+    }
+
+    @Test
     void selectingPresetUpdatesAllFourProfileRowsImmediatelyWithoutCommitting() {
         FontTweaksSettings cfg = new FontTweaksSettings();
         YetAnotherConfigLib yacl = FontTweaksYaclScreen.buildConfig(cfg, 3);

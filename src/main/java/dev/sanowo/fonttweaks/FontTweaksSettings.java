@@ -43,11 +43,7 @@ public final class FontTweaksSettings {
     /** Bitmap effect only, independent of all text sizing. */
     @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
     public boolean pixelationEnabled = true;
-    /**
-     * Source bitmap pixelation density at GUI scale 3.
-     * 0 = Auto (2px at the fixed GUI3 atlas reference); 1..4 = manual.
-     * Auto uses the already-baked atlas to avoid reloading on GUI resize.
-     */
+    /** Dot density at the GUI3 reference: only 1..4 are supported. */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
     public int pixelBlockSize = 1;
     /** Selected preset ID or \"custom\". Existing configs are custom by default. */
@@ -85,8 +81,7 @@ public final class FontTweaksSettings {
     }
 
     public int effectivePixelBlockSize(int guiScale) {
-        int size = pixelBlockSizeFor(guiScale);
-        return size == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : size;
+        return pixelBlockSizeFor(guiScale);
     }
 
     public boolean unifontProcessingAt(int guiScale) {
@@ -130,12 +125,9 @@ public final class FontTweaksSettings {
         activePreset = FontTweaksPresets.CUSTOM;
     }
 
-    public static final int AUTO_PIXEL_SIZE = 0;
-    public static final int AUTO_REFERENCE_PIXEL_SIZE = 2;
-
     /** The cached Unifont atlas is always baked at GUI scale 3. */
     public int effectivePixelBlockSize() {
-        return pixelBlockSize == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : pixelBlockSize;
+        return pixelBlockSize;
     }
 
 
@@ -256,7 +248,10 @@ public final class FontTweaksSettings {
         // Tracking is additive, so its neutral value is 0 (not the multiplier default 1).
         letterSpacing = Double.isFinite(letterSpacing)
                 ? bounded(letterSpacing, -2.0, 4.0) : 0.0;
-        if (pixelBlockSize < AUTO_PIXEL_SIZE || pixelBlockSize > 4) pixelBlockSize = 1;
+        // Before 0.12.5, "Auto" was stored as 0 but rendered identically to 2.
+        // Migrate it to the explicit 2px value without changing appearance.
+        if (pixelBlockSize == 0) pixelBlockSize = 2;
+        else if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 1;
         if (!FontTweaksPresets.isValid(activePreset)) {
             activePreset = FontTweaksPresets.CUSTOM;
         }
@@ -278,7 +273,8 @@ public final class FontTweaksSettings {
             }
         });
         for (GuiScaleProfile profile : guiScaleProfiles.values()) {
-            if (profile.pixelBlockSize < AUTO_PIXEL_SIZE || profile.pixelBlockSize > 4) {
+            if (profile.pixelBlockSize == 0) profile.pixelBlockSize = 2;
+            else if (profile.pixelBlockSize < 1 || profile.pixelBlockSize > 4) {
                 profile.pixelBlockSize = 1;
             }
             if (!"misaki".equals(profile.legacyExistingFont)

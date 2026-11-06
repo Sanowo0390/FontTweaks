@@ -50,9 +50,6 @@ public final class FontTweaksFontImage implements ImageRenderer {
         int processedPixels = settings.pixelRasterSignature(gui);
         GuiScaleProfile profile = settings.profileFor(gui);
         String pixelStatus = processedPixels == 0 ? "Native" : processedPixels + "px";
-        if (profile.pixelBlockSize == FontTweaksSettings.AUTO_PIXEL_SIZE && processedPixels != 0) {
-            pixelStatus = "Auto " + pixelStatus;
-        }
         if (profile.useExistingFont) {
             pixelStatus += profile.effectivePixels() == 3
                     || "misaki".equals(profile.legacyExistingFont) ? " / Misaki" : " / PixelMplus";

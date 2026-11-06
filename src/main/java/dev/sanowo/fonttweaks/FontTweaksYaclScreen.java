@@ -57,9 +57,8 @@ public final class FontTweaksYaclScreen {
         }
     }
 
-    /** YACL enum controller with an explicit Auto choice (config value 0). */
+    /** A distinct selection for each supported pixel density. */
     private enum PixelSizeChoice implements NameableEnum {
-        AUTO(0, "fonttweaks.ui.dot.auto"),
         ONE(1, "fonttweaks.ui.dot.1"),
         TWO(2, "fonttweaks.ui.dot.2"),
         THREE(3, "fonttweaks.ui.dot.3"),
@@ -78,6 +77,8 @@ public final class FontTweaksYaclScreen {
         }
 
         static PixelSizeChoice fromPixels(int pixels) {
+            // Defensive fallback for settings that have not yet been migrated.
+            if (pixels == 0) return TWO;
             for (PixelSizeChoice choice : values()) {
                 if (choice.pixels == pixels) return choice;
             }

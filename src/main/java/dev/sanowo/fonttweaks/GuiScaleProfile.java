@@ -2,7 +2,7 @@ package dev.sanowo.fonttweaks;
 
 /** One independent Minecraft GUI-scale profile; scale 4 covers GUI4 and higher. */
 public final class GuiScaleProfile {
-    /** 0=Auto (GUI3 reference 2px), 1..4=manual screen-pixel density. */
+    /** Explicit pixel density: 1, 2, 3 or 4. */
     public int pixelBlockSize = 1;
     /** Prefer a bundled bitmap font rather than the vanilla Unifont. */
     public boolean useExistingFont = false;
@@ -24,7 +24,6 @@ public final class GuiScaleProfile {
     }
 
     public int effectivePixels() {
-        return pixelBlockSize == FontTweaksSettings.AUTO_PIXEL_SIZE
-                ? FontTweaksSettings.AUTO_REFERENCE_PIXEL_SIZE : pixelBlockSize;
+        return pixelBlockSize;
     }
 }

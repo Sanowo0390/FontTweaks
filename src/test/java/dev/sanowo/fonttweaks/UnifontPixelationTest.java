@@ -85,24 +85,23 @@ class UnifontPixelationTest {
         assertEquals(4, restored.pixelBlockSize);
     }
 
-    @Test void autoModeIsPersistedAndProducesTheSameGui3AtlasAsManualTwoPx() {
+    @Test void legacyAutoZeroMigratesToTheEquivalentExplicitTwoPx() {
         FontTweaksSettings cfg = new FontTweaksSettings();
-        assertEquals(1, cfg.pixelBlockSize); // New-install default remains 1px.
-        assertEquals(1, cfg.effectivePixelBlockSize());
-
-        cfg.pixelBlockSize = FontTweaksSettings.AUTO_PIXEL_SIZE;
+        assertEquals(1, cfg.pixelBlockSize); // New-install default stays 1.
+        cfg.pixelBlockSize = 0;
+        cfg.guiScaleProfiles.put("3", new GuiScaleProfile(0, false, null));
         cfg.sanitize();
-        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
+        assertEquals(2, cfg.pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize());
-        FontTweaksSettings restored = new Gson().fromJson(new Gson().toJson(cfg),
-                FontTweaksSettings.class);
-        restored.sanitize();
-        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, restored.pixelBlockSize);
-        assertEquals(2, restored.effectivePixelBlockSize());
+        assertEquals(2, cfg.profileFor(3).pixelBlockSize);
+        assertEquals(2, cfg.effectivePixelBlockSize(3));
 
-        cfg.pixelBlockSize = 2;
-        assertNotEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
-        assertEquals(restored.effectivePixelBlockSize(), cfg.effectivePixelBlockSize());
+        Gson gson = new Gson();
+        FontTweaksSettings restored = gson.fromJson(gson.toJson(cfg), FontTweaksSettings.class);
+        restored.sanitize();
+        assertEquals(2, restored.pixelBlockSize);
+        assertEquals(2, restored.profileFor(3).pixelBlockSize);
+        assertFalse(gson.toJson(restored).contains("\\"pixelBlockSize\\":0"));
     }
 
     @Test void productionPixelationUsesFixedGuiThreeAtlasInsteadOfLiveGuiScale() {

@@ -56,14 +56,14 @@ class GuiProfilesTest {
     }
 
     @Test
-    void guiFourAndAboveShareOneProfileAndAutoIsPreserved() {
+    void guiFourAndAboveShareOneExplicitTwoPixelProfile() {
         FontTweaksSettings cfg = new FontTweaksSettings();
-        cfg.setProfilePixelSize(4, FontTweaksSettings.AUTO_PIXEL_SIZE);
+        cfg.setProfilePixelSize(4, 2);
         cfg.setProfileExistingFont(4, true);
         assertSame(cfg.profileFor(4), cfg.profileFor(5));
         assertSame(cfg.profileFor(4), cfg.profileFor(6));
         assertSame(cfg.profileFor(4), cfg.profileFor(20));
-        assertEquals(0, cfg.profileFor(6).pixelBlockSize);
+        assertEquals(2, cfg.profileFor(6).pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize(6));
         assertSame(FontTweaksFonts.PIXELMPLUS,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '語', cfg, 6, false));
