@@ -1,10 +1,10 @@
 {
   "fonttweaks.title": "FontTweaks - 文字表示設定",
-  "fonttweaks.global": "文字サイズ（全体）",
-  "fonttweaks.screen": "画面の文字サイズ倍率",
-  "fonttweaks.hud": "HUDの文字サイズ倍率",
-  "fonttweaks.spacing": "折り返し文章の行間",
-  "fonttweaks.tooltip_spacing": "ツールチップの行間",
+  "fonttweaks.global": "文字全体",
+  "fonttweaks.screen": "画面の文字",
+  "fonttweaks.hud": "HUDの文字",
+  "fonttweaks.spacing": "文章の行間",
+  "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "チャットの文字サイズ・行間はバニラのチャット設定で変更できます"
+  "fonttweaks.help": "数値を直接入力可能（例：0.6666666666666667）"
 }
