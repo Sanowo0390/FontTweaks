@@ -183,9 +183,13 @@ public final class FontTweaksYaclScreen {
     }
 
     public static Screen create(Screen parent) {
-        FontTweaksSettings cfg = FontTweaksSettings.get();
-        Minecraft initialClient = Minecraft.getInstance();
-        final int initialGuiScale = initialClient == null ? 3 : initialClient.getWindow().getGuiScale();
+        Minecraft client = Minecraft.getInstance();
+        int guiScale = client == null ? 3 : client.getWindow().getGuiScale();
+        return buildConfig(FontTweaksSettings.get(), guiScale).generateScreen(parent);
+    }
+
+    /** Separate option-state creation from drawing so pending UI changes are testable. */
+    static YetAnotherConfigLib buildConfig(FontTweaksSettings cfg, int initialGuiScale) {
         final int initialRasterSignature = cfg.pixelRasterSignature(initialGuiScale);
         ProfileControls gui1 = profileGroup(cfg, 1);
         ProfileControls gui2 = profileGroup(cfg, 2);
@@ -324,7 +328,6 @@ public final class FontTweaksYaclScreen {
                     Minecraft mc = Minecraft.getInstance();
                     if (mc != null && mc.gui != null) mc.gui.hud.getChat().rescaleChat();
                 })
-                .build()
-                .generateScreen(parent);
+                .build();
     }
 }
