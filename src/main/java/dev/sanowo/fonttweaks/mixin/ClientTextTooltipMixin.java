@@ -1,6 +1,7 @@
 package dev.sanowo.fonttweaks.mixin;
 
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.FontTweaksUiContext;
 import dev.sanowo.fonttweaks.FontTweaksSpacingPolicy;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
@@ -18,6 +19,7 @@ public abstract class ClientTextTooltipMixin {
     @Shadow @Final private FormattedCharSequence text;
     @Inject(method = "getHeight", at = @At("RETURN"), cancellable = true)
     private void fonttweaks$height(Font font, CallbackInfoReturnable<Integer> cir) {
+        if (FontTweaksUiContext.isOwnSettingsScreen()) return;
         FontTweaksSettings settings = FontTweaksSettings.get();
         if (settings.excludeEnglishFromSpacing
                 && !FontTweaksSpacingPolicy.containsNonEnglish(this.text)) return;

@@ -8,18 +8,15 @@ import java.util.function.Supplier;
 public final class ResourceReloadQueue {
     private long requested;
     private long attempted;
-    private long due;
     private boolean running;
 
-    public synchronized void request(long now, long delay) {
+    public synchronized void request() {
         requested++;
-        due = now + delay;
     }
-    public synchronized void flush() { due = Long.MIN_VALUE; }
 
-    public synchronized void tick(long now, Supplier<CompletableFuture<Void>> reload,
+    public synchronized void tick(Supplier<CompletableFuture<Void>> reload,
                                   Runnable success, Consumer<Throwable> failure) {
-        if (running || requested == attempted || now < due) return;
+        if (running || requested == attempted) return;
         running = true;
         long generation = requested;
         try {

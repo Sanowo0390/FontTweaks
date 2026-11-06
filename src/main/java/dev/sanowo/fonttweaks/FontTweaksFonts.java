@@ -17,11 +17,6 @@ public final class FontTweaksFonts {
         return enabled && !forceUnicode && guiScale > 0 && targetPixels == guiScale;
     }
 
-    /** Native Unihex uses two source pixels per GUI unit. */
-    public static boolean matchesNativeUnifontGrid(int targetPixels, int guiScale) {
-        return guiScale > 0 && targetPixels > 0 && targetPixels * 2 == guiScale;
-    }
-
     public static FontDescription activePackFont(FontTweaksSettings cfg, int guiScale, boolean forceUnicode) {
         if (!cfg.resourcePackEnabled) return null;
         return switch (cfg.resourcePackFont) {
@@ -55,7 +50,7 @@ public final class FontTweaksFonts {
                     || "misaki".equals(profile.legacyExistingFont)) return MISAKI;
             return PIXELMPLUS;
         }
-        if (!cfg.shouldReplace(codepoint)) return requested;
+        if (!cfg.replaceEnglish && FontTweaksSettings.isEnglish(codepoint)) return requested;
         // This works even if normal font replacement is off: GUI 3 can use
         // processed vanilla Unifont, while GUI 2 immediately uses crisp Misaki.
         // No font atlas rebuild or resource reload is necessary.

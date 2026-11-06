@@ -138,9 +138,6 @@ public final class FontTweaksSettings {
         return pixelBlockSize == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : pixelBlockSize;
     }
 
-    public boolean automaticPixelSize() {
-        return pixelBlockSize == AUTO_PIXEL_SIZE;
-    }
 
     /** 0 = vanilla Unifont, 1..4 = a processed glyph atlas. */
     public int pixelRasterSignature(int guiScale) {
@@ -176,24 +173,15 @@ public final class FontTweaksSettings {
         return INSTANCE;
     }
 
-    public int nextPixelBlockSize() {
-        return pixelBlockSize >= 4 ? AUTO_PIXEL_SIZE : pixelBlockSize + 1;
-    }
 
-    public void cycleResourcePackFont() {
-        resourcePackFont = switch (resourcePackFont) {
-            case "pixelmplus12" -> "misaki";
-            case "misaki" -> "auto";
-            default -> "pixelmplus12";
-        };
-    }
 
     public float scaleFor(boolean screenOpen) {
         return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
     }
 
     public boolean isBlacklisted(int codepoint) {
-        return (blacklistedEntries != null && blacklistedEntries.contains(new String(Character.toChars(codepoint))))
+        return (blacklistedEntries != null && !blacklistedEntries.isEmpty()
+                && blacklistedEntries.contains(new String(Character.toChars(codepoint))))
                 || (blacklistedCharacters != null && blacklistedCharacters.indexOf(codepoint) >= 0);
     }
 
@@ -207,14 +195,6 @@ public final class FontTweaksSettings {
         return before != blacklistedEntries.size();
     }
 
-    public void clearBlacklist() {
-        blacklistedEntries = new java.util.ArrayList<>();
-        blacklistedCharacters = null;
-    }
-
-    public boolean shouldReplace(int codepoint) {
-        return !isBlacklisted(codepoint) && (replaceEnglish || !isEnglish(codepoint));
-    }
 
     public static boolean isEnglish(int codepoint) {
         return (codepoint >= 0x20 && codepoint <= 0x7E)
@@ -257,22 +237,7 @@ public final class FontTweaksSettings {
         }
     }
 
-    public static synchronized void reset() {
-        INSTANCE = new FontTweaksSettings();
-        save();
-    }
-    /** A deep copy so the settings UI can restore all values, including blacklist entries. */
-    public static synchronized FontTweaksSettings snapshot() {
-        return GSON.fromJson(GSON.toJson(INSTANCE), FontTweaksSettings.class);
-    }
 
-    /** Restore the copy captured when the user opened the settings dashboard. */
-    public static synchronized void restore(FontTweaksSettings snapshot) {
-        if (snapshot == null) return;
-        INSTANCE = GSON.fromJson(GSON.toJson(snapshot), FontTweaksSettings.class);
-        INSTANCE.sanitize();
-        save();
-    }
 
 
     public void sanitize() {

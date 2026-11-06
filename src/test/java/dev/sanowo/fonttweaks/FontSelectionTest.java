@@ -74,7 +74,7 @@ class FontSelectionTest {
         cfg.pixelBlockSize = FontTweaksSettings.AUTO_PIXEL_SIZE;
         cfg.guiScaleDependentFont = true;
         cfg.resourcePackEnabled = false;
-        assertTrue(cfg.automaticPixelSize());
+        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize());
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
@@ -122,15 +122,14 @@ class FontSelectionTest {
         assertSame(FontDescription.DEFAULT, select('日', cfg));
     }
 
-    @Test void fontChoiceCyclesAndPersistsWithSafeDefaults() {
+    @Test void legacyFontChoicePersistsWithSafeDefaults() {
+        for (String font : new String[]{"misaki", "auto", "pixelmplus12"}) {
+            FontTweaksSettings cfg = new FontTweaksSettings();
+            cfg.resourcePackFont = font;
+            assertEquals(font, new Gson().fromJson(new Gson().toJson(cfg),
+                    FontTweaksSettings.class).resourcePackFont);
+        }
         FontTweaksSettings cfg = new FontTweaksSettings();
-        cfg.cycleResourcePackFont();
-        assertEquals("misaki", cfg.resourcePackFont);
-        assertEquals("misaki", new Gson().fromJson(new Gson().toJson(cfg), FontTweaksSettings.class).resourcePackFont);
-        cfg.cycleResourcePackFont();
-        assertEquals("auto", cfg.resourcePackFont);
-        cfg.cycleResourcePackFont();
-        assertEquals("pixelmplus12", cfg.resourcePackFont);
         cfg.resourcePackFont = null;
         cfg.sanitize();
         assertEquals("pixelmplus12", cfg.resourcePackFont);

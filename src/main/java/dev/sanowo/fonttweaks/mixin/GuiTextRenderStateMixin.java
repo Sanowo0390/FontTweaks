@@ -1,13 +1,7 @@
 package dev.sanowo.fonttweaks.mixin;
 
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
-import dev.sanowo.fonttweaks.FontTweaksScreen;
 import dev.sanowo.fonttweaks.FontTweaksUiContext;
-import dev.sanowo.fonttweaks.FontTweaksDashboardScreen;
-import dev.sanowo.fonttweaks.FontTweaksFontScreen;
-import dev.sanowo.fonttweaks.FontTweaksBlacklistScreen;
-import dev.sanowo.fonttweaks.FontTweaksPreviewScreen;
-import dev.sanowo.fonttweaks.PreviewScaleSource;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
 import dev.sanowo.fonttweaks.PixelGridMath;
 import net.minecraft.client.Minecraft;
@@ -46,8 +40,7 @@ public abstract class GuiTextRenderStateMixin {
         FontTweaksRenderContext.Kind context = FontTweaksRenderContext.current();
         // Keep the configuration controls readable. The explicitly tagged
         // preview is the only text in this screen that uses user settings.
-        if ((FontTweaksUiContext.isOwnYaclScreen(mc.gui.screen()) || mc.gui.screen() instanceof FontTweaksScreen || mc.gui.screen() instanceof FontTweaksDashboardScreen || mc.gui.screen() instanceof FontTweaksFontScreen
-                || mc.gui.screen() instanceof FontTweaksPreviewScreen || mc.gui.screen() instanceof FontTweaksBlacklistScreen)
+        if (FontTweaksUiContext.isOwnYaclScreen(mc.gui.screen())
                 && context != FontTweaksRenderContext.Kind.PREVIEW) return;
 
         FontTweaksSettings settings = FontTweaksSettings.get();
@@ -55,12 +48,13 @@ public abstract class GuiTextRenderStateMixin {
             case BUTTON -> settings.buttonTextScale();
             // Vanilla chat already scales its own pose, including backgrounds.
             case CHAT -> 1.0;
-            case PREVIEW -> mc.gui.screen() instanceof PreviewScaleSource source
-                    ? source.previewScale() : settings.scaleFor(true);
+            case PREVIEW -> settings.scaleFor(true);
             case DEFAULT -> settings.scaleFor(mc.gui.screen() != null);
         };
 
-        if (Math.abs(multiplier - 1.0) < 0.000001 && !settings.pixelationEnabled) return;
+        int guiScale = mc.getWindow().getGuiScale();
+        boolean pixelation = settings.shouldPixelateAt(guiScale);
+        if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelation) return;
 
         float scale = (float) FontTweaksSettings.bounded(multiplier, 0.05, 8.0);
         // Button text is centered in the widget: preserve its center.
@@ -71,8 +65,7 @@ public abstract class GuiTextRenderStateMixin {
         Matrix3x2f adjusted = new Matrix3x2f(inputPose);
         adjusted.translate(anchorX, y).scale(scale, scale).translate(-anchorX, -y);
 
-        if (settings.pixelationEnabled) {
-            int guiScale = mc.getWindow().getGuiScale();
+        if (pixelation) {
             float gx = adjusted.m00() * x + adjusted.m10() * y + adjusted.m20();
             float gy = adjusted.m01() * x + adjusted.m11() * y + adjusted.m21();
             adjusted.translateLocal(PixelGridMath.snapDelta(gx, guiScale),

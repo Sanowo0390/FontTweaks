@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.sanowo.fonttweaks.FontTweaksFonts;
 import dev.sanowo.fonttweaks.FontTweaksLetterSpacing;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.FontTweaksUiContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.FontDescription;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class FontMixin {
     @ModifyConstant(method = "wordWrapHeight", constant = @Constant(intValue = 9))
     private int fonttweaks$wrappedHeight(int original) {
+        if (FontTweaksUiContext.isOwnSettingsScreen()) return original;
         return Math.max(1, (int) Math.round(original * FontTweaksSettings.get().wrappedSpacing()));
     }
 
