@@ -48,7 +48,11 @@ public final class FontTweaksFontImage implements ImageRenderer {
 
         graphics.text(minecraft.font,
                 Component.literal("GUI " + minecraft.getWindow().getGuiScale() + " / " +
-                        (settings.pixelationEnabled ? settings.pixelBlockSize + "px" : "OFF")),
+                        (settings.pixelationEnabled
+                            ? (settings.automaticPixelSize()
+                                    ? "AUTO (" + settings.effectivePixelBlockSize() + "px @ GUI3)"
+                                    : settings.pixelBlockSize + "px @ GUI3")
+                            : "OFF")),
                 x + 7, y + height - 15, 0xFFA5AFC3);
         return height;
     }
