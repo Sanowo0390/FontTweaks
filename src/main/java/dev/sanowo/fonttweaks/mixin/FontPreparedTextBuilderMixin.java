@@ -41,4 +41,3 @@ public abstract class FontPreparedTextBuilderMixin {
         return FontTweaksLetterSpacing.apply(original, fonttweaks$codepoint.get());
     }
 }
-

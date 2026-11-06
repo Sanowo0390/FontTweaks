@@ -55,4 +55,3 @@ class BlacklistEntriesTest {
         assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg));
     }
 }
-

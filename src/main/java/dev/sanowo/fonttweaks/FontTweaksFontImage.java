@@ -66,4 +66,3 @@ public final class FontTweaksFontImage implements ImageRenderer {
     @Override public void tick() {}
     @Override public void close() {}
 }
-

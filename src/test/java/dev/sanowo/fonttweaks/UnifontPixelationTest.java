@@ -275,4 +275,3 @@ class UnifontPixelationTest {
         assertFalse(saved.contains("pixelPerfectMode"));
     }
 }
-

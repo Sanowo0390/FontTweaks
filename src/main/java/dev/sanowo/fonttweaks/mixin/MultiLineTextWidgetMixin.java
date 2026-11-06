@@ -19,4 +19,3 @@ public abstract class MultiLineTextWidgetMixin {
         return cfg.lineStep(original);
     }
 }
-

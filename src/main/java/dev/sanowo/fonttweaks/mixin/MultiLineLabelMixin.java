@@ -67,4 +67,3 @@ public abstract class MultiLineLabelMixin {
                 frame[0], cfg.globalLineSpacing, line, true) - frame[0];
     }
 }
-

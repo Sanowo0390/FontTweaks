@@ -25,4 +25,3 @@ class FontTweaksRenderContextTest {
         assertEquals(FontTweaksRenderContext.Kind.DEFAULT, FontTweaksRenderContext.current());
     }
 }
-

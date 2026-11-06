@@ -119,4 +119,3 @@ class FontTweaksPresetsTest {
         assertSame(FontTweaksFonts.PIXELMPLUS, selected(legacy, 3, 'A'));
     }
 }
-

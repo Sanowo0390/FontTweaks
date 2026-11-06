@@ -41,4 +41,3 @@ public abstract class FontMixin {
                 mc.getWindow().getGuiScale(), mc.options.forceUnicodeFont().get());
     }
 }
-

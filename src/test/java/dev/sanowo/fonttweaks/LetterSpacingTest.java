@@ -86,4 +86,3 @@ class LetterSpacingTest {
         assertEquals(1, invalid.pixelBlockSize);
     }
 }
-

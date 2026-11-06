@@ -18,4 +18,3 @@ public final class FontTweaksUiContext {
         return client != null && client.gui != null && isOwnYaclScreen(client.gui.screen());
     }
 }
-

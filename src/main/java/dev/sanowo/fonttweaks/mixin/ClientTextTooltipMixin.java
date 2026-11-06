@@ -28,4 +28,3 @@ public abstract class ClientTextTooltipMixin {
         cir.setReturnValue(Math.max(1, (int) Math.round(cir.getReturnValue() * spacing)));
     }
 }
-

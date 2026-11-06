@@ -47,4 +47,3 @@ class TextLayoutSettingsTest {
         assertEquals(1, cfg.globalLineSpacing);
     }
 }
-

@@ -19,4 +19,3 @@ class PixelGridMathTest {
         assertEquals(0.0f, PixelGridMath.snapDelta(2.5f, 0));
     }
 }
-
