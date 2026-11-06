@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 1.0.0 - Text Settings",
+  "fonttweaks.title": "FontTweaks 0.10.0 - Text Settings",
   "fonttweaks.global": "Global Text Scale",
   "fonttweaks.screen": "Screen Text Scale",
   "fonttweaks.hud": "HUD Text Scale",
@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "Text sizes",
   "fonttweaks.preview_spacing": "Line spacing",
   "fonttweaks.preview_spacing_hint": "Open Preview to check actual multiline text.",
-  "fonttweaks.ui.title": "FontTweaks 1.0.0 - Text Settings",
+  "fonttweaks.ui.title": "FontTweaks 0.10.0 - Text Settings",
   "fonttweaks.ui.tab.size": "Size",
   "fonttweaks.ui.tab.spacing": "Text spacing",
   "fonttweaks.ui.tab.pixels": "Pixels",
