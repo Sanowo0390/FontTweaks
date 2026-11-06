@@ -26,7 +26,7 @@ public final class FontTweaksFonts {
         if (!cfg.resourcePackEnabled) return null;
         return switch (cfg.resourcePackFont) {
             case "misaki" -> MISAKI;
-            case "auto" -> matchesEnglishGrid(cfg.pixelationEnabled, cfg.pixelBlockSize,
+            case "auto" -> matchesEnglishGrid(cfg.pixelationEnabled, cfg.effectivePixelBlockSize(),
                     guiScale, forceUnicode) ? MISAKI : PIXELMPLUS;
             default -> PIXELMPLUS;
         };
