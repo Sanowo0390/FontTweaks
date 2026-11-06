@@ -14,7 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Real YACL options must refresh within the SAME screen, without a save/reopen. */
 class YaclLivePresetTest {
     private static Option<?> presetOption(YetAnotherConfigLib config) {
-        return config.categories().get(0).groups().get(0).options().get(0);
+        return config.categories().get(0).groups().stream()
+                .flatMap(group -> group.options().stream())
+                .filter(option -> option.pendingValue() instanceof Enum<?> value
+                        && value.getDeclaringClass().getSimpleName().equals("PresetChoice"))
+                .findFirst().orElseThrow();
     }
 
     private static void save(YetAnotherConfigLib config) {
@@ -57,7 +61,9 @@ class YaclLivePresetTest {
         selectBool(guiGroups(config).get(1).options().get(2), true);
         assertEquals("ALWAYS_MISAKI", enumName(preset));
         @SuppressWarnings("unchecked")
-        Option<Double> size = (Option<Double>) config.categories().get(1).groups().get(0).options().get(0);
+        Option<Double> size = (Option<Double>) config.categories().get(1).groups().stream()
+                .flatMap(group -> group.options().stream())
+                .filter(option -> option.pendingValue() instanceof Double).findFirst().orElseThrow();
         size.requestSet(1.25);
         save(config);
         assertEquals(FontTweaksPresets.ALWAYS_MISAKI, cfg.activePreset);
