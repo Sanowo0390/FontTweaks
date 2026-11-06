@@ -180,6 +180,12 @@ public final class FontTweaksScreen extends Screen {
                 FontTweaksRenderContext.pop(prev);
             }
 
+            boolean matched = FontTweaksFonts.matchesEnglishGrid(
+                    FontTweaksSettings.get().pixelationEnabled, FontTweaksSettings.get().pixelBlockSize,
+                    this.minecraft.getWindow().getGuiScale(), this.minecraft.options.forceUnicodeFont().get());
+            graphics.centeredText(this.font, Component.translatable(matched
+                    ? "fonttweaks.auto_misaki" : "fonttweaks.auto_unifont"),
+                    this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);
         }
     }
 

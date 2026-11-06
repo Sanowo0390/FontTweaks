@@ -32,7 +32,7 @@ class UnifontPixelationTest {
         rows[0] = 0x80000000;
         int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 3);
         // One lit source pixel in a 2x2 source block used to disappear.
-        assertEquals(64, result[0] >>> 24);
+        assertEquals(255, result[0] >>> 24);
         assertEquals(result[0], result[5 * 48 + 5]);
         assertEquals(0, result[6]);
     }
@@ -62,6 +62,18 @@ class UnifontPixelationTest {
         rows[15] = 1 << (31 - 11);
         int[] raster = UnifontPixelation.rasterize(rows, 5, 7, 3, 2);
         assertTrue((raster[raster.length - 1] >>> 24) > 0);
+    }
+
+    @Test void everyOutputPixelIsOpaqueOrTransparent() {
+        int[] rows = new int[16];
+        for (int y = 0; y < 16; y++) rows[y] = 0xAA55AA55;
+        for (int gui = 1; gui <= 4; gui++) {
+            for (int target = 1; target <= 3; target++) {
+                for (int pixel : UnifontPixelation.rasterize(rows, 0, 16, gui, target)) {
+                    assertTrue(pixel == 0 || pixel == -1);
+                }
+            }
+        }
     }
 
     @Test void invalidDimensionsAreRejected() {

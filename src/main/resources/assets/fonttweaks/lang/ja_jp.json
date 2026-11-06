@@ -6,11 +6,13 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "GUI基準のドット表示。文字サイズは別に調整できます。",
+  "fonttweaks.help": "標準英字と同じドット幅なら美咲へ自動切替。",
   "fonttweaks.button": "ボタン文字",
   "fonttweaks.chat": "チャット文字",
   "fonttweaks.pixel_mode_on": "ピクセル化：ON",
   "fonttweaks.pixel_mode_off": "ピクセル化：OFF",
   "fonttweaks.pixel_density": "1ドット：%s画面px",
-  "fonttweaks.pixel_help": "文字倍率100%時の画面px数。GUIスケールに合わせて変換します。細線は透明度で保持します。"
+  "fonttweaks.pixel_help": "文字倍率100%時の画面px。標準英字と同じ幅なら美咲へ自動切替。半透明ドットは使いません。",
+  "fonttweaks.auto_misaki": "標準英字とドット幅一致 → 美咲を使用",
+  "fonttweaks.auto_unifont": "標準フォントを使用（ON時はUnifontを加工）"
 }

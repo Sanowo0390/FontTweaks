@@ -21,10 +21,8 @@ public final class UnifontPixelation {
                         if (bit >= 0 && bit < 32 && ((rows[yy / guiScale] >>> bit) & 1) != 0) ink++;
                     }
                 }
-                // Keep coverage as alpha instead of discarding minority strokes.
-                int area = (endX - x) * (endY - y);
-                int alpha = ink == 0 ? 0 : Math.max(1, (ink * 255 + area / 2) / area);
-                int value = alpha == 0 ? 0 : (alpha << 24) | 0xFFFFFF;
+                // Binary max coverage: thin strokes stay opaque, with no gray/alpha fringe.
+                int value = ink == 0 ? 0 : -1;
                 for (int yy = y; yy < endY; yy++) {
                     for (int xx = x; xx < endX; xx++) result[yy * w + xx] = value;
                 }

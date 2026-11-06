@@ -6,11 +6,13 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "GUI-aware pixel grid. Text size is adjusted separately.",
+  "fonttweaks.help": "Matching standard English dot size automatically selects Misaki.",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
   "fonttweaks.pixel_mode_on": "Pixelation: ON",
   "fonttweaks.pixel_mode_off": "Pixelation: OFF",
   "fonttweaks.pixel_density": "Dot: %s screen px",
-  "fonttweaks.pixel_help": "Display pixels at 100% text size. Compensates GUI scale and retains thin-stroke coverage."
+  "fonttweaks.pixel_help": "Screen pixels at 100% size. Matching standard English grid selects Misaki. Binary pixels only.",
+  "fonttweaks.auto_misaki": "Standard English grid matches: Misaki",
+  "fonttweaks.auto_unifont": "Default font (Unifont pixelated when ON)"
 }

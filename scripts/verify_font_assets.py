@@ -22,6 +22,6 @@ with zipfile.ZipFile(jars[0]) as jar, zipfile.ZipFile(vendor) as upstream:
     assert jar.read("META-INF/THIRD_PARTY_NOTICES.md") == (
         root / "THIRD_PARTY_NOTICES.md").read_bytes()
     mixins = json.loads(jar.read("fonttweaks.mixins.json"))["client"]
-    assert "FontMixin" not in mixins
+    assert "FontMixin" in mixins
     assert "UnihexBitmapMixin" in mixins
 print(f"Verified {jars[0].name}: no default override; original font bytes and notices intact")

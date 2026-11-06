@@ -3,6 +3,7 @@ package dev.sanowo.fonttweaks.mixin;
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
 import dev.sanowo.fonttweaks.FontTweaksScreen;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.PixelGridMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -51,7 +52,7 @@ public abstract class GuiTextRenderStateMixin {
             case DEFAULT -> settings.scaleFor(mc.gui.screen() != null);
         };
 
-        if (Math.abs(multiplier - 1.0) < 0.000001) return;
+        if (Math.abs(multiplier - 1.0) < 0.000001 && !settings.pixelationEnabled) return;
 
         float scale = (float) FontTweaksSettings.bounded(multiplier, 0.05, 8.0);
         // Button text is centered in the widget: preserve its center.
@@ -61,6 +62,14 @@ public abstract class GuiTextRenderStateMixin {
 
         Matrix3x2f adjusted = new Matrix3x2f(inputPose);
         adjusted.translate(anchorX, y).scale(scale, scale).translate(-anchorX, -y);
+
+        if (settings.pixelationEnabled) {
+            int guiScale = mc.getWindow().getGuiScale();
+            float gx = adjusted.m00() * x + adjusted.m10() * y + adjusted.m20();
+            float gy = adjusted.m01() * x + adjusted.m11() * y + adjusted.m21();
+            adjusted.translateLocal(PixelGridMath.snapDelta(gx, guiScale),
+                    PixelGridMath.snapDelta(gy, guiScale));
+        }
 
         this.pose = adjusted;
     }
