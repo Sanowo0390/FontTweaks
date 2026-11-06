@@ -41,9 +41,25 @@ public final class FontTweaksSettings {
     /** Bitmap effect only, independent of all text sizing. */
     @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
     public boolean pixelationEnabled = true;
-    /** Physical display pixels per dot at text scale 100%; GUI scale is compensated. */
+    /**
+     * Source bitmap pixelation density at GUI scale 3.
+     * 0 = Auto (2px at the fixed GUI3 atlas reference); 1..4 = manual.
+     * Auto uses the already-baked atlas to avoid reloading on GUI resize.
+     */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
     public int pixelBlockSize = 1;
+
+    public static final int AUTO_PIXEL_SIZE = 0;
+    public static final int AUTO_REFERENCE_PIXEL_SIZE = 2;
+
+    /** The cached Unifont atlas is always baked at GUI scale 3. */
+    public int effectivePixelBlockSize() {
+        return pixelBlockSize == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : pixelBlockSize;
+    }
+
+    public boolean automaticPixelSize() {
+        return pixelBlockSize == AUTO_PIXEL_SIZE;
+    }
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
@@ -67,7 +83,7 @@ public final class FontTweaksSettings {
     }
 
     public int nextPixelBlockSize() {
-        return pixelBlockSize >= 4 ? 1 : pixelBlockSize + 1;
+        return pixelBlockSize >= 4 ? AUTO_PIXEL_SIZE : pixelBlockSize + 1;
     }
 
     public void cycleResourcePackFont() {
@@ -181,7 +197,7 @@ public final class FontTweaksSettings {
         // Tracking is additive, so its neutral value is 0 (not the multiplier default 1).
         letterSpacing = Double.isFinite(letterSpacing)
                 ? bounded(letterSpacing, -2.0, 4.0) : 0.0;
-        if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 1;
+        if (pixelBlockSize < AUTO_PIXEL_SIZE || pixelBlockSize > 4) pixelBlockSize = 1;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
         globalLineSpacing = bounded(globalLineSpacing, 0.5, 2.0);
