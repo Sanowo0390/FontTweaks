@@ -455,7 +455,7 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
         return switch (tab) {
             case SIZE -> String.format(Locale.ROOT, "%.1f%%", SIZES[index].get(cfg) * 100.0);
             case SPACING -> String.format(Locale.ROOT, "%.1f%%", SPACINGS[index].get(cfg) * 100.0);
-            case PIXELS -> index == 0 ? toggleState(cfg.pixelationEnabled) : cfg.pixelBlockSize + "px";
+            case PIXELS -> index == 0 ? toggleState(cfg.pixelationEnabled) : cfg.automaticPixelSize() ? "Auto" : cfg.pixelBlockSize + "px";
             case FONTS -> switch (index) {
                 case 0 -> toggleState(cfg.resourcePackEnabled);
                 case 1 -> cfg.resourcePackFont.equals("misaki") ? "Misaki"
