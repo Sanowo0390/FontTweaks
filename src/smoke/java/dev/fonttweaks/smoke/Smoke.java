@@ -61,7 +61,28 @@ public final class Smoke implements PreLaunchEntrypoint {
   factor.setDouble(cfg,1);int normal=(Integer)height.invoke(tip,font);
   factor.setDouble(cfg,2);int scaled=(Integer)height.invoke(tip,font);
   if(scaled!=normal*2)throw new AssertionError("tooltip "+normal+" -> "+scaled);
+  // Ensure actual line positions change, not just the widget's height.
+  java.lang.reflect.Field englishOnly=settings.getField("excludeEnglishFromSpacing");
+  Object english=net.minecraft.util.FormattedCharSequence.forward(
+      "Sodium settings",net.minecraft.network.chat.Style.EMPTY);
+  Object japanese=net.minecraft.util.FormattedCharSequence.forward(
+      "日本語設定",net.minecraft.network.chat.Style.EMPTY);
+  Object englishRow=ctor.newInstance(english,6);
+  Object japaneseRow=ctor.newInstance(japanese,6);
+  factor.setDouble(cfg,2);
+  englishOnly.setBoolean(cfg,true);
+  rows.set(label,java.util.List.of(englishRow,japaneseRow));
+  ys.clear();
+  visit.invoke(label,left,0,10,9,collector);
+  if(!ys.equals(java.util.List.of(10,19)))
+      throw new AssertionError("English line must keep native pitch: "+ys);
+  rows.set(label,java.util.List.of(japaneseRow,englishRow));
+  ys.clear();
+  visit.invoke(label,left,0,10,9,collector);
+  if(!ys.equals(java.util.List.of(10,28)))
+      throw new AssertionError("Japanese line must apply adjusted pitch: "+ys);
+  englishOnly.setBoolean(cfg,false);
   factor.setDouble(cfg,1);
-  System.out.println("FONT_SPACING_SMOKE labels=[10,19] -> [10,28]; tooltip="+normal+" -> "+scaled);
+  System.out.println("FONT_SPACING_SMOKE labels=[10,19] -> [10,28]; English skip and Japanese pitch verified; tooltip="+normal+" -> "+scaled);
  }
 }
