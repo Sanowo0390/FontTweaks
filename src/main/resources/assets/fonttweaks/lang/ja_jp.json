@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks - 文字表示設定",
+  "fonttweaks.title": "FontTweaks 0.6.0 - 文字表示設定",
   "fonttweaks.global": "文字全体",
   "fonttweaks.screen": "画面の文字",
   "fonttweaks.hud": "HUDの文字",
@@ -23,12 +23,21 @@
   "fonttweaks.english_on": "英字フォントを置き換える：ON",
   "fonttweaks.english_off": "英字フォントを置き換える：OFF",
   "fonttweaks.blacklist": "除外する文字（ブラックリスト）",
-  "fonttweaks.blacklist_help": "対象外にしたい文字をそのまま入力します。例：！？★　登録文字はフォント置換・ピクセル加工をせず、元のフォントで表示します。入力を止めると反映します。英字OFFでは半角英数字・記号とラテン文字を元のフォントで表示します。",
+  "fonttweaks.blacklist_help": "ブラックリストはフォント置換だけを除外します。登録文字にもUnifontのピクセル加工は適用します。追加・個別削除は一覧で操作できます。",
   "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular（除外文字は標準）",
   "fonttweaks.global_spacing": "行間全体",
   "fonttweaks.preview": "プレビュー",
   "fonttweaks.preview_current": "プレビュー：%s %s%%",
   "fonttweaks.pack_font_pixelmplus12": "フォント：PixelMplus12 Regular",
   "fonttweaks.pack_font_misaki": "フォント：美咲ゴシック第2",
-  "fonttweaks.pack_font_auto": "フォント：自動（英字と一致なら美咲）"
+  "fonttweaks.pack_font_auto": "フォント：自動（英字と一致なら美咲）",
+  "fonttweaks.reset_short": "戻す",
+  "fonttweaks.reset_all": "すべて初期化",
+  "fonttweaks.blacklist_count": "ブラックリスト：%s文字",
+  "fonttweaks.blacklist_add": "追加",
+  "fonttweaks.blacklist_delete": "削除",
+  "fonttweaks.blacklist_list_help": "文字を入力して追加。複数文字は1文字ずつ登録します。",
+  "fonttweaks.preview_sizes": "文字サイズの確認",
+  "fonttweaks.preview_spacing": "行間の確認",
+  "fonttweaks.preview_spacing_hint": "「プレビュー」で実際の複数行表示を確認できます。"
 }

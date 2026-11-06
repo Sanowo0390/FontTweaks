@@ -17,6 +17,8 @@ jobs:
           gradle-version: '9.7.1'
       - name: Build, run tests and bundle pinned fonts
         run: gradle clean build --stacktrace
+      - name: Verify Minecraft hooks and real multiline spacing without opening a game window
+        run: gradle runSmoke -x downloadAssets --stacktrace
       - name: Verify installed font assets and copyright notices
         run: |
           set -euo pipefail

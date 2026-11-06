@@ -30,8 +30,10 @@ public final class FontTweaksSettings {
     public boolean resourcePackEnabled = false;
     public String resourcePackFont = "pixelmplus12";
     public boolean replaceEnglish = false;
-    /** Literal code points excluded from font replacement and bitmap processing. */
-    public String blacklistedCharacters = "";
+    /** Each entry is one codepoint excluded from font replacement only. */
+    public java.util.List<String> blacklistedEntries = new java.util.ArrayList<>();
+    /** Read old configs, migrate on sanitize, then omit this legacy field on save. */
+    @Deprecated public String blacklistedCharacters;
     /** Bitmap effect only, independent of all text sizing. */
     @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
     public boolean pixelationEnabled = true;
@@ -77,7 +79,23 @@ public final class FontTweaksSettings {
     }
 
     public boolean isBlacklisted(int codepoint) {
-        return blacklistedCharacters != null && blacklistedCharacters.indexOf(codepoint) >= 0;
+        return (blacklistedEntries != null && blacklistedEntries.contains(new String(Character.toChars(codepoint))))
+                || (blacklistedCharacters != null && blacklistedCharacters.indexOf(codepoint) >= 0);
+    }
+
+    public boolean addBlacklistCharacters(String text) {
+        if (blacklistedEntries == null) blacklistedEntries = new java.util.ArrayList<>();
+        int before = blacklistedEntries.size();
+        text.codePoints().forEach(cp -> {
+            String entry = new String(Character.toChars(cp));
+            if (!blacklistedEntries.contains(entry)) blacklistedEntries.add(entry);
+        });
+        return before != blacklistedEntries.size();
+    }
+
+    public void clearBlacklist() {
+        blacklistedEntries = new java.util.ArrayList<>();
+        blacklistedCharacters = null;
     }
 
     public boolean shouldReplace(int codepoint) {
@@ -133,7 +151,11 @@ public final class FontTweaksSettings {
     public void sanitize() {
         if (!"pixelmplus12".equals(resourcePackFont) && !"misaki".equals(resourcePackFont)
                 && !"auto".equals(resourcePackFont)) resourcePackFont = "pixelmplus12";
-        if (blacklistedCharacters == null) blacklistedCharacters = "";
+        java.util.List<String> oldEntries = blacklistedEntries;
+        blacklistedEntries = new java.util.ArrayList<>();
+        if (oldEntries != null) for (String entry : oldEntries) if (entry != null) addBlacklistCharacters(entry);
+        if (blacklistedCharacters != null) addBlacklistCharacters(blacklistedCharacters);
+        blacklistedCharacters = null;
         globalScale = bounded(globalScale, 0.5, 2.0);
         screenScale = bounded(screenScale, 0.5, 2.0);
         hudScale = bounded(hudScale, 0.5, 2.0);

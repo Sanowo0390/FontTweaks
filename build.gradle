@@ -129,3 +129,23 @@ def downloadPixelMplus = tasks.register('downloadPixelMplus', DefaultTask) {
 }
 sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/pixelmplus'))
 tasks.named('processResources').configure { dependsOn downloadPixelMplus }
+
+// Launch Fabric far enough to verify transformed Minecraft classes and line
+// spacing, then exit in preLaunch before creating any window or loading a world.
+sourceSets {
+    smoke { compileClasspath += sourceSets.main.compileClasspath }
+}
+def smokeJar = tasks.register('smokeJar', Jar) {
+    from sourceSets.smoke.output
+    archiveFileName = 'fonttweaks-smoke.jar'
+    destinationDirectory = layout.buildDirectory.dir('smoke')
+}
+loom.runs {
+    smoke {
+        client()
+        source sourceSets.main
+        runDir 'run-smoke'
+        vmArg "-Dfabric.addMods=${layout.buildDirectory.file('smoke/fonttweaks-smoke.jar').get().asFile.absolutePath}"
+    }
+}
+tasks.named('runSmoke').configure { dependsOn smokeJar }

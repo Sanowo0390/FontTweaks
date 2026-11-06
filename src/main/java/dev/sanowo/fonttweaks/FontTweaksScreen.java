@@ -83,21 +83,27 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             reloadPixelation();
             this.rebuildWidgets();
-        }).bounds(x, startY + 8 * gap, half, 20).build());
+        }).bounds(x, startY + 8 * gap, half - 36, 20).build());
         pixelSizeButton = this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
             cfg.pixelBlockSize = cfg.nextPixelBlockSize();
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             reloadPixelation();
-        }).bounds(x + half + 8, startY + 8 * gap, half, 20).build());
+        }).bounds(x + half + 8, startY + 8 * gap, half - 36, 20).build());
 
+        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset_short"), b -> {
+            cfg.pixelationEnabled = true; FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
+        }).bounds(x + half - 32, startY + 8 * gap, 32, 20).build());
+        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset_short"), b -> {
+            cfg.pixelBlockSize = 2; FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
+        }).bounds(x + w - 32, startY + 8 * gap, 32, 20).build());
         int third = (w - 16) / 3;
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.font_settings"), b -> {
             this.minecraft.gui.setScreen(new FontTweaksFontScreen(this));
         }).bounds(x, startY + 9 * gap, third, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.preview"), b -> {
-            this.minecraft.gui.setScreen(new FontTweaksPreviewScreen(this));
+            this.minecraft.gui.setScreen(new FontTweaksPreviewScreen(this, previewKey.contains("spacing")));
         }).bounds(x + third + 8, startY + 9 * gap, third, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(x + (third + 8) * 2, startY + 9 * gap, third, 20).build());
@@ -134,16 +140,17 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
     private void addSettingRow(int x, int y, int width, String key, double min, double max,
                                Supplier<Double> getter, Consumer<Double> setter) {
         Consumer<Double> apply = value -> {
-            if (key.equals("fonttweaks.global") || key.equals("fonttweaks.screen")
-                    || key.equals("fonttweaks.hud") || key.equals("fonttweaks.button")
-                    || key.equals("fonttweaks.chat")) previewKey = key;
+            previewKey = key;
             setter.accept(value);
         };
-        int inputWidth = Math.min(112, Math.max(86, width / 3));
-        int sliderWidth = width - inputWidth - 8;
+        int resetWidth = 36;
+        int inputWidth = Math.min(96, Math.max(72, width / 4));
+        int sliderWidth = width - inputWidth - resetWidth - 12;
 
         EditBox input = new EditBox(this.font, x + sliderWidth + 8, y,
                 inputWidth, 20, Component.translatable(key));
+        input.setTextColor(0xFFFFFFFF);
+        input.setTextColorUneditable(0xFFFFFFFF);
         input.setMaxLength(32);
         input.setValue(formatNumber(getter.get()));
 
@@ -160,20 +167,27 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
                 // highlighted until the user finishes typing a valid number.
                 double exact = Double.parseDouble(raw.trim());
                 if (!Double.isFinite(exact) || exact < min || exact > max) {
-                    input.setTextColor(0xFF5555);
+                    input.setTextColor(0xFFFF5555);
                     return;
                 }
-                input.setTextColor(0xFFFFFF);
+                input.setTextColor(0xFFFFFFFF);
                 apply.accept(exact);
                 slider.updateFromField(exact);
                 FontTweaksSettings.save();
             } catch (NumberFormatException ignored) {
-                input.setTextColor(0xFF5555);
+                input.setTextColor(0xFFFF5555);
             }
         });
 
         this.addRenderableWidget(slider);
         this.addRenderableWidget(input);
+        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset_short"), button -> {
+            apply.accept(1.0);
+            input.setValue("1");
+            slider.updateFromField(1.0);
+            input.setTextColor(0xFFFFFFFF);
+            FontTweaksSettings.save();
+        }).bounds(x + width - resetWidth, y, resetWidth, 20).build());
         List<AbstractWidget> controls = key.equals("fonttweaks.global_spacing") || key.equals("fonttweaks.spacing")
                 || key.equals("fonttweaks.tooltip_spacing") ? spacingControls : scaleControls;
         controls.add(slider);
@@ -191,7 +205,8 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
         int startY = Math.max(26, (this.height - (10 * gap + 44)) / 2);
         graphics.centeredText(this.font, this.title, this.width / 2, startY - 18, 0xFFFFFFFF);
         if (this.height >= 270) {
-            graphics.centeredText(this.font, Component.translatable("fonttweaks.preview_current", Component.translatable(previewKey), Math.round(previewScale() * 100)),
+            graphics.centeredText(this.font, previewKey.contains("spacing") ? Component.translatable("fonttweaks.preview_spacing_hint")
+                    : Component.translatable("fonttweaks.preview_current", Component.translatable(previewKey), Math.round(previewScale() * 100)),
                     this.width / 2, startY + 10 * gap + 2, 0xFFAAAAAA);
 
             // The sample uses the independent text size; bitmap processing is global.

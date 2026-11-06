@@ -1,9 +1,6 @@
 package dev.sanowo.fonttweaks;
 
 import com.google.gson.Gson;
-import com.mojang.blaze3d.font.GlyphInfo;
-import com.mojang.blaze3d.font.UnbakedGlyph;
-import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Test;
@@ -125,7 +122,8 @@ class FontSelectionTest {
         old.sanitize();
         assertFalse(old.resourcePackEnabled);
         assertFalse(old.replaceEnglish);
-        assertEquals("", old.blacklistedCharacters);
+        assertNull(old.blacklistedCharacters);
+        assertTrue(old.blacklistedEntries.isEmpty());
         old.resourcePackEnabled = true;
         old.replaceEnglish = true;
         old.blacklistedCharacters = "！？★\uD83D\uDE00";
@@ -136,47 +134,4 @@ class FontSelectionTest {
         assertEquals(4, restored.pixelBlockSize);
     }
 
-    @Test void excludedGlyphSkipsBitmapProcessingAndRestoresContextAfterFailure() {
-        FontTweaksSettings cfg = FontTweaksSettings.get();
-        String originalBlacklist = cfg.blacklistedCharacters;
-        try {
-            cfg.blacklistedCharacters = "★";
-            UnbakedGlyph probe = new UnbakedGlyph() {
-                public GlyphInfo info() { return null; }
-                public BakedGlyph bake(Stitcher stitcher) {
-                    assertTrue(GlyphProcessingContext.excluded());
-                    throw new IllegalStateException("probe");
-                }
-            };
-            assertFalse(GlyphProcessingContext.excluded());
-            assertThrows(IllegalStateException.class, () -> new CharacterGlyph(probe, '★').bake(null));
-            assertFalse(GlyphProcessingContext.excluded());
-        } finally { cfg.blacklistedCharacters = originalBlacklist; }
-    }
-
-    @Test void blacklistIsReadWhenGlyphIsBakedAndCanBeRemovedAgain() {
-        FontTweaksSettings cfg = FontTweaksSettings.get();
-        String originalBlacklist = cfg.blacklistedCharacters;
-        boolean[] seen = {false};
-        UnbakedGlyph probe = new UnbakedGlyph() {
-            public GlyphInfo info() { return null; }
-            public BakedGlyph bake(Stitcher stitcher) {
-                seen[0] = GlyphProcessingContext.excluded();
-                return null;
-            }
-        };
-        CharacterGlyph glyph = new CharacterGlyph(probe, '語');
-        try {
-            cfg.blacklistedCharacters = "";
-            glyph.bake(null);
-            assertFalse(seen[0]);
-            cfg.blacklistedCharacters = "語";
-            glyph.bake(null);
-            assertTrue(seen[0]);
-            cfg.blacklistedCharacters = "";
-            glyph.bake(null);
-            assertFalse(seen[0]);
-            assertFalse(GlyphProcessingContext.excluded());
-        } finally { cfg.blacklistedCharacters = originalBlacklist; }
-    }
 }

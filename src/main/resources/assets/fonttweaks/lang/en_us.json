@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks - Text Display",
+  "fonttweaks.title": "FontTweaks 0.6.0 - Text Display",
   "fonttweaks.global": "Global Text Scale",
   "fonttweaks.screen": "Screen Text Scale",
   "fonttweaks.hud": "HUD Text Scale",
@@ -23,12 +23,21 @@
   "fonttweaks.english_on": "Replace English font: ON",
   "fonttweaks.english_off": "Replace English font: OFF",
   "fonttweaks.blacklist": "Excluded characters (blacklist)",
-  "fonttweaks.blacklist_help": "Enter literal characters, e.g. !?*. Exclusions retain their original font and bypass pixel processing. Reloads after you stop typing. English OFF preserves printable ASCII and Latin characters.",
+  "fonttweaks.blacklist_help": "Blacklist excludes font replacement only. Unifont pixel processing still applies. Open the list to add or delete individual characters.",
   "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular (exclusions use default)",
   "fonttweaks.global_spacing": "Global Line Spacing",
   "fonttweaks.preview": "Preview",
   "fonttweaks.preview_current": "Preview: %s %s%%",
   "fonttweaks.pack_font_pixelmplus12": "Font: PixelMplus12 Regular",
   "fonttweaks.pack_font_misaki": "Font: Misaki Gothic 2",
-  "fonttweaks.pack_font_auto": "Font: Auto (English grid match selects Misaki)"
+  "fonttweaks.pack_font_auto": "Font: Auto (English grid match selects Misaki)",
+  "fonttweaks.reset_short": "Reset",
+  "fonttweaks.reset_all": "Reset all",
+  "fonttweaks.blacklist_count": "Blacklist: %s characters",
+  "fonttweaks.blacklist_add": "Add",
+  "fonttweaks.blacklist_delete": "Delete",
+  "fonttweaks.blacklist_list_help": "Add characters here. Each codepoint gets its own row.",
+  "fonttweaks.preview_sizes": "Text sizes",
+  "fonttweaks.preview_spacing": "Line spacing",
+  "fonttweaks.preview_spacing_hint": "Open Preview to check actual multiline text."
 }

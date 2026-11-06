@@ -3,6 +3,7 @@ package dev.sanowo.fonttweaks.mixin;
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
 import dev.sanowo.fonttweaks.FontTweaksScreen;
 import dev.sanowo.fonttweaks.FontTweaksFontScreen;
+import dev.sanowo.fonttweaks.FontTweaksBlacklistScreen;
 import dev.sanowo.fonttweaks.FontTweaksPreviewScreen;
 import dev.sanowo.fonttweaks.PreviewScaleSource;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
@@ -44,7 +45,7 @@ public abstract class GuiTextRenderStateMixin {
         // Keep the configuration controls readable. The explicitly tagged
         // preview is the only text in this screen that uses user settings.
         if ((mc.gui.screen() instanceof FontTweaksScreen || mc.gui.screen() instanceof FontTweaksFontScreen
-                || mc.gui.screen() instanceof FontTweaksPreviewScreen)
+                || mc.gui.screen() instanceof FontTweaksPreviewScreen || mc.gui.screen() instanceof FontTweaksBlacklistScreen)
                 && context != FontTweaksRenderContext.Kind.PREVIEW) return;
 
         FontTweaksSettings settings = FontTweaksSettings.get();

@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
 import dev.sanowo.fonttweaks.FontTweaksFontScreen;
+import dev.sanowo.fonttweaks.FontTweaksBlacklistScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -23,7 +24,7 @@ public abstract class GuiGraphicsExtractorMixin {
         FontTweaksSettings settings = FontTweaksSettings.get();
         double spacing = settings.wrappedSpacing();
         Minecraft mc = Minecraft.getInstance();
-        if (mc != null && mc.gui != null && mc.gui.screen() instanceof FontTweaksFontScreen) {
+        if (mc != null && mc.gui != null && (mc.gui.screen() instanceof FontTweaksFontScreen || mc.gui.screen() instanceof FontTweaksBlacklistScreen)) {
             return original.call(font, text, x, y, width, color, shadow);
         }
         float scale = mc == null || mc.gui == null ? 1.0f

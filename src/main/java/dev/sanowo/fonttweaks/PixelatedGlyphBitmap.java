@@ -8,6 +8,12 @@ import org.lwjgl.system.MemoryUtil;
 
 /** More texture pixels, same quad bounds and original GlyphInfo. */
 public final class PixelatedGlyphBitmap implements GlyphBitmap {
+    public static GlyphBitmap process(GlyphBitmap original, int[] rows, int left, int guiScale,
+                                      FontTweaksSettings settings) {
+        // Exclusion lists select fonts only. Pixel processing is controlled solely by its own switch.
+        return settings.pixelationEnabled
+                ? new PixelatedGlyphBitmap(original, rows, left, guiScale, settings.pixelBlockSize) : original;
+    }
     private final GlyphBitmap original;
     private final int[] pixels;
     private final int guiScale;

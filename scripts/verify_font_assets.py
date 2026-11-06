@@ -24,7 +24,8 @@ with zipfile.ZipFile(jars[0]) as jar, zipfile.ZipFile(vendor) as upstream:
     mixins = json.loads(jar.read("fonttweaks.mixins.json"))["client"]
     assert "FontMixin" in mixins
     assert "UnihexBitmapMixin" in mixins
-    assert "UnihexProviderMixin" in mixins
+    assert "UnihexProviderMixin" not in mixins
+    assert not any("GlyphProcessingContext" in path for path in jar.namelist())
     pixel_path = "assets/fonttweaks/font/pixelmplus12_regular.ttf"
     assert hashlib.sha256(jar.read(pixel_path)).hexdigest() == (
         "02f19467ea7cc235cc06c570b7f6c3b0a12a6f682bc8d74c43f2d323d97bcd12")
