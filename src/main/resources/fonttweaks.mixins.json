@@ -7,8 +7,7 @@
     "GuiTextRenderStateMixin",
     "AbstractWidgetMixin",
     "ChatComponentMixin",
-    "ClientTextTooltipMixin",
-    "UnihexProviderMixin"
+    "ClientTextTooltipMixin"
   ],
   "injectors": {
     "defaultRequire": 1
