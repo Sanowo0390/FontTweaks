@@ -189,7 +189,7 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
         for (int i = 0; i < n; i++) {
             Tab value = Tab.values()[i];
             int x = EDGE + i * (tabWidth + gap);
-            Button button = this.addRenderableWidget(Button.builder(Component.translatable(value.key), b -> {
+            this.addRenderableWidget(Button.builder(Component.translatable(value.key), b -> {
                 if (tab != value) {
                     tab = value;
                     selectedRow = 0;
@@ -198,7 +198,6 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
                     this.rebuildWidgets();
                 }
             }).bounds(x, TAB_Y, tabWidth, TAB_HEIGHT).build());
-            button.active = tab != value;
         }
     }
 
@@ -506,6 +505,12 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
             graphics.fill(detailsX - 3, LIST_TOP - 3, detailsX - 1, panelBottom + 2, 0x99CCCCCC);
         }
         super.extractRenderState(graphics, mouseX, mouseY, delta);
+
+        // Selected category uses a bright outline instead of disabled text.
+        int tabWidth = (Math.max(110, this.width - EDGE * 2) - (Tab.values().length - 1) * 3)
+                / Tab.values().length;
+        graphics.outline(EDGE + tab.ordinal() * (tabWidth + 3), TAB_Y,
+                tabWidth, TAB_HEIGHT, 0xFF7EC8FF);
 
         graphics.text(this.font, Component.translatable("fonttweaks.ui.title"),
                 EDGE + 1, 5, 0xFFFFFFFF);
