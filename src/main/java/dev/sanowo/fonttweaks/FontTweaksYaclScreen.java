@@ -10,7 +10,6 @@ import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.DoubleFieldControllerBuilder;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
-import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -51,6 +50,34 @@ public final class FontTweaksYaclScreen {
         }
     }
 
+    /** YACL enum controller with an explicit Auto choice (config value 0). */
+    private enum PixelSizeChoice implements NameableEnum {
+        AUTO(0, "fonttweaks.ui.dot.auto"),
+        ONE(1, "fonttweaks.ui.dot.1"),
+        TWO(2, "fonttweaks.ui.dot.2"),
+        THREE(3, "fonttweaks.ui.dot.3"),
+        FOUR(4, "fonttweaks.ui.dot.4");
+
+        private final int pixels;
+        private final String label;
+        PixelSizeChoice(int pixels, String label) {
+            this.pixels = pixels;
+            this.label = label;
+        }
+
+        @Override
+        public Component getDisplayName() {
+            return Component.translatable(label);
+        }
+
+        static PixelSizeChoice fromPixels(int pixels) {
+            for (PixelSizeChoice choice : values()) {
+                if (choice.pixels == pixels) return choice;
+            }
+            return ONE;
+        }
+    }
+
     private static OptionDescription description(String key) {
         return OptionDescription.of(Component.translatable(key));
     }
@@ -87,12 +114,13 @@ public final class FontTweaksYaclScreen {
     public static Screen create(Screen parent) {
         FontTweaksSettings cfg = FontTweaksSettings.get();
         final boolean initialPixels = cfg.pixelationEnabled;
-        final int initialDotSize = cfg.pixelBlockSize;
+        final int initialRasterPixels = cfg.effectivePixelBlockSize();
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("fonttweaks.ui.title"))
+                // Text tab: font sizes and letter/line spacing share one category.
                 .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.size"))
+                        .name(Component.translatable("fonttweaks.ui.tab.text"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.sizes"))
                                 .option(number("fonttweaks.global", "fonttweaks.ui.desc.global",
@@ -106,9 +134,6 @@ public final class FontTweaksYaclScreen {
                                 .option(number("fonttweaks.chat", "fonttweaks.ui.desc.chat",
                                         () -> cfg.chatScale, value -> cfg.chatScale = value))
                                 .build())
-                        .build())
-                .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.spacing"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.spacing"))
                                 .option(Option.<Double>createBuilder()
@@ -133,8 +158,9 @@ public final class FontTweaksYaclScreen {
                                         value -> cfg.tooltipLineSpacing = value))
                                 .build())
                         .build())
+                // Fonts tab: pixel effects and font replacement in one place.
                 .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.pixels"))
+                        .name(Component.translatable("fonttweaks.ui.tab.fonts"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.pixels"))
                                 .option(Option.<Boolean>createBuilder()
@@ -144,23 +170,20 @@ public final class FontTweaksYaclScreen {
                                                 value -> cfg.pixelationEnabled = value)
                                         .controller(BooleanControllerBuilder::create)
                                         .build())
-                                .option(Option.<Integer>createBuilder()
+                                .option(Option.<PixelSizeChoice>createBuilder()
                                         .name(Component.translatable("fonttweaks.ui.dot_count"))
-                                        .description(illustrated("fonttweaks.ui.desc.pixel_count"))
-                                        .binding(1, () -> cfg.pixelBlockSize,
-                                                value -> cfg.pixelBlockSize = value)
-                                        .controller(option -> IntegerSliderControllerBuilder.create(option)
-                                                .range(1, 4).step(1)
-                                                .formatValue(v -> Component.literal(v + " px")))
+                                        .description(illustrated("fonttweaks.ui.desc.pixel_auto"))
+                                        .binding(PixelSizeChoice.ONE,
+                                                () -> PixelSizeChoice.fromPixels(cfg.pixelBlockSize),
+                                                value -> cfg.pixelBlockSize = value.pixels)
+                                        .controller(option -> EnumControllerBuilder.create(option)
+                                                .enumClass(PixelSizeChoice.class))
                                         .build())
-                                .build())
                                 .option(toggle("fonttweaks.gui_scale_font",
                                         "fonttweaks.ui.desc.gui_scale_font", false,
                                         () -> cfg.guiScaleDependentFont,
                                         value -> cfg.guiScaleDependentFont = value))
-                        .build())
-                .category(ConfigCategory.createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.tab.fonts"))
+                                .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.fonts"))
                                 .option(toggle("fonttweaks.ui.font_enable",
@@ -180,10 +203,9 @@ public final class FontTweaksYaclScreen {
                                         () -> cfg.replaceEnglish, value -> cfg.replaceEnglish = value))
                                 .build())
                         .build())
+                // Single exclusions tab with YACL's scrollable list editor.
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("fonttweaks.ui.tab.blacklist"))
-                        // YACL handles each entry as an independent editable row
-                        // with its own delete/reorder controls and a scroll pane.
                         .option(ListOption.<String>createBuilder()
                                 .name(Component.translatable("fonttweaks.blacklist"))
                                 .description(description("fonttweaks.ui.desc.blacklist"))
@@ -195,13 +217,13 @@ public final class FontTweaksYaclScreen {
                                 .build())
                         .build())
                 .save(() -> {
-                    // YACL applies all pending values to their bindings before
-                    // calling save. Cancel discards them automatically.
+                    // Compare baked atlas output, not the raw enum sentinel:
+                    // Auto (0) and manual 2 use identical GUI3 texture pixels.
+                    boolean mustReload = initialPixels != cfg.pixelationEnabled
+                            || (cfg.pixelationEnabled
+                                    && initialRasterPixels != cfg.effectivePixelBlockSize());
                     FontTweaksSettings.save();
-                    if (initialPixels != cfg.pixelationEnabled
-                            || (cfg.pixelationEnabled && initialDotSize != cfg.pixelBlockSize)) {
-                        FontTweaksReload.request();
-                    }
+                    if (mustReload) FontTweaksReload.request();
                     Minecraft mc = Minecraft.getInstance();
                     if (mc != null && mc.gui != null) mc.gui.hud.getChat().rescaleChat();
                 })
