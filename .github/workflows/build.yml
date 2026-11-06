@@ -15,30 +15,16 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.7.1'
-      - name: Inspect licensed Misaki Gothic 2 resource pack
+      - name: Inspect upstream Misaki pack contents
         run: |
-          curl -fL --retry 3 --connect-timeout 15 \
-            'https://cdn.modrinth.com/data/4M0C1Ypo/versions/ce2snAzP/MisakiGothic2forMC_26_3.zip' \
-            -o /tmp/misaki26_3.zip
-          echo 'UPSTREAM SHA256:'
-          sha256sum /tmp/misaki26_3.zip
-          echo 'UPSTREAM CONTENTS:'
-          unzip -Z -1 /tmp/misaki26_3.zip | head -90
-          echo 'UPSTREAM FONT JSON:'
-          for item in $(unzip -Z -1 /tmp/misaki26_3.zip | grep -E '^assets/.*/font/.*\\.json        run: gradle clean build --stacktrace
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: fonttweaks-26.3
-          path: build/libs/*.jar
-          if-no-files-found: error
- | head -4); do
-            echo "===== $item ====="
-            unzip -p /tmp/misaki26_3.zip "$item" | head -c 1800
+          curl -fsSL --retry 3 'https://cdn.modrinth.com/data/4M0C1Ypo/versions/ce2snAzP/MisakiGothic2forMC_26_3.zip' -o /tmp/misaki.zip
+          sha256sum /tmp/misaki.zip
+          unzip -Z -1 /tmp/misaki.zip | head -90
+          for name in $(unzip -Z -1 /tmp/misaki.zip | grep -E 'assets/.*/font/.*\.json$' | head -4); do
+            echo "===== $name ====="
+            unzip -p /tmp/misaki.zip "$name" | head -c 1400
             echo
           done
-          echo 'UPSTREAM LICENSES:'
-          unzip -Z -1 /tmp/misaki26_3.zip | grep -Ei '(license|licence|readme|copyright)' || true
       - name: Compile and package
         run: gradle clean build --stacktrace
       - uses: actions/upload-artifact@v4
