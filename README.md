@@ -6,6 +6,16 @@ A **client-only** experimental Fabric mod for independently adjusting screen/HUD
 
 GitHub Actions build has succeeded for the original prototype. Subsequent commits must pass their own workflow build; in-game runtime behavior remains unverified.
 
+## New in 0.2.0
+
+- **Button labels:** independent button-text scale (50–200%). The button graphics and clickable bounds remain unchanged.
+- **Chat:** independent chat scale multiplier (50–200%). It multiplies vanilla Chat Scale and the global FontTweaks multiplier. Chat background, wrapping and hit detection use this combined native chat scale; HUD scale does not multiply chat.
+- **Unifont pixel alignment (optional):** for GUI scale **3**, text runs with CJK / kana / Hangul characters use **1 physical screen pixel** per approximately 16-pixel-tall Unifont source dot (small, equivalent to 0.6666666666666667 of the default GUI text size) or **2 physical pixels** per source dot (large, equivalent to 1.3333333333333333). Text origins are also rounded to the physical pixel grid.
+- **Precision:** every numeric scale setting accepts decimal input with double-precision storage.
+- **Config:** `buttonScale`, `chatScale`, `unifontPixelPerfect` and `unifontPixelsPerDot` are new JSON keys. Old files migrate automatically by defaulting new fields.
+
+The Unifont fix is an opt-in pixel-grid **size/alignment correction**, not a rewrite of font textures or a nearest-neighbor shader. The CJK character-range detection does not distinguish resource-pack glyph providers. If a line mixes English and Japanese, its entire run is scaled consistently to avoid splitting individual glyph advance positions. It does not change non-CJK strings, and it is inactive at GUI scales other than 3.
+
 ## Features
 
 - Global text scale: 50–200% (default 100%)
