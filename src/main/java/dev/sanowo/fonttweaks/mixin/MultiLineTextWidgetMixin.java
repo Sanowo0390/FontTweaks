@@ -1,6 +1,7 @@
 package dev.sanowo.fonttweaks.mixin;
 
 import dev.sanowo.fonttweaks.FontTweaksSettings;
+import dev.sanowo.fonttweaks.FontTweaksSpacingPolicy;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -10,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class MultiLineTextWidgetMixin {
     @ModifyConstant(method = "getHeight", constant = @Constant(intValue = 9))
     private int fonttweaks$height(int original) {
-        return FontTweaksSettings.get().lineStep(original);
+        FontTweaksSettings cfg = FontTweaksSettings.get();
+        if (cfg.excludeEnglishFromSpacing && !FontTweaksSpacingPolicy.containsNonEnglish(
+                ((MultiLineTextWidget) (Object) this).getMessage().getString())) return original;
+        return cfg.lineStep(original);
     }
 }
