@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.7.0 - Text Display",
+  "fonttweaks.title": "FontTweaks 0.8.0 - Text Display",
   "fonttweaks.global": "Global Text Scale",
   "fonttweaks.screen": "Screen Text Scale",
   "fonttweaks.hud": "HUD Text Scale",
@@ -12,7 +12,7 @@
   "fonttweaks.pixel_mode_on": "Pixel Processing: ON",
   "fonttweaks.pixel_mode_off": "Pixel Processing: OFF",
   "fonttweaks.pixel_density": "Dot: %s screen px",
-  "fonttweaks.pixel_help": "Screen pixels per dot at GUI scale 3 (1–4). No reload on GUI-size changes; density may differ at other GUI scales.",
+  "fonttweaks.pixel_help": "GUI scale 3 baseline, 1–4px. New installs default to 1px. No reload when GUI size changes.",
   "fonttweaks.status_off": "GUI %s | Pixel processing OFF",
   "fonttweaks.status_misaki": "GUI %s | Misaki Gothic 2 (exclusions use default)",
   "fonttweaks.status_native": "GUI %s | %spx: same as native Unifont",
@@ -40,9 +40,9 @@
   "fonttweaks.preview_sizes": "Text sizes",
   "fonttweaks.preview_spacing": "Line spacing",
   "fonttweaks.preview_spacing_hint": "Open Preview to check actual multiline text.",
-  "fonttweaks.ui.title": "FontTweaks 0.7.1 - Text Display",
+  "fonttweaks.ui.title": "FontTweaks 0.8.0 - Text Display",
   "fonttweaks.ui.tab.size": "Size",
-  "fonttweaks.ui.tab.spacing": "Spacing",
+  "fonttweaks.ui.tab.spacing": "Text spacing",
   "fonttweaks.ui.tab.pixels": "Pixels",
   "fonttweaks.ui.tab.fonts": "Fonts",
   "fonttweaks.ui.tab.blacklist": "Exclude",
@@ -74,7 +74,11 @@
   "fonttweaks.ui.desc.font_english": "Whether to replace English and other Latin glyphs.",
   "fonttweaks.ui.desc.blacklist": "Excluded glyphs use their original fonts. Use the YACL list controls to add, edit, reorder or delete characters.",
   "fonttweaks.ui.group.sizes": "Text sizing",
-  "fonttweaks.ui.group.spacing": "Line spacing",
+  "fonttweaks.ui.group.spacing": "Letter and line spacing",
   "fonttweaks.ui.group.pixels": "Unifont pixel processing",
-  "fonttweaks.ui.group.fonts": "Bundled font replacement"
+  "fonttweaks.ui.group.fonts": "Bundled font replacement",
+  "fonttweaks.letter_spacing": "Letter spacing (horizontal)",
+  "fonttweaks.ui.desc.letter_spacing": "Change the horizontal space between glyphs. Zero is normal; positive widens; negative tightens. This is independent of line spacing. Text measurements, centering and wrapping follow the setting.",
+  "fonttweaks.gui_scale_font": "Switch to Misaki on small GUI scale",
+  "fonttweaks.ui.desc.gui_scale_font": "When pixel processing is ON, GUI scale 3+ uses your normal font selection; GUI scales 1 and 2 automatically use Misaki Gothic 2. No reload when GUI size changes. English replacement and exclusions still apply."
 }
