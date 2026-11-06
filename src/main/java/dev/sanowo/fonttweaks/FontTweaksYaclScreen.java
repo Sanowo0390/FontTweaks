@@ -30,6 +30,32 @@ import java.util.function.Supplier;
 public final class FontTweaksYaclScreen {
     private FontTweaksYaclScreen() {}
 
+    private enum PresetChoice implements NameableEnum {
+        CUSTOM(FontTweaksPresets.CUSTOM, "fonttweaks.preset.custom"),
+        PIXEL_CORRECTION(FontTweaksPresets.PIXEL_CORRECTION, "fonttweaks.preset.pixel_correction"),
+        PIXEL_AND_FONTS(FontTweaksPresets.PIXEL_AND_FONTS, "fonttweaks.preset.pixel_and_fonts"),
+        ALWAYS_MISAKI(FontTweaksPresets.ALWAYS_MISAKI, "fonttweaks.preset.always_misaki");
+
+        private final String id;
+        private final String label;
+        PresetChoice(String id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        @Override
+        public Component getDisplayName() {
+            return Component.translatable(label);
+        }
+
+        static PresetChoice fromId(String id) {
+            for (PresetChoice choice : values()) {
+                if (choice.id.equals(id)) return choice;
+            }
+            return CUSTOM;
+        }
+    }
+
     /** YACL enum controller with an explicit Auto choice (config value 0). */
     private enum PixelSizeChoice implements NameableEnum {
         AUTO(0, "fonttweaks.ui.dot.auto"),
@@ -108,11 +134,24 @@ public final class FontTweaksYaclScreen {
                 .option(toggle("fonttweaks.ui.existing_font",
                         "fonttweaks.ui.desc.existing_font", false,
                         () -> profile.useExistingFont,
-                        value -> cfg.setProfileExistingFont(scale, value)));
+                        value -> cfg.setProfileExistingFont(scale, value)))
+                .option(toggle("fonttweaks.profile.unifont_processing",
+                        "fonttweaks.ui.desc.profile.unifont_processing", true,
+                        () -> cfg.unifontProcessingAt(scale),
+                        value -> cfg.setProfileUnifontProcessing(scale, value)))
+                .option(toggle("fonttweaks.profile.replace_english",
+                        "fonttweaks.ui.desc.profile.replace_english", false,
+                        () -> cfg.replaceEnglishAt(scale),
+                        value -> cfg.setProfileReplaceEnglish(scale, value)));
         if (scale == 3) {
             group.option(toggle("fonttweaks.gui3_correction",
                     "fonttweaks.ui.desc.gui3_correction", true,
-                    () -> cfg.gui3DotCorrection, value -> cfg.gui3DotCorrection = value));
+                    () -> cfg.gui3DotCorrection, value -> {
+                        if (cfg.gui3DotCorrection != value) {
+                            cfg.gui3DotCorrection = value;
+                            cfg.activePreset = FontTweaksPresets.CUSTOM;
+                        }
+                    }));
         }
         return group.build();
     }
@@ -122,22 +161,29 @@ public final class FontTweaksYaclScreen {
         Minecraft initialClient = Minecraft.getInstance();
         final int initialGuiScale = initialClient == null ? 3 : initialClient.getWindow().getGuiScale();
         final int initialRasterSignature = cfg.pixelRasterSignature(initialGuiScale);
+        final boolean[] presetChanged = {false};
+        final String[] selectedPreset = {cfg.activePreset};
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("fonttweaks.ui.title"))
-                // Main purpose first: independent GUI-scale pixel/font profiles.
+                // The primary workflow is choosing one of three presets.
+                // Advanced per-GUI controls remain available for custom setups.
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("fonttweaks.ui.tab.fonts"))
                         .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("fonttweaks.ui.group.pixels"))
-                                .option(toggle("fonttweaks.ui.pixel_toggle",
-                                        "fonttweaks.ui.desc.pixel_toggle", true,
-                                        () -> cfg.pixelationEnabled,
-                                        value -> cfg.pixelationEnabled = value))
-                                .option(toggle("fonttweaks.ui.font_english",
-                                        "fonttweaks.ui.desc.font_english", false,
-                                        () -> cfg.replaceEnglish,
-                                        value -> cfg.replaceEnglish = value))
+                                .name(Component.translatable("fonttweaks.ui.group.presets"))
+                                .option(Option.<PresetChoice>createBuilder()
+                                        .name(Component.translatable("fonttweaks.ui.preset"))
+                                        .description(description("fonttweaks.ui.desc.presets"))
+                                        .binding(PresetChoice.CUSTOM,
+                                                () -> PresetChoice.fromId(cfg.activePreset),
+                                                value -> {
+                                                    selectedPreset[0] = value.id;
+                                                    presetChanged[0] = !value.id.equals(cfg.activePreset);
+                                                })
+                                        .controller(option -> EnumControllerBuilder.create(option)
+                                                .enumClass(PresetChoice.class))
+                                        .build())
                                 .build())
                         .group(profileGroup(cfg, 1))
                         .group(profileGroup(cfg, 2))
@@ -207,6 +253,11 @@ public final class FontTweaksYaclScreen {
                     // Auto (0) and manual 2 use identical GUI3 texture pixels.
                     Minecraft currentClient = Minecraft.getInstance();
                     int currentGuiScale = currentClient == null ? 3 : currentClient.getWindow().getGuiScale();
+                    // Apply a chosen preset after every YACL option is committed:
+                    // stale advanced controls must not overwrite preset values.
+                    if (presetChanged[0]) {
+                        FontTweaksPresets.apply(cfg, selectedPreset[0]);
+                    }
                     boolean mustReload =
                             initialRasterSignature != cfg.pixelRasterSignature(currentGuiScale);
                     FontTweaksSettings.save();
