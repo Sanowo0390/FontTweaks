@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "Text sizes",
   "fonttweaks.preview_spacing": "Line spacing",
   "fonttweaks.preview_spacing_hint": "Open Preview to check actual multiline text.",
-  "fonttweaks.ui.title": "FontTweaks 0.7.0  •  Text Settings",
+  "fonttweaks.ui.title": "FontTweaks 0.7.1 - Text Display",
   "fonttweaks.ui.tab.size": "Size",
   "fonttweaks.ui.tab.spacing": "Spacing",
   "fonttweaks.ui.tab.pixels": "Pixels",
@@ -72,5 +72,9 @@
   "fonttweaks.ui.desc.font_enable": "Enable or disable bundled font replacement without reloading.",
   "fonttweaks.ui.desc.font_choice": "Choose PixelMplus, Misaki Gothic or automatic selection.",
   "fonttweaks.ui.desc.font_english": "Whether to replace English and other Latin glyphs.",
-  "fonttweaks.ui.desc.blacklist": "Characters added here use their original fonts, not the bundled replacement."
+  "fonttweaks.ui.desc.blacklist": "Excluded glyphs use their original fonts. Use the YACL list controls to add, edit, reorder or delete characters.",
+  "fonttweaks.ui.group.sizes": "Text sizing",
+  "fonttweaks.ui.group.spacing": "Line spacing",
+  "fonttweaks.ui.group.pixels": "Unifont pixel processing",
+  "fonttweaks.ui.group.fonts": "Bundled font replacement"
 }
