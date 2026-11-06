@@ -308,13 +308,19 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
         int x = detailsX + 9;
         int width = Math.max(50, detailsWidth - 18);
         int availableHeight = Math.max(32, panelBottom - LIST_TOP);
-        int controlY = LIST_TOP + (availableHeight >= 178 ? 83 : availableHeight >= 115 ? 65 : 45);
+        boolean smallDetail = compact && availableHeight < 115;
+        int controlY = smallDetail ? panelBottom - 24
+                : LIST_TOP + (availableHeight >= 178 ? 83 : availableHeight >= 115 ? 65 : 45);
         NumberSetting numeric = selectedNumber();
         numberInput = null;
         numberSlider = null;
         if (numeric != null) {
             int controlWidth = Math.max(45, width);
-            EditBox field = new EditBox(this.font, x, controlY + 25, controlWidth, 20,
+            int sliderWidth = smallDetail ? Math.max(32, (controlWidth - 4) / 2) : controlWidth;
+            int fieldX = smallDetail ? x + sliderWidth + 4 : x;
+            int fieldY = smallDetail ? controlY : controlY + 25;
+            int fieldWidth = smallDetail ? Math.max(32, controlWidth - sliderWidth - 4) : controlWidth;
+            EditBox field = new EditBox(this.font, fieldX, fieldY, fieldWidth, 20,
                     Component.translatable(numeric.title));
             field.setMaxLength(32);
             field.setTextColor(0xFFFFFFFF);
@@ -322,7 +328,7 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
             field.setValue(decimal(numeric.get(FontTweaksSettings.get())));
             this.numberInput = this.addRenderableWidget(field);
 
-            ValueSlider slider = new ValueSlider(x, controlY, controlWidth, numeric);
+            ValueSlider slider = new ValueSlider(x, controlY, sliderWidth, numeric);
             this.numberSlider = this.addRenderableWidget(slider);
             field.setResponder(value -> {
                 try {
@@ -544,7 +550,7 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
         if (height >= 125 && !compact) {
             graphics.textWithWordWrap(this.font,
                     Component.translatable(selectedHelpKey()), x, LIST_TOP + 30, width, 0xFFBDBDBD);
-        } else {
+        } else if (!(compact && height < 115)) {
             graphics.text(this.font,
                     crop(Component.translatable(selectedHelpKey()).getString(), width),
                     x, titleY + 14, 0xFFBABABA);
