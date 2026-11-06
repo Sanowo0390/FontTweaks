@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.sanowo.fonttweaks.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "GuiGraphicsExtractorMixin",
+    "ClientTextTooltipMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "fonttweaks.title": "FontTweaks - Text Display",
+  "fonttweaks.global": "Global Text Scale",
+  "fonttweaks.screen": "Screen Text Multiplier",
+  "fonttweaks.hud": "HUD Text Multiplier",
+  "fonttweaks.spacing": "Wrapped Text Line Spacing",
+  "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
+  "fonttweaks.reset": "Reset",
+  "fonttweaks.help": "Use vanilla Chat Settings to adjust chat text size and line spacing"
+}

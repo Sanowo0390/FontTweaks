@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "fonttweaks",
+  "version": "${version}",
+  "name": "FontTweaks",
+  "description": "Adjust HUD and GUI text scaling and wrapped-text line spacing on Minecraft 26.3.",
+  "authors": ["Sanowo"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.sanowo.fonttweaks.FontTweaksClient"],
+    "modmenu": ["dev.sanowo.fonttweaks.FontTweaksModMenu"]
+  },
+  "mixins": ["fonttweaks.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}
