@@ -4,16 +4,16 @@ A **client-only** experimental Fabric mod for independently adjusting screen/HUD
 
 ## Status
 
-Source package / **unbuilt prototype**. Minecraft 26.3 class signatures were cross-checked against published API references, but a full Gradle compilation and actual Minecraft runtime test have **not** been completed. Do not place the source ZIP in the mods directory; it is not a JAR.
+GitHub Actions build has succeeded for the original prototype. Subsequent commits must pass their own workflow build; in-game runtime behavior remains unverified.
 
 ## Features
 
 - Global text scale: 50–200% (default 100%)
 - Extra screen/UI text scale: 50–200% (default 100%)
 - Extra HUD text scale: 50–200% (default 100%)
-- Word-wrapped text line spacing: 75–200% (default 100%)
-- Item tooltip text line spacing: 75–200% (default 100%)
-- Mod Menu settings screen, Japanese and English labels, JSON config and reset
+- Word-wrapped text line spacing: 50–200% (default 100%)
+- Item tooltip text line spacing: 50–200% (default 100%)
+- Sliders support 0.001 increments; number fields permit precise decimal entry such as `0.6666666666666667` (= two thirds, about 66.67%).\n- Values use double-precision in config; graphical rendering still uses floats.\n- Mod Menu settings screen, Japanese and English labels, JSON config and reset
 - Config path: config/fonttweaks.json
 
 ## Limitations
