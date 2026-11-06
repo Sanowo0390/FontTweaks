@@ -6,6 +6,31 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnifontPixelationTest {
+    @Test void guiFourTwoPixelGridExactlyPreservesNativeGlyph() {
+        int[] rows = new int[16];
+        for (int y = 0; y < 16; y++) rows[y] = 0xA55AA55A ^ (y << 20);
+        int[] output = UnifontPixelation.rasterize(rows, 3, 13, 4, 2);
+        for (int y = 0; y < 64; y++) {
+            for (int x = 0; x < 52; x++) {
+                int expected = ((rows[y / 4] >>> (31 - 3 - x / 4)) & 1) == 0 ? 0 : -1;
+                assertEquals(expected, output[y * 52 + x]);
+            }
+        }
+    }
+
+    @Test void fourIsSavedAndUiCyclesThroughAllFourValues() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.pixelBlockSize = 4;
+        cfg.sanitize();
+        assertEquals(4, cfg.pixelBlockSize);
+        FontTweaksSettings restored = new Gson().fromJson(new Gson().toJson(cfg), FontTweaksSettings.class);
+        assertEquals(4, restored.pixelBlockSize);
+        for (int target = 1; target <= 4; target++) {
+            cfg.pixelBlockSize = target;
+            assertEquals(target == 4 ? 1 : target + 1, cfg.nextPixelBlockSize());
+        }
+    }
+
     @Test void rasterResolutionChangesWithoutChangingGlyphBounds() {
         com.mojang.blaze3d.font.GlyphBitmap original = new com.mojang.blaze3d.font.GlyphBitmap() {
             public int getPixelWidth() { return 13; }
@@ -41,7 +66,7 @@ class UnifontPixelationTest {
         int[] rows = new int[16];
         rows[0] = 0x80000000;
         for (int gui = 1; gui <= 4; gui++) {
-            for (int target = 1; target <= 3; target++) {
+            for (int target = 1; target <= 4; target++) {
                 int[] result = UnifontPixelation.rasterize(rows, 0, 16, gui, target);
                 assertEquals(16 * gui * 16 * gui, result.length);
                 int block = target * 2;
@@ -68,7 +93,7 @@ class UnifontPixelationTest {
         int[] rows = new int[16];
         for (int y = 0; y < 16; y++) rows[y] = 0xAA55AA55;
         for (int gui = 1; gui <= 4; gui++) {
-            for (int target = 1; target <= 3; target++) {
+            for (int target = 1; target <= 4; target++) {
                 for (int pixel : UnifontPixelation.rasterize(rows, 0, 16, gui, target)) {
                     assertTrue(pixel == 0 || pixel == -1);
                 }
@@ -87,7 +112,7 @@ class UnifontPixelationTest {
         cfg.screenScale = 1.2;
         for (boolean enabled : new boolean[]{true, false}) {
             cfg.pixelationEnabled = enabled;
-            for (int block = 1; block <= 3; block++) {
+            for (int block = 1; block <= 4; block++) {
                 cfg.pixelBlockSize = block;
                 assertEquals(1.5f, cfg.scaleFor(true));
                 assertEquals(1.25f, cfg.scaleFor(false));

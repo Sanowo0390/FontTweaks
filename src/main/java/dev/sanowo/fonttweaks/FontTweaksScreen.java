@@ -68,7 +68,7 @@ public final class FontTweaksScreen extends Screen {
             this.rebuildWidgets();
         }).bounds(x, startY + 7 * gap, half, 20).build());
         pixelSizeButton = this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
-            cfg.pixelBlockSize = cfg.pixelBlockSize == 3 ? 1 : cfg.pixelBlockSize + 1;
+            cfg.pixelBlockSize = cfg.nextPixelBlockSize();
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
@@ -183,8 +183,14 @@ public final class FontTweaksScreen extends Screen {
             boolean matched = FontTweaksFonts.matchesEnglishGrid(
                     FontTweaksSettings.get().pixelationEnabled, FontTweaksSettings.get().pixelBlockSize,
                     this.minecraft.getWindow().getGuiScale(), this.minecraft.options.forceUnicodeFont().get());
-            graphics.centeredText(this.font, Component.translatable(matched
-                    ? "fonttweaks.auto_misaki" : "fonttweaks.auto_unifont"),
+            int guiScale = this.minecraft.getWindow().getGuiScale();
+            boolean nativeGrid = FontTweaksFonts.matchesNativeUnifontGrid(
+                    FontTweaksSettings.get().pixelBlockSize, guiScale);
+            String statusKey = !FontTweaksSettings.get().pixelationEnabled ? "fonttweaks.status_off"
+                    : matched ? "fonttweaks.status_misaki"
+                    : nativeGrid ? "fonttweaks.status_native" : "fonttweaks.status_unifont";
+            graphics.centeredText(this.font, Component.translatable(statusKey,
+                    guiScale, FontTweaksSettings.get().pixelBlockSize),
                     this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);
         }
     }

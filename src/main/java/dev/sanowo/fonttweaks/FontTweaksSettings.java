@@ -42,6 +42,10 @@ public final class FontTweaksSettings {
         return INSTANCE;
     }
 
+    public int nextPixelBlockSize() {
+        return pixelBlockSize >= 4 ? 1 : pixelBlockSize + 1;
+    }
+
     public float scaleFor(boolean screenOpen) {
         return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
     }
@@ -93,7 +97,7 @@ public final class FontTweaksSettings {
         hudScale = bounded(hudScale, 0.5, 2.0);
         buttonScale = bounded(buttonScale, 0.5, 2.0);
         chatScale = bounded(chatScale, 0.5, 2.0);
-        if (pixelBlockSize < 1 || pixelBlockSize > 3) pixelBlockSize = 2;
+        if (pixelBlockSize < 1 || pixelBlockSize > 4) pixelBlockSize = 2;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
     }

@@ -15,6 +15,11 @@ public final class FontTweaksFonts {
         return enabled && !forceUnicode && guiScale > 0 && targetPixels == guiScale;
     }
 
+    /** Native Unihex uses two source pixels per GUI unit. */
+    public static boolean matchesNativeUnifontGrid(int targetPixels, int guiScale) {
+        return guiScale > 0 && targetPixels > 0 && targetPixels * 2 == guiScale;
+    }
+
     public static FontDescription select(FontDescription requested, boolean matches) {
         return matches && FontDescription.DEFAULT.equals(requested) ? MISAKI : requested;
     }

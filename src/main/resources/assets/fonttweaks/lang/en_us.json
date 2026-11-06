@@ -9,10 +9,12 @@
   "fonttweaks.help": "Matching standard English dot size automatically selects Misaki.",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
-  "fonttweaks.pixel_mode_on": "Pixelation: ON",
-  "fonttweaks.pixel_mode_off": "Pixelation: OFF",
+  "fonttweaks.pixel_mode_on": "Pixel Processing: ON",
+  "fonttweaks.pixel_mode_off": "Pixel Processing: OFF",
   "fonttweaks.pixel_density": "Dot: %s screen px",
-  "fonttweaks.pixel_help": "Screen pixels at 100% size. Matching standard English grid selects Misaki. Binary pixels only.",
-  "fonttweaks.auto_misaki": "Standard English grid matches: Misaki",
-  "fonttweaks.auto_unifont": "Default font (Unifont pixelated when ON)"
+  "fonttweaks.pixel_help": "Screen px at 100% text size. Choose 1–4. Matching standard English grid selects Misaki.",
+  "fonttweaks.status_off": "GUI %s | Pixel processing OFF",
+  "fonttweaks.status_misaki": "GUI %s | %spx: English grid matches / Misaki",
+  "fonttweaks.status_native": "GUI %s | %spx: same as native Unifont",
+  "fonttweaks.status_unifont": "GUI %s | %spx: processed Unifont"
 }
