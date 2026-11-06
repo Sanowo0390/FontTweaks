@@ -134,9 +134,24 @@ public final class FontTweaksScreen extends Screen {
         int gap = this.height < 275 ? 21 : 24;
         int startY = Math.max(24, (this.height - (9 * gap + 14)) / 2);
         graphics.centeredText(this.font, this.title, this.width / 2, startY - 18, 0xFFFFFFFF);
-        if (this.height >= 260) {
+        if (this.height >= 250) {
             graphics.centeredText(this.font, Component.translatable("fonttweaks.help"),
                     this.width / 2, startY + 9 * gap + 2, 0xFFAAAAAA);
+
+            // Only this explicitly marked line is affected by pixel mode
+            // while the FontTweaks settings screen is open. Users can now
+            // observe 1px / 2px / 3px and ON / OFF changes immediately.
+            FontTweaksRenderContext.Kind prev =
+                    FontTweaksRenderContext.push(FontTweaksRenderContext.Kind.PREVIEW);
+            try {
+                graphics.centeredText(this.font, Component.literal("美咲ドット 日本語 ABC 012345"),
+                        this.width / 2, startY + 9 * gap + 19, 0xFFFFFF55);
+            } finally {
+                FontTweaksRenderContext.pop(prev);
+            }
+            graphics.centeredText(this.font,
+                    Component.literal(FontTweaksDiagnostics.debugStatus()),
+                    this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);
         }
     }
 
