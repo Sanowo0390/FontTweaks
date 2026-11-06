@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "文字サイズの確認",
   "fonttweaks.preview_spacing": "行間の確認",
   "fonttweaks.preview_spacing_hint": "「プレビュー」で実際の複数行表示を確認できます。",
-  "fonttweaks.ui.title": "FontTweaks 0.7.0  •  文字表示設定",
+  "fonttweaks.ui.title": "FontTweaks 0.7.1 - 文字表示設定",
   "fonttweaks.ui.tab.size": "サイズ",
   "fonttweaks.ui.tab.spacing": "行間",
   "fonttweaks.ui.tab.pixels": "ドット",
@@ -72,5 +72,9 @@
   "fonttweaks.ui.desc.font_enable": "内蔵フォントへの置換を有効・無効にします。再読み込み不要です。",
   "fonttweaks.ui.desc.font_choice": "PixelMplus・美咲ゴシック・自動を選べます。",
   "fonttweaks.ui.desc.font_english": "半角英数字とラテン文字を置き換えるか指定します。",
-  "fonttweaks.ui.desc.blacklist": "ここに追加した文字は内蔵フォントの置換対象から除外します。"
+  "fonttweaks.ui.desc.blacklist": "登録文字だけ内蔵フォントへの置換から除外します。YACLの一覧から追加・編集・並べ替え・削除できます。",
+  "fonttweaks.ui.group.sizes": "文字倍率",
+  "fonttweaks.ui.group.spacing": "行間の調整",
+  "fonttweaks.ui.group.pixels": "Unifontのドット加工",
+  "fonttweaks.ui.group.fonts": "内蔵フォントの置換"
 }
