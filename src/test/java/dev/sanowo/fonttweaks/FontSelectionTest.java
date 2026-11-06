@@ -99,6 +99,13 @@ class FontSelectionTest {
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
+        // Legacy config with both toggles set: the unified Auto mode wins.
+        cfg.resourcePackEnabled = true;
+        cfg.resourcePackFont = "pixelmplus12";
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
     }
 
     @Test void enabledPackHonorsFontChoiceAndGatesAutoMode() {
