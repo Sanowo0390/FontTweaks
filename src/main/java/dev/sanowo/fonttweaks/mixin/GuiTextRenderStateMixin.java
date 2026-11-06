@@ -72,8 +72,9 @@ public abstract class GuiTextRenderStateMixin {
             // subpixel shimmer when the rest of the GUI contains translations.
             float guiX = adjusted.m00() * anchorX + adjusted.m10() * y + adjusted.m20();
             float guiY = adjusted.m01() * anchorX + adjusted.m11() * y + adjusted.m21();
-            adjusted.m20(adjusted.m20() + Math.round(guiX * guiScale) / (float) guiScale - guiX);
-            adjusted.m21(adjusted.m21() + Math.round(guiY * guiScale) / (float) guiScale - guiY);
+            adjusted.translateLocal(
+                    Math.round(guiX * guiScale) / (float) guiScale - guiX,
+                    Math.round(guiY * guiScale) / (float) guiScale - guiY);
         }
         this.pose = adjusted;
     }
