@@ -6,6 +6,28 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnifontPixelationTest {
+    @Test void guiThreeTwoPixelsDoesNotSpreadOneStrokeAcrossFourCells() {
+        int[] rows = new int[16];
+        rows[1] = 1 << 30;
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 2);
+        int count = 0;
+        for (int pixel : result) if (pixel != 0) count++;
+        // A source pixel straddles four 2px cells, but must fill just one.
+        assertEquals(16, count);
+        assertEquals(-1, result[4 * 48 + 4]);
+        assertEquals(0, result[3 * 48 + 3]);
+    }
+
+    @Test void guiThreeTwoPixelsKeepsGapBetweenParallelStrokes() {
+        int[] rows = new int[16];
+        for (int y = 0; y < 16; y++) rows[y] = (1 << 30) | (1 << 27);
+        int[] result = UnifontPixelation.rasterize(rows, 0, 16, 3, 2);
+        // Centers land in cells x=4..7 and x=12..15; x=8..11 remains open.
+        assertEquals(-1, result[4]);
+        assertEquals(0, result[8]);
+        assertEquals(-1, result[12]);
+    }
+
     @Test void guiFourTwoPixelGridExactlyPreservesNativeGlyph() {
         int[] rows = new int[16];
         for (int y = 0; y < 16; y++) rows[y] = 0xA55AA55A ^ (y << 20);
@@ -86,7 +108,8 @@ class UnifontPixelationTest {
                 UnifontPixelation.rasterize(rows, 5, 7, 3, 2));
         rows[15] = 1 << (31 - 11);
         int[] raster = UnifontPixelation.rasterize(rows, 5, 7, 3, 2);
-        assertTrue((raster[raster.length - 1] >>> 24) > 0);
+        assertEquals(-1, raster[44 * 21 + 16]);
+        assertEquals(0, raster[raster.length - 1]);
     }
 
     @Test void everyOutputPixelIsOpaqueOrTransparent() {
