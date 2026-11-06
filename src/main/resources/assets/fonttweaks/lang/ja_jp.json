@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 1.0.0 - 文字表示設定",
+  "fonttweaks.title": "FontTweaks 0.10.0 - 文字表示設定",
   "fonttweaks.global": "文字全体",
   "fonttweaks.screen": "画面の文字",
   "fonttweaks.hud": "HUDの文字",
@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "文字サイズの確認",
   "fonttweaks.preview_spacing": "行間の確認",
   "fonttweaks.preview_spacing_hint": "「プレビュー」で実際の複数行表示を確認できます。",
-  "fonttweaks.ui.title": "FontTweaks 1.0.0 - 文字表示設定",
+  "fonttweaks.ui.title": "FontTweaks 0.10.0 - 文字表示設定",
   "fonttweaks.ui.tab.size": "サイズ",
   "fonttweaks.ui.tab.spacing": "文字間隔・行間",
   "fonttweaks.ui.tab.pixels": "ドット",
