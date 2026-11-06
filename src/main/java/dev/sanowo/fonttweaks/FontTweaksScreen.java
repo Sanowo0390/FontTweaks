@@ -96,7 +96,7 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
             cfg.pixelationEnabled = true; FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
         }).bounds(x + half - 32, startY + 8 * gap, 32, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset_short"), b -> {
-            cfg.pixelBlockSize = 2; FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
+            cfg.pixelBlockSize = 1; FontTweaksSettings.save(); FontTweaksReload.request(); this.rebuildWidgets();
         }).bounds(x + w - 32, startY + 8 * gap, 32, 20).build());
         int third = (w - 16) / 3;
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.font_settings"), b -> {
