@@ -6,10 +6,10 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "Pixelates the original Unifont glyph shapes (without resizing text)",
+  "fonttweaks.help": "Built-in Misaki Gothic 2. GUI3 pixel lock overrides text size sliders",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
-  "fonttweaks.pixel_effect_on": "Glyph pixels: ON",
-  "fonttweaks.pixel_effect_off": "Glyph pixels: OFF",
-  "fonttweaks.pixel_strength": "Pixel blocks: %s x %s"
+  "fonttweaks.pixel_mode_on": "GUI3 Pixel Mode: ON",
+  "fonttweaks.pixel_mode_off": "GUI3 Pixel Mode: OFF",
+  "fonttweaks.pixel_density": "Dot: %s screen px"
 }
