@@ -60,21 +60,24 @@ public final class FontTweaksScreen extends Screen {
 
         int half = (w - 8) / 2;
         this.addRenderableWidget(Button.builder(pixelToggleLabel(cfg), b -> {
-            cfg.pixelPerfectMode = !cfg.pixelPerfectMode;
+            cfg.pixelationEnabled = !cfg.pixelationEnabled;
             b.setMessage(pixelToggleLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+            reloadPixelation();
             this.rebuildWidgets();
         }).bounds(x, startY + 7 * gap, half, 20).build());
         pixelSizeButton = this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
-            cfg.pixelsPerFontDot = cfg.pixelsPerFontDot == 3 ? 1 : cfg.pixelsPerFontDot + 1;
+            cfg.pixelBlockSize = cfg.pixelBlockSize == 3 ? 1 : cfg.pixelBlockSize + 1;
             b.setMessage(pixelSizeLabel(cfg));
             FontTweaksSettings.save();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
+            reloadPixelation();
         }).bounds(x + half + 8, startY + 7 * gap, half, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
             FontTweaksSettings.reset();
+            reloadPixelation();
             if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             this.rebuildWidgets();
         }).bounds(x, startY + 8 * gap, half, 20).build());
@@ -85,23 +88,25 @@ public final class FontTweaksScreen extends Screen {
 
     private void updateControlAvailability() {
         FontTweaksSettings cfg = FontTweaksSettings.get();
-        boolean pixelActive = cfg.isPixelModeActive(this.minecraft.getWindow().getGuiScale());
-        for (AbstractWidget widget : scaleControls) {
-            widget.active = cfg.pixelPerfectMode && !pixelActive;
-            widget.setTooltip(Tooltip.create(Component.translatable("fonttweaks.scale_help")));
-        }
-        for (AbstractWidget widget : spacingControls) widget.active = cfg.pixelPerfectMode;
-        pixelSizeButton.active = pixelActive;
+        // Text sizing and spacing stay available with either effect state.
+        for (AbstractWidget widget : scaleControls) widget.active = true;
+        for (AbstractWidget widget : spacingControls) widget.active = true;
+        pixelSizeButton.active = cfg.pixelationEnabled;
         pixelSizeButton.setTooltip(Tooltip.create(Component.translatable("fonttweaks.pixel_help")));
     }
 
+    private void reloadPixelation() {
+        // Uploaded glyphs are cached in atlases. Rebuild them for ON/OFF and block changes.
+        this.minecraft.reloadResourcePacks();
+    }
+
     private static Component pixelToggleLabel(FontTweaksSettings cfg) {
-        return Component.translatable(cfg.pixelPerfectMode
+        return Component.translatable(cfg.pixelationEnabled
                 ? "fonttweaks.pixel_mode_on" : "fonttweaks.pixel_mode_off");
     }
 
     private static Component pixelSizeLabel(FontTweaksSettings cfg) {
-        return Component.translatable("fonttweaks.pixel_density", cfg.pixelsPerFontDot);
+        return Component.translatable("fonttweaks.pixel_density", cfg.pixelBlockSize);
     }
 
     /**
@@ -165,20 +170,16 @@ public final class FontTweaksScreen extends Screen {
             graphics.centeredText(this.font, Component.translatable("fonttweaks.help"),
                     this.width / 2, startY + 9 * gap + 2, 0xFFAAAAAA);
 
-            // Only this explicitly marked line is affected by pixel mode
-            // while the FontTweaks settings screen is open. Users can now
-            // observe 1px / 2px / 3px and ON / OFF changes immediately.
+            // The sample uses the independent text size; bitmap processing is global.
             FontTweaksRenderContext.Kind prev =
                     FontTweaksRenderContext.push(FontTweaksRenderContext.Kind.PREVIEW);
             try {
-                graphics.centeredText(this.font, Component.literal("美咲ドット 日本語 ABC 012345"),
+                graphics.centeredText(this.font, Component.literal("Unifont 日本語 ABC 012345"),
                         this.width / 2, startY + 9 * gap + 19, 0xFFFFFF55);
             } finally {
                 FontTweaksRenderContext.pop(prev);
             }
-            graphics.centeredText(this.font,
-                    Component.literal(FontTweaksDiagnostics.debugStatus()),
-                    this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);
+
         }
     }
 

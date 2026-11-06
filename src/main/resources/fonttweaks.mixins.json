@@ -3,12 +3,12 @@
   "package": "dev.sanowo.fonttweaks.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "FontMixin",
     "GuiGraphicsExtractorMixin",
     "GuiTextRenderStateMixin",
     "AbstractWidgetMixin",
     "ChatComponentMixin",
-    "ClientTextTooltipMixin"
+    "ClientTextTooltipMixin",
+    "UnihexBitmapMixin"
   ],
   "injectors": {
     "defaultRequire": 1

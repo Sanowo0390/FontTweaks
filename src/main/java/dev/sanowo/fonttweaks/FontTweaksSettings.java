@@ -1,6 +1,7 @@
 package dev.sanowo.fonttweaks;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import java.io.IOException;
@@ -26,10 +27,12 @@ public final class FontTweaksSettings {
     public double hudScale = 1.0;
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
-    /** Master switch: Misaki and adjustments ON, vanilla behavior OFF. Legacy JSON key retained. */
-    public boolean pixelPerfectMode = true;
-    /** Physical screen pixels per 8x8 font texel when GUI scale is 3. Default: exactly 2x2. */
-    public int pixelsPerFontDot = 2;
+    /** Bitmap effect only, independent of all text sizing. */
+    @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
+    public boolean pixelationEnabled = true;
+    /** Source bitmap pixels per block, independent of GUI scale. */
+    @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
+    public int pixelBlockSize = 2;
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
     /** Vertical spacing for individual item-tooltip text lines. */
@@ -39,16 +42,7 @@ public final class FontTweaksSettings {
         return INSTANCE;
     }
 
-    public boolean isPixelModeActive(int guiScale) {
-        return pixelPerfectMode && guiScale == 3;
-    }
-
-    public double targetGuiFontScale(int guiScale) {
-        return (double) pixelsPerFontDot / guiScale;
-    }
-
     public float scaleFor(boolean screenOpen) {
-        if (!pixelPerfectMode) return 1.0f;
         return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
     }
 
@@ -99,7 +93,7 @@ public final class FontTweaksSettings {
         hudScale = bounded(hudScale, 0.5, 2.0);
         buttonScale = bounded(buttonScale, 0.5, 2.0);
         chatScale = bounded(chatScale, 0.5, 2.0);
-        if (pixelsPerFontDot < 1 || pixelsPerFontDot > 3) pixelsPerFontDot = 2;
+        if (pixelBlockSize < 1 || pixelBlockSize > 3) pixelBlockSize = 2;
         wrappedLineSpacing = bounded(wrappedLineSpacing, 0.5, 2.0);
         tooltipLineSpacing = bounded(tooltipLineSpacing, 0.5, 2.0);
     }

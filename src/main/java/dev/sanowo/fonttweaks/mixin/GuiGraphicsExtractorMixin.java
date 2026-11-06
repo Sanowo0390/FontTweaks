@@ -20,9 +20,6 @@ public abstract class GuiGraphicsExtractorMixin {
     private int fonttweaks$wrappedText(Font font, FormattedText text, int x, int y,
                                       int width, int color, boolean shadow, Operation<Integer> original) {
         FontTweaksSettings settings = FontTweaksSettings.get();
-        if (!settings.pixelPerfectMode) {
-            return original.call(font, text, x, y, width, color, shadow);
-        }
         double spacing = settings.wrappedLineSpacing;
         Minecraft mc = Minecraft.getInstance();
         float scale = mc == null || mc.gui == null ? 1.0f

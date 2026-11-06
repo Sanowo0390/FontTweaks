@@ -21,13 +21,6 @@ public abstract class ChatComponentMixin {
     @ModifyReturnValue(method = "getScale", at = @At("RETURN"))
     private double fonttweaks$chatSize(double original) {
         FontTweaksSettings settings = FontTweaksSettings.get();
-        if (!settings.pixelPerfectMode) return original;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc != null && settings.isPixelModeActive(mc.getWindow().getGuiScale())) {
-            // Scale the entire chat widget so backgrounds, line wrapping and
-            // hit regions track the 2-physical-pixel font glyph size.
-            return settings.targetGuiFontScale(mc.getWindow().getGuiScale());
-        }
         return Math.max(0.01, original * settings.globalScale * settings.chatScale);
     }
 

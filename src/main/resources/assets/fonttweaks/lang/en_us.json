@@ -6,12 +6,11 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "ON: Misaki / OFF: default. Dot size applies at GUI 3.",
+  "fonttweaks.help": "Unifont pixelation and text size are independent.",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
-  "fonttweaks.pixel_mode_on": "FontTweaks: ON (Misaki)",
-  "fonttweaks.pixel_mode_off": "FontTweaks: OFF (Default)",
-  "fonttweaks.pixel_density": "Dot: %s screen px",
-  "fonttweaks.scale_help": "Custom scale: ON at GUI scales other than 3. GUI 3 uses the selected dot size.",
-  "fonttweaks.pixel_help": "ON + GUI 3: 1 / 2 / 3 physical pixels per font dot."
+  "fonttweaks.pixel_mode_on": "Pixelation: ON",
+  "fonttweaks.pixel_mode_off": "Pixelation: OFF",
+  "fonttweaks.pixel_density": "Block: %s source px",
+  "fonttweaks.pixel_help": "1: original, 2/3: coarser source bitmap blocks. Size stays unchanged. Reloads resources."
 }
