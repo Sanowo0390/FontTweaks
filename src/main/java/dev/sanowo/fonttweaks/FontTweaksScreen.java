@@ -45,7 +45,7 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
         spacingControls.clear();
         int w = Math.min(350, this.width - 24);
         int x = (this.width - w) / 2;
-        int gap = this.height < 300 ? 20 : 24;
+        int gap = this.height < 340 ? 20 : 24;
         int startY = Math.max(26, (this.height - (10 * gap + 44)) / 2);
         FontTweaksSettings cfg = FontTweaksSettings.get();
 
@@ -187,7 +187,7 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
-        int gap = this.height < 300 ? 20 : 24;
+        int gap = this.height < 340 ? 20 : 24;
         int startY = Math.max(26, (this.height - (10 * gap + 44)) / 2);
         graphics.centeredText(this.font, this.title, this.width / 2, startY - 18, 0xFFFFFFFF);
         if (this.height >= 270) {
