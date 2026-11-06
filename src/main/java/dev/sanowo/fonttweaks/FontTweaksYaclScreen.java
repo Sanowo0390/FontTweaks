@@ -111,6 +111,14 @@ public final class FontTweaksYaclScreen {
                         .name(Component.translatable("fonttweaks.ui.tab.spacing"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.spacing"))
+                                .option(Option.<Double>createBuilder()
+                                        .name(Component.translatable("fonttweaks.letter_spacing"))
+                                        .description(description("fonttweaks.ui.desc.letter_spacing"))
+                                        .binding(0.0, () -> cfg.letterSpacing,
+                                                value -> cfg.letterSpacing = value)
+                                        .controller(option -> DoubleFieldControllerBuilder.create(option)
+                                                .range(-2.0, 4.0))
+                                        .build())
                                 .option(number("fonttweaks.global_spacing",
                                         "fonttweaks.ui.desc.global_line",
                                         () -> cfg.globalLineSpacing,
@@ -139,13 +147,17 @@ public final class FontTweaksYaclScreen {
                                 .option(Option.<Integer>createBuilder()
                                         .name(Component.translatable("fonttweaks.ui.dot_count"))
                                         .description(illustrated("fonttweaks.ui.desc.pixel_count"))
-                                        .binding(2, () -> cfg.pixelBlockSize,
+                                        .binding(1, () -> cfg.pixelBlockSize,
                                                 value -> cfg.pixelBlockSize = value)
                                         .controller(option -> IntegerSliderControllerBuilder.create(option)
                                                 .range(1, 4).step(1)
                                                 .formatValue(v -> Component.literal(v + " px")))
                                         .build())
                                 .build())
+                                .option(toggle("fonttweaks.gui_scale_font",
+                                        "fonttweaks.ui.desc.gui_scale_font", false,
+                                        () -> cfg.guiScaleDependentFont,
+                                        value -> cfg.guiScaleDependentFont = value))
                         .build())
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("fonttweaks.ui.tab.fonts"))
