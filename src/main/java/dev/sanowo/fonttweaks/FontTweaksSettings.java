@@ -29,6 +29,8 @@ public final class FontTweaksSettings {
     public double chatScale = 1.0;
     /** Horizontal glyph tracking in GUI units, added to each glyph advance. */
     public double letterSpacing = 0.0;
+    /** Leave Latin glyphs at their native letter advance. */
+    public boolean excludeEnglishFromSpacing = false;
     public boolean resourcePackEnabled = false;
     public String resourcePackFont = "pixelmplus12";
     public boolean replaceEnglish = false;
@@ -48,6 +50,8 @@ public final class FontTweaksSettings {
      */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
     public int pixelBlockSize = 1;
+    /** Correct pixel density only at GUI scale 3; native glyphs at GUI3 when disabled. */
+    public boolean gui3DotCorrection = true;
 
     public static final int AUTO_PIXEL_SIZE = 0;
     public static final int AUTO_REFERENCE_PIXEL_SIZE = 2;
@@ -59,6 +63,20 @@ public final class FontTweaksSettings {
 
     public boolean automaticPixelSize() {
         return pixelBlockSize == AUTO_PIXEL_SIZE;
+    }
+
+    /** 0 = vanilla Unifont, 1..4 = a processed glyph atlas. */
+    public int pixelRasterSignature(int guiScale) {
+        if (!pixelationEnabled) return 0;
+        // At 1px, GUI 2 and 4 have a naturally aligned pixel grid.
+        // Avoid overwriting their original glyph bitmap.
+        if (effectivePixelBlockSize() == 1 && (guiScale == 2 || guiScale == 4)) return 0;
+        if (guiScale == 3 && !gui3DotCorrection) return 0;
+        return effectivePixelBlockSize();
+    }
+
+    public boolean shouldPixelateAt(int guiScale) {
+        return pixelRasterSignature(guiScale) > 0;
     }
     /** Relative distance between wrapped text lines; does not replace vanilla chat settings. */
     public double wrappedLineSpacing = 1.0;
