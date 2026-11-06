@@ -22,29 +22,57 @@ public final class FontTweaksScreen extends Screen {
 
     @Override
     protected void init() {
-        int w = Math.min(340, this.width - 24);
+        int w = Math.min(350, this.width - 24);
         int x = (this.width - w) / 2;
-        int startY = this.height / 2 - 78;
+        int gap = this.height < 275 ? 21 : 24;
+        int startY = Math.max(24, (this.height - (9 * gap + 14)) / 2);
         FontTweaksSettings cfg = FontTweaksSettings.get();
 
         addSettingRow(x, startY, w, "fonttweaks.global", 0.5, 2.0,
                 () -> cfg.globalScale, v -> cfg.globalScale = v);
-        addSettingRow(x, startY + 25, w, "fonttweaks.screen", 0.5, 2.0,
+        addSettingRow(x, startY + gap, w, "fonttweaks.screen", 0.5, 2.0,
                 () -> cfg.screenScale, v -> cfg.screenScale = v);
-        addSettingRow(x, startY + 50, w, "fonttweaks.hud", 0.5, 2.0,
+        addSettingRow(x, startY + gap * 2, w, "fonttweaks.hud", 0.5, 2.0,
                 () -> cfg.hudScale, v -> cfg.hudScale = v);
-        addSettingRow(x, startY + 75, w, "fonttweaks.spacing", 0.5, 2.0,
+        addSettingRow(x, startY + gap * 3, w, "fonttweaks.button", 0.5, 2.0,
+                () -> cfg.buttonScale, v -> cfg.buttonScale = v);
+        addSettingRow(x, startY + gap * 4, w, "fonttweaks.chat", 0.5, 2.0,
+                () -> cfg.chatScale, v -> {
+                    cfg.chatScale = v;
+                    if (this.minecraft != null) this.minecraft.gui.getChat().rescaleChat();
+                });
+        addSettingRow(x, startY + gap * 5, w, "fonttweaks.spacing", 0.5, 2.0,
                 () -> cfg.wrappedLineSpacing, v -> cfg.wrappedLineSpacing = v);
-        addSettingRow(x, startY + 100, w, "fonttweaks.tooltip_spacing", 0.5, 2.0,
+        addSettingRow(x, startY + gap * 6, w, "fonttweaks.tooltip_spacing", 0.5, 2.0,
                 () -> cfg.tooltipLineSpacing, v -> cfg.tooltipLineSpacing = v);
 
-        int buttonWidth = (w - 8) / 2;
+        int half = (w - 8) / 2;
+        this.addRenderableWidget(Button.builder(pixelToggleLabel(cfg), b -> {
+            cfg.unifontPixelPerfect = !cfg.unifontPixelPerfect;
+            b.setMessage(pixelToggleLabel(cfg));
+            FontTweaksSettings.save();
+        }).bounds(x, startY + 7 * gap, half, 20).build());
+        this.addRenderableWidget(Button.builder(pixelSizeLabel(cfg), b -> {
+            cfg.unifontPixelsPerDot = cfg.unifontPixelsPerDot == 1 ? 2 : 1;
+            b.setMessage(pixelSizeLabel(cfg));
+            FontTweaksSettings.save();
+        }).bounds(x + half + 8, startY + 7 * gap, half, 20).build());
+
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
             FontTweaksSettings.reset();
+            if (this.minecraft != null) this.minecraft.gui.getChat().rescaleChat();
             this.rebuildWidgets();
-        }).bounds(x, startY + 137, buttonWidth, 20).build());
+        }).bounds(x, startY + 8 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-                .bounds(x + buttonWidth + 8, startY + 137, buttonWidth, 20).build());
+                .bounds(x + half + 8, startY + 8 * gap, half, 20).build());
+    }
+
+    private static Component pixelToggleLabel(FontTweaksSettings cfg) {
+        return Component.translatable(cfg.unifontPixelPerfect ? "fonttweaks.pixel_on" : "fonttweaks.pixel_off");
+    }
+
+    private static Component pixelSizeLabel(FontTweaksSettings cfg) {
+        return Component.translatable("fonttweaks.pixel_size", cfg.unifontPixelsPerDot);
     }
 
     /**
@@ -97,9 +125,13 @@ public final class FontTweaksScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
-        graphics.centeredText(this.font, this.title, this.width / 2, this.height / 2 - 102, 0xFFFFFFFF);
-        graphics.centeredText(this.font, Component.translatable("fonttweaks.help"),
-                this.width / 2, this.height / 2 + 83, 0xFFAAAAAA);
+        int gap = this.height < 275 ? 21 : 24;
+        int startY = Math.max(24, (this.height - (9 * gap + 14)) / 2);
+        graphics.centeredText(this.font, this.title, this.width / 2, startY - 18, 0xFFFFFFFF);
+        if (this.height >= 260) {
+            graphics.centeredText(this.font, Component.translatable("fonttweaks.help"),
+                    this.width / 2, startY + 9 * gap + 2, 0xFFAAAAAA);
+        }
     }
 
     @Override
