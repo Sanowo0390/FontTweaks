@@ -104,11 +104,13 @@ public final class FontTweaksSettings {
     }
 
     public void setProfileUnifontProcessing(int guiScale, boolean enabled) {
+        if (unifontProcessingAt(guiScale) == enabled) return;
         profileFor(guiScale).unifontProcessing = enabled;
         activePreset = FontTweaksPresets.CUSTOM;
     }
 
     public void setProfileReplaceEnglish(int guiScale, boolean enabled) {
+        if (replaceEnglishAt(guiScale) == enabled) return;
         profileFor(guiScale).replaceEnglish = enabled;
         activePreset = FontTweaksPresets.CUSTOM;
     }
@@ -116,6 +118,7 @@ public final class FontTweaksSettings {
     /** Explicit profile edits clear the old internal font choice. */
     public void setProfilePixelSize(int guiScale, int pixels) {
         GuiScaleProfile p = profileFor(guiScale);
+        if (p.pixelBlockSize == pixels) return;
         p.pixelBlockSize = pixels;
         p.legacyExistingFont = null;
         activePreset = FontTweaksPresets.CUSTOM;
@@ -123,6 +126,7 @@ public final class FontTweaksSettings {
 
     public void setProfileExistingFont(int guiScale, boolean enabled) {
         GuiScaleProfile p = profileFor(guiScale);
+        if (p.useExistingFont == enabled) return;
         p.useExistingFont = enabled;
         p.legacyExistingFont = null;
         activePreset = FontTweaksPresets.CUSTOM;
