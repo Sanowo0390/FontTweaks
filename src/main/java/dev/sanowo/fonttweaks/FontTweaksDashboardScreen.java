@@ -278,7 +278,7 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
             FontTweaksSettings cfg = FontTweaksSettings.get();
             if (tab == Tab.PIXELS) {
                 if (row == 0) cfg.pixelationEnabled = true;
-                else cfg.pixelBlockSize = 2;
+                else cfg.pixelBlockSize = 1;
             } else if (tab == Tab.FONTS) {
                 switch (row) {
                     case 0 -> cfg.resourcePackEnabled = false;
