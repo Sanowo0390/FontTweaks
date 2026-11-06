@@ -15,21 +15,26 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.7.1'
-      - name: Inspect upstream Misaki pack contents
-        run: |
-          curl -fsSL --retry 3 'https://cdn.modrinth.com/data/4M0C1Ypo/versions/ce2snAzP/MisakiGothic2forMC_26_3.zip' -o /tmp/misaki.zip
-          sha256sum /tmp/misaki.zip
-          unzip -Z -1 /tmp/misaki.zip | head -90
-          for name in $(unzip -Z -1 /tmp/misaki.zip | grep -E 'assets/.*/font/.*\.json$' | head -4); do
-            echo "===== $name ====="
-            unzip -p /tmp/misaki.zip "$name" | head -c 1400
-            echo
-          done
-      - name: Compile and package
+      - name: Build, run tests and bundle pinned Misaki font
         run: gradle clean build --stacktrace
+      - name: Verify installed font assets and copyright notices
+        run: |
+          set -euo pipefail
+          mkdir -p build/distribution
+          JAR=$(find build/libs -maxdepth 1 -type f -name 'fonttweaks-*.jar' ! -name '*sources*' ! -name '*dev*' | head -1)
+          test -n "$JAR"
+          for path in \
+            assets/minecraft/font/default.json \
+            assets/misakigothic2/font/shift_jis.json \
+            assets/misakigothic2/textures/font/shift_jis.png \
+            META-INF/THIRD_PARTY_NOTICES.md; do
+            echo "Checking $path in $JAR"
+            jar tf "$JAR" | grep -Fxq "$path"
+          done
+          cp "$JAR" build/distribution/
       - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: fonttweaks-26.3
-          path: build/libs/*.jar
+          path: build/distribution/*.jar
           if-no-files-found: error
