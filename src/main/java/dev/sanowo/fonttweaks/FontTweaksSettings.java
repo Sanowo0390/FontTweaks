@@ -52,6 +52,8 @@ public final class FontTweaksSettings {
     public int pixelBlockSize = 1;
     /** Correct pixel density only at GUI scale 3; native glyphs at GUI3 when disabled. */
     public boolean gui3DotCorrection = true;
+    /** Selected preset ID or \"custom\". Existing configs are custom by default. */
+    public String activePreset = FontTweaksPresets.CUSTOM;
     /** GUI1/2/3/4/5+ each has its own dot count and built-in-font switch. */
     public java.util.Map<String, GuiScaleProfile> guiScaleProfiles = new java.util.LinkedHashMap<>();
 
@@ -89,17 +91,41 @@ public final class FontTweaksSettings {
         return size == AUTO_PIXEL_SIZE ? AUTO_REFERENCE_PIXEL_SIZE : size;
     }
 
+    public boolean unifontProcessingAt(int guiScale) {
+        if (!hasGuiProfiles()) return pixelationEnabled;
+        Boolean enabled = profileFor(guiScale).unifontProcessing;
+        return enabled != null ? enabled : pixelationEnabled;
+    }
+
+    public boolean replaceEnglishAt(int guiScale) {
+        if (!hasGuiProfiles()) return replaceEnglish;
+        Boolean enabled = profileFor(guiScale).replaceEnglish;
+        return enabled != null ? enabled : replaceEnglish;
+    }
+
+    public void setProfileUnifontProcessing(int guiScale, boolean enabled) {
+        profileFor(guiScale).unifontProcessing = enabled;
+        activePreset = FontTweaksPresets.CUSTOM;
+    }
+
+    public void setProfileReplaceEnglish(int guiScale, boolean enabled) {
+        profileFor(guiScale).replaceEnglish = enabled;
+        activePreset = FontTweaksPresets.CUSTOM;
+    }
+
     /** Explicit profile edits clear the old internal font choice. */
     public void setProfilePixelSize(int guiScale, int pixels) {
         GuiScaleProfile p = profileFor(guiScale);
         p.pixelBlockSize = pixels;
         p.legacyExistingFont = null;
+        activePreset = FontTweaksPresets.CUSTOM;
     }
 
     public void setProfileExistingFont(int guiScale, boolean enabled) {
         GuiScaleProfile p = profileFor(guiScale);
         p.useExistingFont = enabled;
         p.legacyExistingFont = null;
+        activePreset = FontTweaksPresets.CUSTOM;
     }
 
     public static final int AUTO_PIXEL_SIZE = 0;
@@ -116,7 +142,7 @@ public final class FontTweaksSettings {
 
     /** 0 = vanilla Unifont, 1..4 = a processed glyph atlas. */
     public int pixelRasterSignature(int guiScale) {
-        if (!pixelationEnabled) return 0;
+        if (!unifontProcessingAt(guiScale)) return 0;
         // At 1px, GUI 2 and 4 have a naturally aligned pixel grid.
         // Avoid overwriting their original glyph bitmap.
         if (effectivePixelBlockSize(guiScale) == 1 && (guiScale == 2 || guiScale == 4)) return 0;
@@ -265,6 +291,9 @@ public final class FontTweaksSettings {
         letterSpacing = Double.isFinite(letterSpacing)
                 ? bounded(letterSpacing, -2.0, 4.0) : 0.0;
         if (pixelBlockSize < AUTO_PIXEL_SIZE || pixelBlockSize > 4) pixelBlockSize = 1;
+        if (!FontTweaksPresets.isValid(activePreset)) {
+            activePreset = FontTweaksPresets.CUSTOM;
+        }
         if (guiScaleProfiles == null) guiScaleProfiles = new java.util.LinkedHashMap<>();
         guiScaleProfiles.entrySet().removeIf(entry -> {
             if (entry.getValue() == null || entry.getKey() == null) return true;
