@@ -20,7 +20,7 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     // Zoomify 2.17.0 uses YACL v3. Build the same native GUI with YACL 3.9.7 for 26.3.
-    modImplementation "maven.modrinth:1eAoo2KR:s9SjoFu1"
+    implementation "maven.modrinth:1eAoo2KR:s9SjoFu1"
     testImplementation "org.junit.jupiter:junit-jupiter:5.12.2"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.12.2"
 }
