@@ -5,6 +5,7 @@ import dev.isxander.yacl3.api.ListOption;
 import dev.isxander.yacl3.api.NameableEnum;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionEventListener;
 import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
@@ -117,33 +118,68 @@ public final class FontTweaksYaclScreen {
                 .build();
     }
 
+    /**
+     * Hold the actual YACL Options for each GUI profile, so a preset can
+     * update their pending values immediately without rebuilding the screen.
+     * All changes remain undoable until YACL's Save Changes is pressed.
+     */
+    private record ProfileControls(int scale, OptionGroup group,
+                                   Option<PixelSizeChoice> pixels,
+                                   Option<Boolean> existing,
+                                   Option<Boolean> unifont,
+                                   Option<Boolean> english) {
+        void showPreset(GuiScaleProfile values) {
+            pixels.requestSet(PixelSizeChoice.fromPixels(values.pixelBlockSize));
+            existing.requestSet(values.useExistingFont);
+            unifont.requestSet(Boolean.TRUE.equals(values.unifontProcessing));
+            english.requestSet(Boolean.TRUE.equals(values.replaceEnglish));
+        }
+
+        void onManualChange(Runnable listener) {
+            pixels.addEventListener((option, event) -> {
+                if (event == OptionEventListener.Event.STATE_CHANGE) listener.run();
+            });
+            existing.addEventListener((option, event) -> {
+                if (event == OptionEventListener.Event.STATE_CHANGE) listener.run();
+            });
+            unifont.addEventListener((option, event) -> {
+                if (event == OptionEventListener.Event.STATE_CHANGE) listener.run();
+            });
+            english.addEventListener((option, event) -> {
+                if (event == OptionEventListener.Event.STATE_CHANGE) listener.run();
+            });
+        }
+    }
+
     /** Independent GUI1/2/3/4+ YACL groups. */
-    private static OptionGroup profileGroup(FontTweaksSettings cfg, int scale) {
+    private static ProfileControls profileGroup(FontTweaksSettings cfg, int scale) {
         GuiScaleProfile profile = cfg.profileFor(scale);
-        OptionGroup.Builder group = OptionGroup.createBuilder()
+        Option<PixelSizeChoice> pixels = Option.<PixelSizeChoice>createBuilder()
+                .name(Component.translatable("fonttweaks.ui.dot_count"))
+                .description(illustrated("fonttweaks.ui.desc.profile_dots"))
+                .binding(PixelSizeChoice.ONE,
+                        () -> PixelSizeChoice.fromPixels(profile.pixelBlockSize),
+                        value -> cfg.setProfilePixelSize(scale, value.pixels))
+                .controller(option -> EnumControllerBuilder.create(option)
+                        .enumClass(PixelSizeChoice.class))
+                .build();
+        Option<Boolean> existing = toggle("fonttweaks.ui.existing_font",
+                "fonttweaks.ui.desc.existing_font", false,
+                () -> profile.useExistingFont,
+                value -> cfg.setProfileExistingFont(scale, value));
+        Option<Boolean> unifont = toggle("fonttweaks.profile.unifont_processing",
+                "fonttweaks.ui.desc.profile.unifont_processing", true,
+                () -> cfg.unifontProcessingAt(scale),
+                value -> cfg.setProfileUnifontProcessing(scale, value));
+        Option<Boolean> english = toggle("fonttweaks.profile.replace_english",
+                "fonttweaks.ui.desc.profile.replace_english", false,
+                () -> cfg.replaceEnglishAt(scale),
+                value -> cfg.setProfileReplaceEnglish(scale, value));
+        OptionGroup group = OptionGroup.createBuilder()
                 .name(Component.translatable("fonttweaks.ui.profile." + scale))
-                .option(Option.<PixelSizeChoice>createBuilder()
-                        .name(Component.translatable("fonttweaks.ui.dot_count"))
-                        .description(illustrated("fonttweaks.ui.desc.profile_dots"))
-                        .binding(PixelSizeChoice.ONE,
-                                () -> PixelSizeChoice.fromPixels(profile.pixelBlockSize),
-                                value -> cfg.setProfilePixelSize(scale, value.pixels))
-                        .controller(option -> EnumControllerBuilder.create(option)
-                                .enumClass(PixelSizeChoice.class))
-                        .build())
-                .option(toggle("fonttweaks.ui.existing_font",
-                        "fonttweaks.ui.desc.existing_font", false,
-                        () -> profile.useExistingFont,
-                        value -> cfg.setProfileExistingFont(scale, value)))
-                .option(toggle("fonttweaks.profile.unifont_processing",
-                        "fonttweaks.ui.desc.profile.unifont_processing", true,
-                        () -> cfg.unifontProcessingAt(scale),
-                        value -> cfg.setProfileUnifontProcessing(scale, value)))
-                .option(toggle("fonttweaks.profile.replace_english",
-                        "fonttweaks.ui.desc.profile.replace_english", false,
-                        () -> cfg.replaceEnglishAt(scale),
-                        value -> cfg.setProfileReplaceEnglish(scale, value)));
-        return group.build();
+                .option(pixels).option(existing).option(unifont).option(english)
+                .build();
+        return new ProfileControls(scale, group, pixels, existing, unifont, english);
     }
 
     public static Screen create(Screen parent) {
@@ -151,8 +187,50 @@ public final class FontTweaksYaclScreen {
         Minecraft initialClient = Minecraft.getInstance();
         final int initialGuiScale = initialClient == null ? 3 : initialClient.getWindow().getGuiScale();
         final int initialRasterSignature = cfg.pixelRasterSignature(initialGuiScale);
-        final boolean[] presetChanged = {false};
-        final String[] selectedPreset = {cfg.activePreset};
+        ProfileControls gui1 = profileGroup(cfg, 1);
+        ProfileControls gui2 = profileGroup(cfg, 2);
+        ProfileControls gui3 = profileGroup(cfg, 3);
+        ProfileControls gui4 = profileGroup(cfg, 4);
+        List<ProfileControls> profiles = List.of(gui1, gui2, gui3, gui4);
+
+        Option<PresetChoice> preset = Option.<PresetChoice>createBuilder()
+                .name(Component.translatable("fonttweaks.ui.preset"))
+                .description(description("fonttweaks.ui.desc.presets"))
+                .binding(PresetChoice.CUSTOM,
+                        () -> PresetChoice.fromId(cfg.activePreset),
+                        value -> cfg.activePreset = value.id)
+                .controller(option -> EnumControllerBuilder.create(option)
+                        .enumClass(PresetChoice.class))
+                .build();
+
+        final boolean[] syncingPreset = {false};
+        preset.addEventListener((option, event) -> {
+            if (event != OptionEventListener.Event.STATE_CHANGE || syncingPreset[0]) return;
+            PresetChoice choice = option.pendingValue();
+            if (choice == PresetChoice.CUSTOM) return;
+
+            // Preview a preset in a separate in-memory config. Do NOT touch
+            // the saved config (and therefore keep Cancel fully reversible).
+            FontTweaksSettings proposed = new FontTweaksSettings();
+            FontTweaksPresets.apply(proposed, choice.id);
+            syncingPreset[0] = true;
+            try {
+                for (ProfileControls profile : profiles) {
+                    profile.showPreset(proposed.profileFor(profile.scale()));
+                }
+            } finally {
+                syncingPreset[0] = false;
+            }
+        });
+        for (ProfileControls profile : profiles) {
+            profile.onManualChange(() -> {
+                if (!syncingPreset[0] && preset.pendingValue() != PresetChoice.CUSTOM) {
+                    // A manual profile edit is now a custom configuration.
+                    // Keep the edited options; only update the preset label.
+                    preset.requestSet(PresetChoice.CUSTOM);
+                }
+            });
+        }
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("fonttweaks.ui.title"))
@@ -162,23 +240,12 @@ public final class FontTweaksYaclScreen {
                         .name(Component.translatable("fonttweaks.ui.tab.fonts"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.presets"))
-                                .option(Option.<PresetChoice>createBuilder()
-                                        .name(Component.translatable("fonttweaks.ui.preset"))
-                                        .description(description("fonttweaks.ui.desc.presets"))
-                                        .binding(PresetChoice.CUSTOM,
-                                                () -> PresetChoice.fromId(cfg.activePreset),
-                                                value -> {
-                                                    selectedPreset[0] = value.id;
-                                                    presetChanged[0] = !value.id.equals(cfg.activePreset);
-                                                })
-                                        .controller(option -> EnumControllerBuilder.create(option)
-                                                .enumClass(PresetChoice.class))
-                                        .build())
+                                .option(preset)
                                 .build())
-                        .group(profileGroup(cfg, 1))
-                        .group(profileGroup(cfg, 2))
-                        .group(profileGroup(cfg, 3))
-                        .group(profileGroup(cfg, 4))
+                        .group(gui1.group())
+                        .group(gui2.group())
+                        .group(gui3.group())
+                        .group(gui4.group())
                         .build())
                 // Text tab: font sizes and letter/line spacing share one category.
                 .category(ConfigCategory.createBuilder()
@@ -242,10 +309,13 @@ public final class FontTweaksYaclScreen {
                     // Auto (0) and manual 2 use identical GUI3 texture pixels.
                     Minecraft currentClient = Minecraft.getInstance();
                     int currentGuiScale = currentClient == null ? 3 : currentClient.getWindow().getGuiScale();
-                    // Apply a chosen preset after every YACL option is committed:
-                    // stale advanced controls must not overwrite preset values.
-                    if (presetChanged[0]) {
-                        FontTweaksPresets.apply(cfg, selectedPreset[0]);
+                    // YACL has already committed the synchronized per-GUI
+                    // pending values. Per-profile setters may set 'custom'
+                    // during that commit; restore the actual selected label.
+                    cfg.activePreset = preset.pendingValue().id;
+                    if (preset.pendingValue() != PresetChoice.CUSTOM) {
+                        cfg.pixelationEnabled = true;
+                        cfg.replaceEnglish = false;
                     }
                     boolean mustReload =
                             initialRasterSignature != cfg.pixelRasterSignature(currentGuiScale);
