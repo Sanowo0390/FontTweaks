@@ -215,6 +215,13 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
                     tab == Tab.BLACKLIST ? "×" : "↶"), button -> resetRow(index))
                     .bounds(listX + listWidth - resetWidth, y, resetWidth - 2, 22).build());
         }
+        if (compact && tab == Tab.BLACKLIST && count == 0) {
+            this.addRenderableWidget(Button.builder(
+                    Component.translatable("fonttweaks.blacklist_add"), button -> {
+                        compactDetail = true;
+                        this.rebuildWidgets();
+                    }).bounds(listX + 5, LIST_TOP + 4, Math.max(50, listWidth - 10), 20).build());
+        }
         if (hasScroll) {
             int y = listBottom - 21;
             Button up = this.addRenderableWidget(Button.builder(Component.literal("▲"), button -> scrollRows(-1))
@@ -532,7 +539,8 @@ public final class FontTweaksDashboardScreen extends Screen implements PreviewSc
 
         if (!compact || compactDetail) {
             renderDetails(graphics);
-        } else {
+        } else if (!hasScroll
+                && LIST_TOP + Math.min(rowCount(), visibleRows) * ROW_HEIGHT < panelBottom - 18) {
             graphics.text(this.font, Component.translatable("fonttweaks.ui.compact_hint"),
                     EDGE + 5, panelBottom - 11, 0xFFAAAAAA);
         }
