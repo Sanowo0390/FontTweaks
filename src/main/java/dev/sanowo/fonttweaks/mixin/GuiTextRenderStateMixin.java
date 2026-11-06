@@ -45,7 +45,19 @@ public abstract class GuiTextRenderStateMixin {
             case DEFAULT -> settings.scaleFor(mc.gui.screen() != null);
         };
 
-        if (Math.abs(multiplier - 1.0) < 0.000001) return;
+        // For the built-in 8x8 bitmap font, one source texel is normally
+        // 3x3 physical pixels at GUI scale 3. A 2/3 text transform makes
+        // every source texel exactly 2x2 physical pixels, regardless of
+        // intermediate screen-specific pose scales.
+        boolean pixelMode = settings.isPixelModeActive(mc.getWindow().getGuiScale());
+        if (pixelMode) {
+            double existingScale = Math.hypot(inputPose.m00(), inputPose.m01());
+            if (existingScale > 0.00001) {
+                multiplier = settings.targetGuiFontScale(mc.getWindow().getGuiScale())
+                        / existingScale;
+            }
+        }
+        if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelMode) return;
 
         float scale = (float) FontTweaksSettings.bounded(multiplier, 0.05, 8.0);
         // Button text is centered in the widget: preserve its center.
@@ -54,6 +66,18 @@ public abstract class GuiTextRenderStateMixin {
 
         Matrix3x2f adjusted = new Matrix3x2f(inputPose);
         adjusted.translate(anchorX, y).scale(scale, scale).translate(-anchorX, -y);
+
+        if (pixelMode) {
+            // Snap the glyph start to a *physical* pixel rather than a GUI
+            // pixel. This avoids the non-integer GUI positioning that would
+            // otherwise blur a perfectly rendered 2x2 pixel bitmap grid.
+            int guiScale = mc.getWindow().getGuiScale();
+            float gx = adjusted.m00() * x + adjusted.m10() * y + adjusted.m20();
+            float gy = adjusted.m01() * x + adjusted.m11() * y + adjusted.m21();
+            adjusted.translateLocal(
+                    Math.round(gx * guiScale) / (float) guiScale - gx,
+                    Math.round(gy * guiScale) / (float) guiScale - gy);
+        }
 
         this.pose = adjusted;
     }
