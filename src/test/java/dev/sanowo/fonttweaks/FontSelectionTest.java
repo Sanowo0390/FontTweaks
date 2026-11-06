@@ -63,7 +63,8 @@ class FontSelectionTest {
         assertSame(FontTweaksFonts.MISAKI,
                 FontTweaksFonts.select(FontDescription.DEFAULT, 'A', cfg, 2, false));
         cfg.pixelationEnabled = false;
-        assertSame(FontDescription.DEFAULT,
+        // Font selection is independent of the glyph pixel-processing toggle.
+        assertSame(FontTweaksFonts.MISAKI,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '語', cfg, 2, false));
     }
 
@@ -87,6 +88,17 @@ class FontSelectionTest {
         cfg.guiScaleDependentFont = false;
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+    }
+
+    @Test void automaticFontRespectsGuiScaleEvenWhenPixelProcessingOff() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.guiScaleDependentFont = true;
+        cfg.resourcePackEnabled = false;
+        cfg.pixelationEnabled = false;
+        assertSame(FontTweaksFonts.MISAKI,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
+        assertSame(FontDescription.DEFAULT,
+                FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
     }
 
     @Test void enabledPackHonorsFontChoiceAndGatesAutoMode() {
