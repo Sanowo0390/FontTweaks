@@ -14,12 +14,12 @@
   "fonttweaks.pixel_density": "Dot: %s screen px",
   "fonttweaks.pixel_help": "Screen px at 100% text size. Choose 1–4. Matching standard English grid selects Misaki.",
   "fonttweaks.status_off": "GUI %s | Pixel processing OFF",
-  "fonttweaks.status_misaki": "GUI %s | %spx: English grid matches / Misaki",
+  "fonttweaks.status_misaki": "GUI %s | Misaki Gothic 2 (exclusions use default)",
   "fonttweaks.status_native": "GUI %s | %spx: same as native Unifont",
   "fonttweaks.status_unifont": "GUI %s | %spx: processed Unifont",
   "fonttweaks.font_settings": "Fonts / Exclusions",
-  "fonttweaks.pack_on": "Apply resource pack: ON (PixelMplus12)",
-  "fonttweaks.pack_off": "Apply resource pack: OFF",
+  "fonttweaks.pack_on": "Apply resource pack: ON",
+  "fonttweaks.pack_off": "Apply resource pack: OFF (including Misaki)",
   "fonttweaks.english_on": "Replace English font: ON",
   "fonttweaks.english_off": "Replace English font: OFF",
   "fonttweaks.blacklist": "Excluded characters (blacklist)",
@@ -27,5 +27,8 @@
   "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular (exclusions use default)",
   "fonttweaks.global_spacing": "Global Line Spacing",
   "fonttweaks.preview": "Preview",
-  "fonttweaks.preview_current": "Preview: %s %s%%"
+  "fonttweaks.preview_current": "Preview: %s %s%%",
+  "fonttweaks.pack_font_pixelmplus12": "Font: PixelMplus12 Regular",
+  "fonttweaks.pack_font_misaki": "Font: Misaki Gothic 2",
+  "fonttweaks.pack_font_auto": "Font: Auto (English grid match selects Misaki)"
 }

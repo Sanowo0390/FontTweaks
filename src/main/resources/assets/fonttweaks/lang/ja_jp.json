@@ -14,12 +14,12 @@
   "fonttweaks.pixel_density": "1ドット：%s画面px",
   "fonttweaks.pixel_help": "文字倍率100%時の画面px。1〜4から選択。標準英字と同じ幅なら美咲へ自動切替。",
   "fonttweaks.status_off": "GUI %s | ピクセル加工 OFF",
-  "fonttweaks.status_misaki": "GUI %s | %spx：英字と一致・美咲",
+  "fonttweaks.status_misaki": "GUI %s | 美咲ゴシック第2（除外文字は標準）",
   "fonttweaks.status_native": "GUI %s | %spx：元のUnifontと同じ",
   "fonttweaks.status_unifont": "GUI %s | %spx：Unifontを加工",
   "fonttweaks.font_settings": "フォント・除外文字",
-  "fonttweaks.pack_on": "リソースパック適用：ON（PixelMplus12）",
-  "fonttweaks.pack_off": "リソースパック適用：OFF",
+  "fonttweaks.pack_on": "リソースパック適用：ON",
+  "fonttweaks.pack_off": "リソースパック適用：OFF（美咲も適用しない）",
   "fonttweaks.english_on": "英字フォントを置き換える：ON",
   "fonttweaks.english_off": "英字フォントを置き換える：OFF",
   "fonttweaks.blacklist": "除外する文字（ブラックリスト）",
@@ -27,5 +27,8 @@
   "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular（除外文字は標準）",
   "fonttweaks.global_spacing": "行間全体",
   "fonttweaks.preview": "プレビュー",
-  "fonttweaks.preview_current": "プレビュー：%s %s%%"
+  "fonttweaks.preview_current": "プレビュー：%s %s%%",
+  "fonttweaks.pack_font_pixelmplus12": "フォント：PixelMplus12 Regular",
+  "fonttweaks.pack_font_misaki": "フォント：美咲ゴシック第2",
+  "fonttweaks.pack_font_auto": "フォント：自動（英字と一致なら美咲）"
 }

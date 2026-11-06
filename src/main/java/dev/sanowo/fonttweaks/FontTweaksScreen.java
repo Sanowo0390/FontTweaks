@@ -204,16 +204,15 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
                 FontTweaksRenderContext.pop(prev);
             }
 
-            boolean matched = FontTweaksFonts.matchesEnglishGrid(
-                    FontTweaksSettings.get().pixelationEnabled, FontTweaksSettings.get().pixelBlockSize,
-                    this.minecraft.getWindow().getGuiScale(), this.minecraft.options.forceUnicodeFont().get());
+            FontTweaksSettings cfg = FontTweaksSettings.get();
             int guiScale = this.minecraft.getWindow().getGuiScale();
-            boolean nativeGrid = FontTweaksFonts.matchesNativeUnifontGrid(
-                    FontTweaksSettings.get().pixelBlockSize, guiScale);
-            String statusKey = !FontTweaksSettings.get().pixelationEnabled ? "fonttweaks.status_off"
-                    : matched ? "fonttweaks.status_misaki"
+            boolean nativeGrid = FontTweaksFonts.matchesNativeUnifontGrid(cfg.pixelBlockSize, guiScale);
+            net.minecraft.network.chat.FontDescription packFont = FontTweaksFonts.activePackFont(
+                    cfg, guiScale, this.minecraft.options.forceUnicodeFont().get());
+            String statusKey = packFont == FontTweaksFonts.MISAKI ? "fonttweaks.status_misaki"
+                    : packFont == FontTweaksFonts.PIXELMPLUS ? "fonttweaks.status_pixelmplus"
+                    : !cfg.pixelationEnabled ? "fonttweaks.status_off"
                     : nativeGrid ? "fonttweaks.status_native" : "fonttweaks.status_unifont";
-            if (FontTweaksSettings.get().resourcePackEnabled) statusKey = "fonttweaks.status_pixelmplus";
             graphics.centeredText(this.font, Component.translatable(statusKey,
                     guiScale, FontTweaksSettings.get().pixelBlockSize),
                     this.width / 2, startY + 10 * gap + 34, 0xFF88FFFF);

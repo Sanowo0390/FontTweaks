@@ -28,6 +28,7 @@ public final class FontTweaksSettings {
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
     public boolean resourcePackEnabled = false;
+    public String resourcePackFont = "pixelmplus12";
     public boolean replaceEnglish = false;
     /** Literal code points excluded from font replacement and bitmap processing. */
     public String blacklistedCharacters = "";
@@ -61,6 +62,14 @@ public final class FontTweaksSettings {
 
     public int nextPixelBlockSize() {
         return pixelBlockSize >= 4 ? 1 : pixelBlockSize + 1;
+    }
+
+    public void cycleResourcePackFont() {
+        resourcePackFont = switch (resourcePackFont) {
+            case "pixelmplus12" -> "misaki";
+            case "misaki" -> "auto";
+            default -> "pixelmplus12";
+        };
     }
 
     public float scaleFor(boolean screenOpen) {
@@ -122,6 +131,8 @@ public final class FontTweaksSettings {
     }
 
     public void sanitize() {
+        if (!"pixelmplus12".equals(resourcePackFont) && !"misaki".equals(resourcePackFont)
+                && !"auto".equals(resourcePackFont)) resourcePackFont = "pixelmplus12";
         if (blacklistedCharacters == null) blacklistedCharacters = "";
         globalScale = bounded(globalScale, 0.5, 2.0);
         screenScale = bounded(screenScale, 0.5, 2.0);

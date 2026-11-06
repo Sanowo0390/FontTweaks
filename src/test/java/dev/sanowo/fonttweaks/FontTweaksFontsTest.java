@@ -30,10 +30,15 @@ class FontTweaksFontsTest {
 
     @Test void defaultFontSwitchesBackAndExplicitFontsStayUnchanged() {
         FontDescription custom = new FontDescription.Resource(Identifier.fromNamespaceAndPath("test", "icons"));
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        cfg.resourcePackFont = "misaki";
         for (int i = 0; i < 4; i++) {
-            assertSame(FontTweaksFonts.MISAKI, FontTweaksFonts.select(FontDescription.DEFAULT, true));
-            assertSame(FontDescription.DEFAULT, FontTweaksFonts.select(FontDescription.DEFAULT, false));
-            assertSame(custom, FontTweaksFonts.select(custom, true));
+            cfg.resourcePackEnabled = true;
+            assertSame(FontTweaksFonts.MISAKI, FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
+            cfg.resourcePackEnabled = false;
+            assertSame(FontDescription.DEFAULT, FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
+            cfg.resourcePackEnabled = true;
+            assertSame(custom, FontTweaksFonts.select(custom, '日', cfg, 3, false));
         }
     }
 }

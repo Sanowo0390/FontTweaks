@@ -22,15 +22,20 @@ public final class FontTweaksFonts {
         return guiScale > 0 && targetPixels > 0 && targetPixels * 2 == guiScale;
     }
 
-    public static FontDescription select(FontDescription requested, boolean matches) {
-        return matches && FontDescription.DEFAULT.equals(requested) ? MISAKI : requested;
+    public static FontDescription activePackFont(FontTweaksSettings cfg, int guiScale, boolean forceUnicode) {
+        if (!cfg.resourcePackEnabled) return null;
+        return switch (cfg.resourcePackFont) {
+            case "misaki" -> MISAKI;
+            case "auto" -> matchesEnglishGrid(cfg.pixelationEnabled, cfg.pixelBlockSize,
+                    guiScale, forceUnicode) ? MISAKI : PIXELMPLUS;
+            default -> PIXELMPLUS;
+        };
     }
 
     public static FontDescription select(FontDescription requested, int codepoint,
                                          FontTweaksSettings cfg, int guiScale, boolean forceUnicode) {
-        if (!FontDescription.DEFAULT.equals(requested) || !cfg.shouldReplace(codepoint)) return requested;
-        if (cfg.resourcePackEnabled) return PIXELMPLUS;
-        return select(requested, matchesEnglishGrid(cfg.pixelationEnabled,
-                cfg.pixelBlockSize, guiScale, forceUnicode));
+        if (!cfg.resourcePackEnabled || !FontDescription.DEFAULT.equals(requested)
+                || !cfg.shouldReplace(codepoint)) return requested;
+        return activePackFont(cfg, guiScale, forceUnicode);
     }
 }

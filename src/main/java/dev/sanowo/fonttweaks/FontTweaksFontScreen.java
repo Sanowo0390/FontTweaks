@@ -24,14 +24,22 @@ public final class FontTweaksFontScreen extends Screen {
             button.setMessage(packLabel());
             FontTweaksSettings.save();
             FontTweaksReload.request();
+            this.rebuildWidgets();
         }).bounds(x, 45, width, 20).build());
+        Button fontChoice = this.addRenderableWidget(Button.builder(fontLabel(), button -> {
+            cfg.cycleResourcePackFont();
+            button.setMessage(fontLabel());
+            FontTweaksSettings.save();
+            FontTweaksReload.request();
+        }).bounds(x, 69, width, 20).build());
+        fontChoice.active = cfg.resourcePackEnabled;
         this.addRenderableWidget(Button.builder(englishLabel(), button -> {
             cfg.replaceEnglish = !cfg.replaceEnglish;
             button.setMessage(englishLabel());
             FontTweaksSettings.save();
             FontTweaksReload.request();
-        }).bounds(x, 69, width, 20).build());
-        EditBox blacklist = new EditBox(this.font, x, 115, width, 20,
+        }).bounds(x, 93, width, 20).build());
+        EditBox blacklist = new EditBox(this.font, x, 139, width, 20,
                 Component.translatable("fonttweaks.blacklist"));
         blacklist.setMaxLength(4096);
         blacklist.setValue(cfg.blacklistedCharacters);
@@ -61,14 +69,18 @@ public final class FontTweaksFontScreen extends Screen {
                 ? "fonttweaks.english_on" : "fonttweaks.english_off");
     }
 
+    private Component fontLabel() {
+        return Component.translatable("fonttweaks.pack_font_" + FontTweaksSettings.get().resourcePackFont);
+    }
+
     @Override public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         int width = Math.min(360, this.width - 24);
         int x = (this.width - width) / 2;
         graphics.centeredText(this.font, this.title, this.width / 2, 22, 0xFFFFFFFF);
-        graphics.text(this.font, Component.translatable("fonttweaks.blacklist"), x, 101, 0xFFFFFFFF);
+        graphics.text(this.font, Component.translatable("fonttweaks.blacklist"), x, 125, 0xFFFFFFFF);
         graphics.textWithWordWrap(this.font, Component.translatable("fonttweaks.blacklist_help"),
-                x, 144, width, 0xFFAAAAAA);
+                x, 168, width, 0xFFAAAAAA);
     }
 
     @Override public void onClose() {
