@@ -48,8 +48,15 @@ public final class FontTweaksFontImage implements ImageRenderer {
 
         int gui = minecraft.getWindow().getGuiScale();
         int processedPixels = settings.pixelRasterSignature(gui);
-        String pixelStatus = processedPixels == 0 ? "Native"
-                : (settings.automaticPixelSize() ? "Auto " : "") + processedPixels + "px";
+        GuiScaleProfile profile = settings.profileFor(gui);
+        String pixelStatus = processedPixels == 0 ? "Native" : processedPixels + "px";
+        if (profile.pixelBlockSize == FontTweaksSettings.AUTO_PIXEL_SIZE && processedPixels != 0) {
+            pixelStatus = "Auto " + pixelStatus;
+        }
+        if (profile.useExistingFont) {
+            pixelStatus += profile.effectivePixels() == 3
+                    || "misaki".equals(profile.legacyExistingFont) ? " / Misaki" : " / PixelMplus";
+        }
         graphics.text(minecraft.font,
                 Component.literal("GUI " + gui + " / " + pixelStatus),
                 x + 7, y + height - 15, 0xFFA5AFC3);

@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.10.0 - 文字表示設定",
+  "fonttweaks.title": "FontTweaks 0.11.0 - 文字表示設定",
   "fonttweaks.global": "文字全体",
   "fonttweaks.screen": "画面の文字",
   "fonttweaks.hud": "HUDの文字",
@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "文字サイズの確認",
   "fonttweaks.preview_spacing": "行間の確認",
   "fonttweaks.preview_spacing_hint": "「プレビュー」で実際の複数行表示を確認できます。",
-  "fonttweaks.ui.title": "FontTweaks 0.10.0 - 文字表示設定",
+  "fonttweaks.ui.title": "FontTweaks 0.11.0 - 文字表示設定",
   "fonttweaks.ui.tab.size": "サイズ",
   "fonttweaks.ui.tab.spacing": "文字間隔・行間",
   "fonttweaks.ui.tab.pixels": "ドット",
@@ -67,7 +67,7 @@
   "fonttweaks.ui.desc.global_line": "複数行テキストに共通する行間倍率です。",
   "fonttweaks.ui.desc.wrapped": "幅で折り返される文章の行間です。",
   "fonttweaks.ui.desc.tooltip": "アイテムの説明文などの行間です。",
-  "fonttweaks.ui.desc.pixel_toggle": "Unifontのドット加工を切り替えます。字形が変わるときだけ再生成します。",
+  "fonttweaks.ui.desc.pixel_toggle": "全GUIスケールでUnifontのドット加工を有効化します。実際のドット数と既存フォントの使用はGUIサイズごとに設定します。",
   "fonttweaks.ui.desc.pixel_count": "GUI3を基準に1ドットを1〜4画面pxへ加工します。",
   "fonttweaks.ui.desc.font_enable": "内蔵フォントへの置換を有効・無効にします。再読み込み不要です。",
   "fonttweaks.ui.desc.font_choice": "使用フォントを選びます。自動ではGUI2以下が美咲、GUI3以上は標準になります。",
@@ -75,7 +75,7 @@
   "fonttweaks.ui.desc.blacklist": "登録文字だけ内蔵フォントへの置換から除外します。YACLの一覧から追加・編集・並べ替え・削除できます。",
   "fonttweaks.ui.group.sizes": "文字サイズ",
   "fonttweaks.ui.group.spacing": "文字間隔・行間",
-  "fonttweaks.ui.group.pixels": "ドット数の補正",
+  "fonttweaks.ui.group.pixels": "フォント・ドット全般",
   "fonttweaks.ui.group.fonts": "使用フォント",
   "fonttweaks.letter_spacing": "文字間隔（横）",
   "fonttweaks.ui.desc.letter_spacing": "文字と文字の横方向の間隔を変更します。0＝標準、正の値で広げ、負の値で詰めます。行間とは別の設定です。文字幅・中央揃え・折り返しも調整されます。",
@@ -95,5 +95,13 @@
   "fonttweaks.english_exclusion": "英字を間隔調整から除外",
   "fonttweaks.ui.desc.english_exclusion": "ONで英数字の文字間隔は通常どおり、日本語などの文字間隔だけ変更します。行間も英字だけの行は標準、日本語を含む行は指定の行間になります。",
   "fonttweaks.gui3_correction": "GUI3でドット数を補正",
-  "fonttweaks.ui.desc.gui3_correction": "ONでGUIスケール3のUnifontを指定したドット数に加工します。OFFならGUI3で元の字形を使います。"
+  "fonttweaks.ui.desc.gui3_correction": "GUIスケール3のUnifontを指定ドット数に加工します。OFFならGUI3は元の字形を使用します。GUI別プロファイルの設定は保持します。",
+  "fonttweaks.ui.existing_font": "既存フォントを使用する",
+  "fonttweaks.ui.desc.existing_font": "このGUIサイズで同梱の既存フォントを使用します。ドット数が3pxならGUIスケールにかかわらず美咲ゴシック第2、それ以外はPixelMplusを選択します。OFFなら標準フォントを使用します。",
+  "fonttweaks.ui.desc.profile_dots": "このGUIスケールだけのドット数を設定します。自動／1〜4pxから選択できます。3px＋「既存フォントを使用する」ONで美咲ゴシック第2を使用します。",
+  "fonttweaks.ui.profile.1": "GUIスケール1",
+  "fonttweaks.ui.profile.2": "GUIスケール2",
+  "fonttweaks.ui.profile.3": "GUIスケール3",
+  "fonttweaks.ui.profile.4": "GUIスケール4",
+  "fonttweaks.ui.profile.5": "GUIスケール5以上"
 }

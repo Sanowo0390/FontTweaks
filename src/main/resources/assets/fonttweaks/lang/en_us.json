@@ -1,5 +1,5 @@
 {
-  "fonttweaks.title": "FontTweaks 0.10.0 - Text Settings",
+  "fonttweaks.title": "FontTweaks 0.11.0 - Text Settings",
   "fonttweaks.global": "Global Text Scale",
   "fonttweaks.screen": "Screen Text Scale",
   "fonttweaks.hud": "HUD Text Scale",
@@ -40,7 +40,7 @@
   "fonttweaks.preview_sizes": "Text sizes",
   "fonttweaks.preview_spacing": "Line spacing",
   "fonttweaks.preview_spacing_hint": "Open Preview to check actual multiline text.",
-  "fonttweaks.ui.title": "FontTweaks 0.10.0 - Text Settings",
+  "fonttweaks.ui.title": "FontTweaks 0.11.0 - Text Settings",
   "fonttweaks.ui.tab.size": "Size",
   "fonttweaks.ui.tab.spacing": "Text spacing",
   "fonttweaks.ui.tab.pixels": "Pixels",
@@ -67,7 +67,7 @@
   "fonttweaks.ui.desc.global_line": "Shared spacing multiplier for multiline text.",
   "fonttweaks.ui.desc.wrapped": "Line distance for wrapped paragraphs.",
   "fonttweaks.ui.desc.tooltip": "Line distance for tooltip descriptions.",
-  "fonttweaks.ui.desc.pixel_toggle": "Toggle Unifont pixel processing. Fonts are rebuilt only when the baked glyph representation changes.",
+  "fonttweaks.ui.desc.pixel_toggle": "Enable Unifont dot processing globally. Configure the pixel size and existing font separately for each GUI scale.",
   "fonttweaks.ui.desc.pixel_count": "At GUI 3, process Unifont to 1–4 screen pixels per dot.",
   "fonttweaks.ui.desc.font_enable": "Enable or disable bundled font replacement without reloading.",
   "fonttweaks.ui.desc.font_choice": "Choose your font. Auto uses Misaki at GUI scales 1–2 and the default font at GUI 3+.",
@@ -75,7 +75,7 @@
   "fonttweaks.ui.desc.blacklist": "Excluded glyphs use their original fonts. Use the YACL list controls to add, edit, reorder or delete characters.",
   "fonttweaks.ui.group.sizes": "Text sizes",
   "fonttweaks.ui.group.spacing": "Letter and line spacing",
-  "fonttweaks.ui.group.pixels": "Pixel density correction",
+  "fonttweaks.ui.group.pixels": "General font & pixel settings",
   "fonttweaks.ui.group.fonts": "Font selection",
   "fonttweaks.letter_spacing": "Letter spacing (horizontal)",
   "fonttweaks.ui.desc.letter_spacing": "Change the horizontal space between glyphs. Zero is normal; positive widens; negative tightens. This is independent of line spacing. Text measurements, centering and wrapping follow the setting.",
@@ -95,5 +95,13 @@
   "fonttweaks.english_exclusion": "Exclude English from spacing",
   "fonttweaks.ui.desc.english_exclusion": "Keep English glyph tracking unchanged. English-only lines retain standard vertical spacing; lines with Japanese text use your configured line spacing.",
   "fonttweaks.gui3_correction": "Correct dot density at GUI 3",
-  "fonttweaks.ui.desc.gui3_correction": "When on, process Unifont at GUI scale 3 to your selected dot size. When off, use the native glyph at GUI 3."
+  "fonttweaks.ui.desc.gui3_correction": "Process Unifont to the chosen dot size at GUI scale 3; OFF keeps its native glyph. Other GUI-scale profiles remain unchanged.",
+  "fonttweaks.ui.existing_font": "Use existing font",
+  "fonttweaks.ui.desc.existing_font": "Use a bundled existing font at this GUI scale. 3px always selects Misaki Gothic 2 at any GUI scale; other dot sizes use PixelMplus. OFF uses Minecraft's default font.",
+  "fonttweaks.ui.desc.profile_dots": "Set dot size independently for this GUI scale. Choose Auto or 1–4px. When 3px and Use existing font are selected, Misaki Gothic 2 is used.",
+  "fonttweaks.ui.profile.1": "GUI scale 1",
+  "fonttweaks.ui.profile.2": "GUI scale 2",
+  "fonttweaks.ui.profile.3": "GUI scale 3",
+  "fonttweaks.ui.profile.4": "GUI scale 4",
+  "fonttweaks.ui.profile.5": "GUI scale 5+"
 }
