@@ -27,6 +27,10 @@ public final class FontTweaksSettings {
     public double hudScale = 1.0;
     public double buttonScale = 1.0;
     public double chatScale = 1.0;
+    public boolean resourcePackEnabled = false;
+    public boolean replaceEnglish = false;
+    /** Literal code points excluded from font replacement and bitmap processing. */
+    public String blacklistedCharacters = "";
     /** Bitmap effect only, independent of all text sizing. */
     @SerializedName(value = "pixelationEnabled", alternate = {"pixelPerfectMode"})
     public boolean pixelationEnabled = true;
@@ -48,6 +52,19 @@ public final class FontTweaksSettings {
 
     public float scaleFor(boolean screenOpen) {
         return (float) bounded(globalScale * (screenOpen ? screenScale : hudScale), 0.25, 4.0);
+    }
+
+    public boolean isBlacklisted(int codepoint) {
+        return blacklistedCharacters != null && blacklistedCharacters.indexOf(codepoint) >= 0;
+    }
+
+    public boolean shouldReplace(int codepoint) {
+        return !isBlacklisted(codepoint) && (replaceEnglish || !isEnglish(codepoint));
+    }
+
+    public static boolean isEnglish(int codepoint) {
+        return (codepoint >= 0x20 && codepoint <= 0x7E)
+                || Character.UnicodeScript.of(codepoint) == Character.UnicodeScript.LATIN;
     }
 
     public static synchronized void load() {
@@ -92,6 +109,7 @@ public final class FontTweaksSettings {
     }
 
     public void sanitize() {
+        if (blacklistedCharacters == null) blacklistedCharacters = "";
         globalScale = bounded(globalScale, 0.5, 2.0);
         screenScale = bounded(screenScale, 0.5, 2.0);
         hudScale = bounded(hudScale, 0.5, 2.0);

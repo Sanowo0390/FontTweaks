@@ -52,3 +52,23 @@ This is the underlying font contained in MisakiGothic2forMC.
 
 FontTweaks source code is Copyright (c) 2026 Sanowo, MIT licensed. Its license
 is separate from the licenses above.
+# PixelMplus12 Regular
+
+Copyright (C) 2013 itouhiro
+Copyright (C) 2002-2013 M+ FONTS PROJECT
+
+Source: https://github.com/itouhiro/PixelMplus
+Pinned revision: d89b95f04eeb95bf98bb09cb9234a2f99d186df5
+Bundled file: PixelMplus12-Regular.ttf (unmodified).
+SHA-256: 02f19467ea7cc235cc06c570b7f6c3b0a12a6f682bc8d74c43f2d323d97bcd12
+
+M+ FONTS                                Copyright (C) 2002-2013 M+ FONTS PROJECT
+
+LICENSE_E
+
+These fonts are free software.
+Unlimited permission is granted to use, copy, and distribute them, with
+or without modification, either commercially or noncommercially.
+THESE FONTS ARE PROVIDED "AS IS" WITHOUT WARRANTY.
+
+http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/

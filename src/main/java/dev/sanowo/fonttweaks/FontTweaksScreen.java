@@ -75,11 +75,8 @@ public final class FontTweaksScreen extends Screen {
             reloadPixelation();
         }).bounds(x + half + 8, startY + 7 * gap, half, 20).build());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
-            FontTweaksSettings.reset();
-            reloadPixelation();
-            if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
-            this.rebuildWidgets();
+        this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.font_settings"), b -> {
+            this.minecraft.gui.setScreen(new FontTweaksFontScreen(this));
         }).bounds(x, startY + 8 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(x + half + 8, startY + 8 * gap, half, 20).build());
@@ -174,7 +171,7 @@ public final class FontTweaksScreen extends Screen {
             FontTweaksRenderContext.Kind prev =
                     FontTweaksRenderContext.push(FontTweaksRenderContext.Kind.PREVIEW);
             try {
-                graphics.centeredText(this.font, Component.literal("Unifont 日本語 ABC 012345"),
+                graphics.centeredText(this.font, Component.literal("日本語 ABC 012345"),
                         this.width / 2, startY + 9 * gap + 19, 0xFFFFFF55);
             } finally {
                 FontTweaksRenderContext.pop(prev);
@@ -189,6 +186,7 @@ public final class FontTweaksScreen extends Screen {
             String statusKey = !FontTweaksSettings.get().pixelationEnabled ? "fonttweaks.status_off"
                     : matched ? "fonttweaks.status_misaki"
                     : nativeGrid ? "fonttweaks.status_native" : "fonttweaks.status_unifont";
+            if (FontTweaksSettings.get().resourcePackEnabled) statusKey = "fonttweaks.status_pixelmplus";
             graphics.centeredText(this.font, Component.translatable(statusKey,
                     guiScale, FontTweaksSettings.get().pixelBlockSize),
                     this.width / 2, startY + 9 * gap + 34, 0xFF88FFFF);

@@ -102,3 +102,30 @@ tasks.named('processResources').configure {
         delete layout.buildDirectory.file('resources/main/assets/minecraft/font/default.json')
     }
 }
+
+// Original PixelMplus12 Regular, pinned to its upstream commit and exact bytes.
+def pixelFont = layout.buildDirectory.file('generated/pixelmplus/assets/fonttweaks/font/pixelmplus12_regular.ttf')
+def pixelSha256 = '02f19467ea7cc235cc06c570b7f6c3b0a12a6f682bc8d74c43f2d323d97bcd12'
+def downloadPixelMplus = tasks.register('downloadPixelMplus', DefaultTask) {
+    inputs.property 'sha256', pixelSha256
+    outputs.file(pixelFont)
+    doLast {
+        File dest = pixelFont.get().asFile
+        dest.parentFile.mkdirs()
+        def url = 'https://raw.githubusercontent.com/itouhiro/PixelMplus/d89b95f04eeb95bf98bb09cb9234a2f99d186df5/PixelMplus12-Regular.ttf'
+        def connection = new URI(url).toURL().openConnection()
+        connection.setConnectTimeout(20000)
+        connection.setReadTimeout(45000)
+        try (def input = connection.getInputStream(); def output = new FileOutputStream(dest)) {
+            input.transferTo(output)
+        }
+        def digest = java.security.MessageDigest.getInstance('SHA-256')
+        def actual = java.util.HexFormat.of().formatHex(digest.digest(dest.bytes))
+        if (actual != pixelSha256) {
+            dest.delete()
+            throw new GradleException("PixelMplus12 SHA-256 mismatch: ${actual}")
+        }
+    }
+}
+sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/pixelmplus'))
+tasks.named('processResources').configure { dependsOn downloadPixelMplus }

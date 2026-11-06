@@ -6,7 +6,7 @@
   "fonttweaks.spacing": "文章の行間",
   "fonttweaks.tooltip_spacing": "説明文の行間",
   "fonttweaks.reset": "初期化",
-  "fonttweaks.help": "標準英字と同じドット幅なら美咲へ自動切替。",
+  "fonttweaks.help": "「フォント・除外文字」で内蔵フォントと適用範囲を設定。",
   "fonttweaks.button": "ボタン文字",
   "fonttweaks.chat": "チャット文字",
   "fonttweaks.pixel_mode_on": "ピクセル加工：ON",
@@ -16,5 +16,13 @@
   "fonttweaks.status_off": "GUI %s | ピクセル加工 OFF",
   "fonttweaks.status_misaki": "GUI %s | %spx：英字と一致・美咲",
   "fonttweaks.status_native": "GUI %s | %spx：元のUnifontと同じ",
-  "fonttweaks.status_unifont": "GUI %s | %spx：Unifontを加工"
+  "fonttweaks.status_unifont": "GUI %s | %spx：Unifontを加工",
+  "fonttweaks.font_settings": "フォント・除外文字",
+  "fonttweaks.pack_on": "リソースパック適用：ON（PixelMplus12）",
+  "fonttweaks.pack_off": "リソースパック適用：OFF",
+  "fonttweaks.english_on": "英字フォントを置き換える：ON",
+  "fonttweaks.english_off": "英字フォントを置き換える：OFF",
+  "fonttweaks.blacklist": "除外する文字（ブラックリスト）",
+  "fonttweaks.blacklist_help": "対象外にしたい文字をそのまま入力します。例：！？★　登録文字はフォント置換・ピクセル加工をせず、元のフォントで表示します。「完了」で再読み込みします。英字OFFでは半角英数字・記号とラテン文字を元のフォントで表示します。",
+  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular（除外文字は標準）"
 }

@@ -9,7 +9,8 @@
     "ChatComponentMixin",
     "ClientTextTooltipMixin",
     "UnihexBitmapMixin",
-    "FontMixin"
+    "FontMixin",
+    "UnihexProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

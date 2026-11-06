@@ -24,4 +24,12 @@ with zipfile.ZipFile(jars[0]) as jar, zipfile.ZipFile(vendor) as upstream:
     mixins = json.loads(jar.read("fonttweaks.mixins.json"))["client"]
     assert "FontMixin" in mixins
     assert "UnihexBitmapMixin" in mixins
+    assert "UnihexProviderMixin" in mixins
+    pixel_path = "assets/fonttweaks/font/pixelmplus12_regular.ttf"
+    assert hashlib.sha256(jar.read(pixel_path)).hexdigest() == (
+        "02f19467ea7cc235cc06c570b7f6c3b0a12a6f682bc8d74c43f2d323d97bcd12")
+    pixel_definition = json.loads(jar.read("assets/fonttweaks/font/pixelmplus12.json"))
+    assert pixel_definition["providers"][0]["file"] == "fonttweaks:pixelmplus12_regular.ttf"
+    assert pixel_definition["providers"][-1] == {"type": "reference", "id": "minecraft:default"}
+    assert b"Copyright (C) 2013 itouhiro" in jar.read("META-INF/THIRD_PARTY_NOTICES.md")
 print(f"Verified {jars[0].name}: no default override; original font bytes and notices intact")

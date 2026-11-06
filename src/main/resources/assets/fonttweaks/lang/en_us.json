@@ -6,7 +6,7 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "Matching standard English dot size automatically selects Misaki.",
+  "fonttweaks.help": "Fonts / Exclusions controls bundled fonts and character selection.",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
   "fonttweaks.pixel_mode_on": "Pixel Processing: ON",
@@ -16,5 +16,13 @@
   "fonttweaks.status_off": "GUI %s | Pixel processing OFF",
   "fonttweaks.status_misaki": "GUI %s | %spx: English grid matches / Misaki",
   "fonttweaks.status_native": "GUI %s | %spx: same as native Unifont",
-  "fonttweaks.status_unifont": "GUI %s | %spx: processed Unifont"
+  "fonttweaks.status_unifont": "GUI %s | %spx: processed Unifont",
+  "fonttweaks.font_settings": "Fonts / Exclusions",
+  "fonttweaks.pack_on": "Apply resource pack: ON (PixelMplus12)",
+  "fonttweaks.pack_off": "Apply resource pack: OFF",
+  "fonttweaks.english_on": "Replace English font: ON",
+  "fonttweaks.english_off": "Replace English font: OFF",
+  "fonttweaks.blacklist": "Excluded characters (blacklist)",
+  "fonttweaks.blacklist_help": "Enter literal characters, e.g. !?*. Excluded characters keep their original font and bypass pixel processing. Done reloads resources. English OFF preserves printable ASCII and Latin characters.",
+  "fonttweaks.status_pixelmplus": "GUI %s | PixelMplus12 Regular (exclusions use default)"
 }
