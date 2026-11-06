@@ -15,6 +15,6 @@ public abstract class ClientTextTooltipMixin {
     private void fonttweaks$height(Font font, CallbackInfoReturnable<Integer> cir) {
         double spacing = FontTweaksSettings.get().tooltipLineSpacing;
         if (Math.abs(spacing - 1.0f) < 0.001f) return;
-        cir.setReturnValue(Math.max(1, Math.round(cir.getReturnValue() * spacing)));
+        cir.setReturnValue(Math.max(1, (int) Math.round(cir.getReturnValue() * spacing)));
     }
 }
