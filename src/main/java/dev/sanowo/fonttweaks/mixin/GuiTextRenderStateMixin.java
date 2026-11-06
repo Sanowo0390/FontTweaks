@@ -1,6 +1,7 @@
 package dev.sanowo.fonttweaks.mixin;
 
 import dev.sanowo.fonttweaks.FontTweaksRenderContext;
+import dev.sanowo.fonttweaks.FontTweaksDiagnostics;
 import dev.sanowo.fonttweaks.FontTweaksScreen;
 import dev.sanowo.fonttweaks.FontTweaksSettings;
 import dev.sanowo.fonttweaks.PixelGridMath;
@@ -35,14 +36,20 @@ public abstract class GuiTextRenderStateMixin {
             boolean dropShadow, boolean includeEmpty, @Nullable ScreenRectangle scissor,
             CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc == null || mc.gui == null || mc.gui.screen() instanceof FontTweaksScreen) return;
+        if (mc == null || mc.gui == null) return;
+
+        FontTweaksRenderContext.Kind context = FontTweaksRenderContext.current();
+        // Keep the configuration controls readable. The explicitly tagged
+        // preview is the only text in this screen that uses user settings.
+        if (mc.gui.screen() instanceof FontTweaksScreen
+                && context != FontTweaksRenderContext.Kind.PREVIEW) return;
 
         FontTweaksSettings settings = FontTweaksSettings.get();
-        FontTweaksRenderContext.Kind context = FontTweaksRenderContext.current();
         double multiplier = switch (context) {
             case BUTTON -> settings.globalScale * settings.screenScale * settings.buttonScale;
             // Vanilla chat already scales its own pose, including backgrounds.
             case CHAT -> 1.0;
+            case PREVIEW -> 1.0;
             case DEFAULT -> settings.scaleFor(mc.gui.screen() != null);
         };
 
@@ -58,11 +65,16 @@ public abstract class GuiTextRenderStateMixin {
                         settings.pixelsPerFontDot, mc.getWindow().getGuiScale(), existingScale);
             }
         }
+        if (context == FontTweaksRenderContext.Kind.PREVIEW) {
+            FontTweaksDiagnostics.recordPreview(mc.getWindow().getGuiScale(), pixelMode,
+                    settings.pixelsPerFontDot, multiplier);
+        }
         if (Math.abs(multiplier - 1.0) < 0.000001 && !pixelMode) return;
 
         float scale = (float) FontTweaksSettings.bounded(multiplier, 0.05, 8.0);
         // Button text is centered in the widget: preserve its center.
-        float anchorX = context == FontTweaksRenderContext.Kind.BUTTON
+        float anchorX = (context == FontTweaksRenderContext.Kind.BUTTON
+                || context == FontTweaksRenderContext.Kind.PREVIEW)
                 ? x + font.width(text) / 2.0f : x;
 
         Matrix3x2f adjusted = new Matrix3x2f(inputPose);
