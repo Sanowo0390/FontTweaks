@@ -6,10 +6,10 @@
   "fonttweaks.spacing": "Wrapped Line Spacing",
   "fonttweaks.tooltip_spacing": "Tooltip Line Spacing",
   "fonttweaks.reset": "Reset",
-  "fonttweaks.help": "At GUI scale 3: 1px = smaller, 2px = larger CJK pixel glyphs",
+  "fonttweaks.help": "Pixelates the original Unifont glyph shapes (without resizing text)",
   "fonttweaks.button": "Button text",
   "fonttweaks.chat": "Chat text",
-  "fonttweaks.pixel_on": "Unifont pixels: ON",
-  "fonttweaks.pixel_off": "Unifont pixels: OFF",
-  "fonttweaks.pixel_size": "Unifont: %s px / dot"
+  "fonttweaks.pixel_effect_on": "Glyph pixels: ON",
+  "fonttweaks.pixel_effect_off": "Glyph pixels: OFF",
+  "fonttweaks.pixel_strength": "Pixel blocks: %s x %s"
 }
