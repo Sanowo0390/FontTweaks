@@ -16,7 +16,7 @@ public final class PixelatedGlyphBitmap implements GlyphBitmap {
         // Exclusion lists select fonts only. Pixel processing is controlled solely by its own switch.
         return settings.pixelationEnabled
                 ? new PixelatedGlyphBitmap(original, rows, left, ATLAS_RASTER_GUI_SCALE,
-                        settings.pixelBlockSize) : original;
+                        settings.effectivePixelBlockSize()) : original;
     }
     private final GlyphBitmap original;
     private final int[] pixels;
