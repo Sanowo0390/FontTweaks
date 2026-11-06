@@ -40,18 +40,22 @@ public final class FontTweaksFonts {
     public static FontDescription select(FontDescription requested, int codepoint,
                                          FontTweaksSettings cfg, int guiScale, boolean forceUnicode) {
         // Respect explicitly selected fonts and per-codepoint exclusions.
-        if (!FontDescription.DEFAULT.equals(requested) || !cfg.shouldReplace(codepoint)) {
+        if (!FontDescription.DEFAULT.equals(requested) || cfg.isBlacklisted(codepoint)) {
             return requested;
         }
         if (cfg.hasGuiProfiles()) {
             GuiScaleProfile profile = cfg.profileFor(guiScale);
-            if (!profile.useExistingFont) return requested;
+            if (!profile.useExistingFont
+                    || (FontTweaksSettings.isEnglish(codepoint) && !cfg.replaceEnglishAt(guiScale))) {
+                return requested;
+            }
             // Explicit rule requested by user: 3px + existing font ON
             // selects bundled Misaki for EVERY GUI scale, including 1 and 5+.
             if (profile.effectivePixels() == 3
                     || "misaki".equals(profile.legacyExistingFont)) return MISAKI;
             return PIXELMPLUS;
         }
+        if (!cfg.shouldReplace(codepoint)) return requested;
         // This works even if normal font replacement is off: GUI 3 can use
         // processed vanilla Unifont, while GUI 2 immediately uses crisp Misaki.
         // No font atlas rebuild or resource reload is necessary.
