@@ -83,7 +83,7 @@ public abstract class GuiGraphicsExtractorMixin {
             return original.call(font, text, x, y, width, color, shadow);
         }
         int wrapWidth = Math.max(1, Math.round(width / scale));
-        int lineStep = Math.max(1, Math.round(font.lineHeight * spacing * scale));
+        int lineStep = Math.max(1, (int) Math.round(font.lineHeight * spacing * scale));
         GuiGraphicsExtractor graphics = (GuiGraphicsExtractor) (Object) this;
         int nextY = y;
         for (FormattedCharSequence line : font.split(text, wrapWidth)) {
