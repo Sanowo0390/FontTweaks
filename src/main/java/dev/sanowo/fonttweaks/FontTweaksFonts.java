@@ -46,7 +46,11 @@ public final class FontTweaksFonts {
         // This works even if normal font replacement is off: GUI 3 can use
         // processed vanilla Unifont, while GUI 2 immediately uses crisp Misaki.
         // No font atlas rebuild or resource reload is necessary.
-        if (useCompactGuiFallback(cfg, guiScale)) return MISAKI;
+        if (cfg.guiScaleDependentFont) {
+            // The unified "Auto" choice always means native at GUI 3+,
+            // Misaki at GUI 1/2, even for old configs with both flags set.
+            return useCompactGuiFallback(cfg, guiScale) ? MISAKI : requested;
+        }
         if (!cfg.resourcePackEnabled) return requested;
         return activePackFont(cfg, guiScale, forceUnicode);
     }
