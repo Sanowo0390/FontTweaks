@@ -3,9 +3,11 @@ package dev.sanowo.fonttweaks;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -20,21 +22,21 @@ public final class FontTweaksScreen extends Screen {
 
     @Override
     protected void init() {
-        int w = Math.min(310, this.width - 24);
+        int w = Math.min(340, this.width - 24);
         int x = (this.width - w) / 2;
         int startY = this.height / 2 - 78;
         FontTweaksSettings cfg = FontTweaksSettings.get();
 
-        this.addRenderableWidget(new SettingSlider(x, startY, w, "fonttweaks.global",
-                0.5f, 2.0f, () -> cfg.globalScale, v -> cfg.globalScale = v));
-        this.addRenderableWidget(new SettingSlider(x, startY + 25, w, "fonttweaks.screen",
-                0.5f, 2.0f, () -> cfg.screenScale, v -> cfg.screenScale = v));
-        this.addRenderableWidget(new SettingSlider(x, startY + 50, w, "fonttweaks.hud",
-                0.5f, 2.0f, () -> cfg.hudScale, v -> cfg.hudScale = v));
-        this.addRenderableWidget(new SettingSlider(x, startY + 75, w, "fonttweaks.spacing",
-                0.75f, 2.0f, () -> cfg.wrappedLineSpacing, v -> cfg.wrappedLineSpacing = v));
-        this.addRenderableWidget(new SettingSlider(x, startY + 100, w, "fonttweaks.tooltip_spacing",
-                0.75f, 2.0f, () -> cfg.tooltipLineSpacing, v -> cfg.tooltipLineSpacing = v));
+        addSettingRow(x, startY, w, "fonttweaks.global", 0.5, 2.0,
+                () -> cfg.globalScale, v -> cfg.globalScale = v);
+        addSettingRow(x, startY + 25, w, "fonttweaks.screen", 0.5, 2.0,
+                () -> cfg.screenScale, v -> cfg.screenScale = v);
+        addSettingRow(x, startY + 50, w, "fonttweaks.hud", 0.5, 2.0,
+                () -> cfg.hudScale, v -> cfg.hudScale = v);
+        addSettingRow(x, startY + 75, w, "fonttweaks.spacing", 0.5, 2.0,
+                () -> cfg.wrappedLineSpacing, v -> cfg.wrappedLineSpacing = v);
+        addSettingRow(x, startY + 100, w, "fonttweaks.tooltip_spacing", 0.5, 2.0,
+                () -> cfg.tooltipLineSpacing, v -> cfg.tooltipLineSpacing = v);
 
         int buttonWidth = (w - 8) / 2;
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
@@ -43,6 +45,53 @@ public final class FontTweaksScreen extends Screen {
         }).bounds(x, startY + 137, buttonWidth, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
                 .bounds(x + buttonWidth + 8, startY + 137, buttonWidth, 20).build());
+    }
+
+    /**
+     * A slider is convenient for rough adjustment, while the text field preserves
+     * precise decimal values such as 0.6666666666666667 (2/3) as a double.
+     */
+    private void addSettingRow(int x, int y, int width, String key, double min, double max,
+                               Supplier<Double> getter, Consumer<Double> setter) {
+        int inputWidth = Math.min(112, Math.max(86, width / 3));
+        int sliderWidth = width - inputWidth - 8;
+
+        EditBox input = new EditBox(this.font, x + sliderWidth + 8, y,
+                inputWidth, 20, Component.translatable(key));
+        input.setMaxLength(32);
+        input.setValue(formatNumber(getter.get()));
+
+        SettingSlider slider = new SettingSlider(x, y, sliderWidth, key, min, max,
+                getter, value -> {
+                    setter.accept(value);
+                    input.setValue(formatNumber(value));
+                    FontTweaksSettings.save();
+                });
+
+        input.setResponder(raw -> {
+            try {
+                // Do not overwrite a partially typed number. Invalid values are
+                // highlighted until the user finishes typing a valid number.
+                double exact = Double.parseDouble(raw.trim());
+                if (!Double.isFinite(exact) || exact < min || exact > max) {
+                    input.setTextColor(0xFF5555);
+                    return;
+                }
+                input.setTextColor(0xFFFFFF);
+                setter.accept(exact);
+                slider.updateFromField(exact);
+                FontTweaksSettings.save();
+            } catch (NumberFormatException ignored) {
+                input.setTextColor(0xFF5555);
+            }
+        });
+
+        this.addRenderableWidget(slider);
+        this.addRenderableWidget(input);
+    }
+
+    private static String formatNumber(double value) {
+        return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
     }
 
     @Override
@@ -61,13 +110,13 @@ public final class FontTweaksScreen extends Screen {
 
     private static final class SettingSlider extends AbstractSliderButton {
         private final String titleKey;
-        private final float min;
-        private final float max;
-        private final Supplier<Float> getter;
-        private final Consumer<Float> setter;
+        private final double min;
+        private final double max;
+        private final Supplier<Double> getter;
+        private final Consumer<Double> setter;
 
-        SettingSlider(int x, int y, int width, String titleKey, float min, float max,
-                      Supplier<Float> getter, Consumer<Float> setter) {
+        SettingSlider(int x, int y, int width, String titleKey, double min, double max,
+                      Supplier<Double> getter, Consumer<Double> setter) {
             super(x, y, width, 20, Component.empty(), (getter.get() - min) / (max - min));
             this.titleKey = titleKey;
             this.min = min;
@@ -77,19 +126,23 @@ public final class FontTweaksScreen extends Screen {
             updateMessage();
         }
 
+        void updateFromField(double exact) {
+            this.value = (exact - min) / (max - min);
+            updateMessage();
+        }
+
         @Override
         protected void updateMessage() {
-            float amount = min + (float) this.value * (max - min);
             this.setMessage(Component.translatable(titleKey).append(" ")
-                    .append(String.format(Locale.ROOT, "%.0f%%", amount * 100)));
+                    .append(String.format(Locale.ROOT, "%.2f%%", getter.get() * 100.0)));
         }
 
         @Override
         protected void applyValue() {
-            float raw = min + (float) this.value * (max - min);
-            float snapped = Math.round(raw * 20.0f) / 20.0f;
+            double raw = min + this.value * (max - min);
+            double snapped = Math.round(raw * 1000.0) / 1000.0;
             setter.accept(FontTweaksSettings.bounded(snapped, min, max));
-            FontTweaksSettings.save();
+            updateMessage();
         }
     }
 }
