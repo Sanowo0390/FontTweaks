@@ -1,4 +1,25 @@
-# FontTweaks 0.7.0
+# FontTweaks 0.7.1
+
+Minecraft 26.3 / Fabric / client-only
+
+## 0.7.1 — Zoomify 2.17.0 のJARを参考にYACLへ移行
+
+Zoomify 2.17.0+mc26.3-universal.jarの `fabric.mod.json` と `SettingsGuiFactory` を調査し、Zoomifyの設定画面が **YetAnotherConfigLib (YACL) v3** を使用していることを確認しました。前バージョンの自前ダッシュボードに代わり、**同じYACL 3.9.7 + Minecraft 26.3のUIエンジン**で設定画面を組み直しました。Zoomify本体やそのソースコード、画像は組み込んでいません。
+
+- YACL標準の上部タブ、スクロールする設定一覧、右側の説明欄、項目ごとのリセット、下部の保存・キャンセルを使用。
+- **サイズ**：全体・画面・HUD・ボタン・チャットの倍率。精密な小数を入力できるフィールドで、`0.6666666666666667` を保存可能。
+- **行間**：全体・折り返し文章・説明文の倍率。
+- **ドット**：Unifont加工ON/OFF、1〜4画面pxのスライダー。ピクセル加工自体が変更された場合だけ再読み込み。
+- **フォント**：置換ON/OFF、美咲ゴシック第2・PixelMplus12・自動選択、英字置換ON/OFF。
+- **除外文字**：YACLのリスト編集画面で追加・個別編集・削除・順番変更。保存時に重複を削除しUnicodeコードポイント単位に統一。再読み込みは不要。
+- 右側の説明ペインにはYACLの `OptionDescription.customImage` を用いて、日本語・英字の**現在適用中のフォント表示例**を追加。
+- YACLの編集内容は画面下部の適用操作でまとめて保存し、キャンセルすると未保存の変更は反映されません。チャットの折り返しは保存後に更新します。
+
+**必須依存Mod**：<https://modrinth.com/mod/yacl/version/3.9.7%2B26.3-fabric> （YetAnotherConfigLib v3.9.7 / Fabric 26.3）。Zoomify 2.17.0を使っている環境なら通常すでに導入されています。FontTweaksにZoomify本体の導入は不要です。
+
+なおこのプレビューはYACLが保存前の入力を適用しないため、**適用済みの設定**を表示します。入力途中の値をリアルタイムで反映するものではありません。Minecraft実機でのGUI描画・他Modとの組み合わせは未検証です。
+
+## 0.7.0（以前の自前UI）
 
 Minecraft 26.3 / Fabric / client-only
 
