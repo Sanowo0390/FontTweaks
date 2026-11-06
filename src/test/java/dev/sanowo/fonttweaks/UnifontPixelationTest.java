@@ -85,8 +85,30 @@ class UnifontPixelationTest {
         assertEquals(4, restored.pixelBlockSize);
         for (int target = 1; target <= 4; target++) {
             cfg.pixelBlockSize = target;
-            assertEquals(target == 4 ? 1 : target + 1, cfg.nextPixelBlockSize());
+            assertEquals(target == 4 ? FontTweaksSettings.AUTO_PIXEL_SIZE : target + 1,
+                    cfg.nextPixelBlockSize());
         }
+    }
+
+    @Test void autoModeIsPersistedAndProducesTheSameGui3AtlasAsManualTwoPx() {
+        FontTweaksSettings cfg = new FontTweaksSettings();
+        assertEquals(1, cfg.pixelBlockSize); // New-install default remains 1px.
+        assertEquals(1, cfg.effectivePixelBlockSize());
+
+        cfg.pixelBlockSize = FontTweaksSettings.AUTO_PIXEL_SIZE;
+        cfg.sanitize();
+        assertTrue(cfg.automaticPixelSize());
+        assertEquals(2, cfg.effectivePixelBlockSize());
+        assertEquals(1, cfg.nextPixelBlockSize());
+        FontTweaksSettings restored = new Gson().fromJson(new Gson().toJson(cfg),
+                FontTweaksSettings.class);
+        restored.sanitize();
+        assertTrue(restored.automaticPixelSize());
+        assertEquals(2, restored.effectivePixelBlockSize());
+
+        cfg.pixelBlockSize = 2;
+        assertFalse(cfg.automaticPixelSize());
+        assertEquals(restored.effectivePixelBlockSize(), cfg.effectivePixelBlockSize());
     }
 
     @Test void productionPixelationUsesFixedGuiThreeAtlasInsteadOfLiveGuiScale() {
