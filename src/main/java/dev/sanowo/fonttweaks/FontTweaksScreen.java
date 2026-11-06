@@ -130,7 +130,7 @@ public final class FontTweaksScreen extends Screen implements PreviewScaleSource
     }
 
     private static Component pixelSizeLabel(FontTweaksSettings cfg) {
-        return Component.translatable("fonttweaks.pixel_density", cfg.pixelBlockSize);
+        return Component.translatable("fonttweaks.pixel_density", cfg.automaticPixelSize() ? "Auto" : cfg.pixelBlockSize);
     }
 
     /**
