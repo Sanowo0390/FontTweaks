@@ -6,15 +6,22 @@ A **client-only** experimental Fabric mod for independently adjusting screen/HUD
 
 GitHub Actions build has succeeded for the original prototype. Subsequent commits must pass their own workflow build; in-game runtime behavior remains unverified.
 
-## New in 0.2.0
+## New in 0.2.1 — actual font bitmap pixelation
 
-- **Button labels:** independent button-text scale (50–200%). The button graphics and clickable bounds remain unchanged.
-- **Chat:** independent chat scale multiplier (50–200%). It multiplies vanilla Chat Scale and the global FontTweaks multiplier. Chat background, wrapping and hit detection use this combined native chat scale; HUD scale does not multiply chat.
-- **Unifont pixel alignment (optional):** for GUI scale **3**, text runs with CJK / kana / Hangul characters use **1 physical screen pixel** per approximately 16-pixel-tall Unifont source dot (small, equivalent to 0.6666666666666667 of the default GUI text size) or **2 physical pixels** per source dot (large, equivalent to 1.3333333333333333). Text origins are also rounded to the physical pixel grid.
-- **Precision:** every numeric scale setting accepts decimal input with double-precision storage.
-- **Config:** `buttonScale`, `chatScale`, `unifontPixelPerfect` and `unifontPixelsPerDot` are new JSON keys. Old files migrate automatically by defaulting new fields.
+The previous 0.2.0 **GUI-scale-3 pixel alignment/size adjustment has been removed**, because it changed the appearance and size of a text run rather than making the glyph itself blockier.
 
-The Unifont fix is an opt-in pixel-grid **size/alignment correction**, not a rewrite of font textures or a nearest-neighbor shader. The CJK character-range detection does not distinguish resource-pack glyph providers. If a line mixes English and Japanese, its entire run is scaled consistently to avoid splitting individual glyph advance positions. It does not change non-CJK strings, and it is inactive at GUI scales other than 3.
+- **Unifont glyph pixelation** is a separate, optional font effect. It changes the **source glyph bitmap data** before the glyph is uploaded to Minecraft's font texture atlas. It does not adjust GUI scale, font size, character advance or layout.
+- Settings: `pixelGlyphEnabled` (default `false`) and `pixelGlyphBlockSize` (default `2`, switch between `2×2`, `3×3` and `4×4` source texel blocks).
+- The algorithm thresholds glyph pixels within each source block and fills that block with a single solid glyph color/alpha. This creates genuinely block-shaped letter strokes rather than stretching or repositioning the font.
+- Any GUI scale (including scale 3) may use the effect. Turning it on/off or changing strength triggers a **resource reload**, rebuilding cached glyph atlas textures.
+- Only **vanilla Unihex/Unifont glyphs** currently go through the pixelation hook. Other providers (bitmap, TTF, sprite fonts and resource-pack replacements) are not modified by this effect. Existing text size and line spacing controls work as before.
+- Extremely coarse pixelation can obscure detailed kanji; start with `2×2` blocks.
+- The old JSON config keys `unifontPixelPerfect` and `unifontPixelsPerDot` are retired. They are ignored and disappear the next time config is saved.
+
+## Previous 0.2.0 features
+
+- Button text scaling and independent chat scaling, without changing their surrounding UI widgets.
+- Decimal values such as `0.6666666666666667` remain supported by all numeric controls.
 
 ## Features
 
@@ -31,7 +38,7 @@ The Unifont fix is an opt-in pixel-grid **size/alignment correction**, not a rew
 - Glyph rendering changes, but button hitboxes and layout containers do not change. Large text may overlap or clip.
 - Not every tooltip, other mod's custom text rendering or rendering path will respond to scaling. Tooltip text and background geometry may not align.
 - Wrapped line spacing covers the GuiGraphicsExtractor textWithWordWrap path. Chat scale and spacing have native Minecraft settings.
-- Chat/HUD text may share the HUD multiplier, in addition to vanilla chat scale.
+- Chat uses the native chat zoom multiplied by global/chat-specific settings; it does not inherit the HUD multiplier.
 - Mixin targets need runtime testing against Minecraft 26.3; compatibility with GUI overhaul mods is not assured.
 
 ## Build
