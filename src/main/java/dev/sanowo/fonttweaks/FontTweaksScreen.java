@@ -39,7 +39,7 @@ public final class FontTweaksScreen extends Screen {
         addSettingRow(x, startY + gap * 4, w, "fonttweaks.chat", 0.5, 2.0,
                 () -> cfg.chatScale, v -> {
                     cfg.chatScale = v;
-                    if (this.minecraft != null) this.minecraft.gui.getChat().rescaleChat();
+                    if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
                 });
         addSettingRow(x, startY + gap * 5, w, "fonttweaks.spacing", 0.5, 2.0,
                 () -> cfg.wrappedLineSpacing, v -> cfg.wrappedLineSpacing = v);
@@ -60,7 +60,7 @@ public final class FontTweaksScreen extends Screen {
 
         this.addRenderableWidget(Button.builder(Component.translatable("fonttweaks.reset"), b -> {
             FontTweaksSettings.reset();
-            if (this.minecraft != null) this.minecraft.gui.getChat().rescaleChat();
+            if (this.minecraft != null) this.minecraft.gui.hud.getChat().rescaleChat();
             this.rebuildWidgets();
         }).bounds(x, startY + 8 * gap, half, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
