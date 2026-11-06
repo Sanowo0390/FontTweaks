@@ -83,7 +83,7 @@ public final class FontTweaksScreen extends Screen {
     }
 
     private static Component pixelSizeLabel(FontTweaksSettings cfg) {
-        return Component.translatable("fonttweaks.pixel_strength", cfg.pixelGlyphBlockSize);
+        return Component.translatable("fonttweaks.pixel_strength", cfg.pixelGlyphBlockSize, cfg.pixelGlyphBlockSize);
     }
 
     /**
