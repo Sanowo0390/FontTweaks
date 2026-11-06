@@ -10,11 +10,20 @@ public final class FontTweaksClient implements ClientModInitializer {
         int[] previousGuiScale = {-1};
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             int scale = client.getWindow().getGuiScale();
-            // Font atlases use a fixed GUI-3 raster resolution. Changing the
-            // window's GUI scale no longer requires reloading resource packs.
-            // Re-layout chat once, since wrapping/width can change with scale.
-            if (previousGuiScale[0] > 0 && previousGuiScale[0] != scale
-                    && client.gui != null) client.gui.hud.getChat().rescaleChat();
+            // Raster resolution is always GUI3 referenced, but native versus
+            // processed glyph variants cannot share a cached baked glyph.
+            // Refresh only when that actual representation changes.
+            if (previousGuiScale[0] > 0 && previousGuiScale[0] != scale) {
+                if (client.gui != null) client.gui.hud.getChat().rescaleChat();
+                // Font glyphs are cached. A reload is necessary ONLY when
+                // crossing native/processed atlas boundaries, not for every
+                // GUI scale change or the GUI2/4 native 1px transition.
+                FontTweaksSettings cfg = FontTweaksSettings.get();
+                if (cfg.pixelRasterSignature(previousGuiScale[0])
+                        != cfg.pixelRasterSignature(scale)) {
+                    FontTweaksReload.request();
+                }
+            }
             previousGuiScale[0] = scale;
             FontTweaksReload.tick(client);
         });
