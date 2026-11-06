@@ -28,27 +28,27 @@ public final class FontTweaksPresets {
         }
 
         LinkedHashMap<String, GuiScaleProfile> profiles = new LinkedHashMap<>();
-        for (int gui = 1; gui <= 5; gui++) {
+        for (int gui = 1; gui <= 4; gui++) {
             // The unmentioned scales remain completely native, including
-            // GUI 4 in preset 2. GUI 5 represents every scale >= 5.
+            // GUI 4+ in preset 2. Scale 4 covers all larger sizes.
             profiles.put(Integer.toString(gui), profile(1, false, false));
         }
 
         switch (id) {
             case PIXEL_CORRECTION -> {
                 // Unifont's native dot occupies half a GUI unit; rounded
-                // GUI1/GUI3 correction uses 1px / 2px respectively.
+                // GUI1 and GUI3 both use 1px correction, per preset 1.
                 profiles.put("1", profile(1, false, true));
-                profiles.put("3", profile(2, false, true));
+                profiles.put("3", profile(1, false, true));
             }
             case PIXEL_AND_FONTS -> {
                 // GUI1 Misaki / 3px; GUI3 PixelMplus12 / 2px.
-                // GUI2, GUI4 and GUI5+ retain vanilla appearance.
+                // GUI2 and GUI4+ retain vanilla appearance.
                 profiles.put("1", profile(3, true, true));
                 profiles.put("3", profile(2, true, true));
             }
             case ALWAYS_MISAKI -> {
-                for (int gui = 1; gui <= 5; gui++) {
+                for (int gui = 1; gui <= 4; gui++) {
                     profiles.put(Integer.toString(gui), profile(3, true, true));
                 }
             }
@@ -56,7 +56,6 @@ public final class FontTweaksPresets {
         }
 
         cfg.guiScaleProfiles = profiles;
-        cfg.gui3DotCorrection = true;
         cfg.pixelationEnabled = true;
         // Every preset must disable Latin / English glyph replacement.
         cfg.replaceEnglish = false;

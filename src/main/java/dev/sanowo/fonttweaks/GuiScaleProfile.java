@@ -1,6 +1,6 @@
 package dev.sanowo.fonttweaks;
 
-/** One independent Minecraft GUI-scale profile; scale 5 covers 5+. */
+/** One independent Minecraft GUI-scale profile; scale 4 covers GUI4 and higher. */
 public final class GuiScaleProfile {
     /** 0=Auto (GUI3 reference 2px), 1..4=manual screen-pixel density. */
     public int pixelBlockSize = 1;

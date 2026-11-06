@@ -20,11 +20,11 @@ class FontTweaksPresetsTest {
         FontTweaksPresets.apply(cfg, FontTweaksPresets.PIXEL_CORRECTION);
         assertEquals(FontTweaksPresets.PIXEL_CORRECTION, cfg.activePreset);
         assertEquals(1, cfg.profileFor(1).effectivePixels());
-        assertEquals(2, cfg.profileFor(3).effectivePixels());
+        assertEquals(1, cfg.profileFor(3).effectivePixels());
         assertTrue(cfg.unifontProcessingAt(1));
         assertTrue(cfg.unifontProcessingAt(3));
         assertEquals(1, cfg.pixelRasterSignature(1));
-        assertEquals(2, cfg.pixelRasterSignature(3));
+        assertEquals(1, cfg.pixelRasterSignature(3));
         for (int gui : new int[]{2, 4, 5, 6, 7}) {
             assertEquals(0, cfg.pixelRasterSignature(gui), "GUI " + gui + " must remain native");
             assertFalse(cfg.profileFor(gui).useExistingFont);

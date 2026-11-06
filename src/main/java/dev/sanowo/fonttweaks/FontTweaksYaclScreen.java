@@ -117,7 +117,7 @@ public final class FontTweaksYaclScreen {
                 .build();
     }
 
-    /** Every GUI scale has its own independent YACL group. GUI 5 also handles 6+. */
+    /** Independent GUI1/2/3/4+ YACL groups. */
     private static OptionGroup profileGroup(FontTweaksSettings cfg, int scale) {
         GuiScaleProfile profile = cfg.profileFor(scale);
         OptionGroup.Builder group = OptionGroup.createBuilder()
@@ -143,16 +143,6 @@ public final class FontTweaksYaclScreen {
                         "fonttweaks.ui.desc.profile.replace_english", false,
                         () -> cfg.replaceEnglishAt(scale),
                         value -> cfg.setProfileReplaceEnglish(scale, value)));
-        if (scale == 3) {
-            group.option(toggle("fonttweaks.gui3_correction",
-                    "fonttweaks.ui.desc.gui3_correction", true,
-                    () -> cfg.gui3DotCorrection, value -> {
-                        if (cfg.gui3DotCorrection != value) {
-                            cfg.gui3DotCorrection = value;
-                            cfg.activePreset = FontTweaksPresets.CUSTOM;
-                        }
-                    }));
-        }
         return group.build();
     }
 
@@ -189,7 +179,6 @@ public final class FontTweaksYaclScreen {
                         .group(profileGroup(cfg, 2))
                         .group(profileGroup(cfg, 3))
                         .group(profileGroup(cfg, 4))
-                        .group(profileGroup(cfg, 5))
                         .build())
                 // Text tab: font sizes and letter/line spacing share one category.
                 .category(ConfigCategory.createBuilder()

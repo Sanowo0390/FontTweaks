@@ -1,4 +1,19 @@
-# FontTweaks 0.12.0
+# FontTweaks 0.12.1
+
+Minecraft 26.3 / Fabric / client-only
+
+## 0.12.1 — GUI4以上へ統合、GUI3補正スイッチ廃止、プリセット1のGUI3を1pxへ
+
+- **GUI別プロファイルは4つ**：GUI1 / GUI2 / GUI3 / **GUI4以上**。GUI5以上という独立グループは廃止しました。GUI4、5、6…は設定ファイル内の同じ `guiScaleProfiles["4"]` を参照します。
+- 「GUI3でドット数を補正」は設定画面・設定項目・内部の独立判定から削除しました。GUI3の補正は各GUIプロファイルの **Unifontを加工する** のON/OFFで直接制御します。
+- **プリセット1（ドット補正のみ）**：GUI1はUnifont加工ON・1px、GUI3も**Unifont加工ON・1px**。GUI2とGUI4以上は加工OFF、標準フォントです。全GUIで英字のフォント置換はOFF。
+- プリセット2：GUI1＝美咲・3px、GUI3＝PixelMplus12・2px。GUI2・GUI4以上＝標準・無加工。
+- プリセット3：GUI1〜GUI4以上の全プロファイルで美咲・3px。
+- **旧設定移行**：以前のGUI4とGUI5以上の設定が両方ある場合はGUI4の設定を優先し、旧GUI5以上のキーを削除します。GUI4の設定が存在せずGUI5以上だけ保存されている場合は、その設定をGUI4以上へ引き継ぎます。旧 `gui3DotCorrection` は読み込み時に無視し、次回保存時に出力しません。
+
+GUIの文字サイズ・文字間隔・ブラックリスト・GUI別英字置換・Unifont加工設定は引き続き利用できます。Minecraft実機表示は未検証のため、ビルド・JUnit・Mixinテストとは区別してください。
+
+## 0.12.0（旧版）
 
 Minecraft 26.3 / Fabric / client-only
 

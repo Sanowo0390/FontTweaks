@@ -50,15 +50,13 @@ public final class FontTweaksSettings {
      */
     @SerializedName(value = "pixelBlockSize", alternate = {"pixelsPerFontDot"})
     public int pixelBlockSize = 1;
-    /** Correct pixel density only at GUI scale 3; native glyphs at GUI3 when disabled. */
-    public boolean gui3DotCorrection = true;
     /** Selected preset ID or \"custom\". Existing configs are custom by default. */
     public String activePreset = FontTweaksPresets.CUSTOM;
-    /** GUI1/2/3/4/5+ each has its own dot count and built-in-font switch. */
+    /** GUI1/2/3/4+ each has its own dot count and bundled-font switch. */
     public java.util.Map<String, GuiScaleProfile> guiScaleProfiles = new java.util.LinkedHashMap<>();
 
     public static int profileScale(int guiScale) {
-        return Math.min(5, Math.max(1, guiScale));
+        return Math.min(4, Math.max(1, guiScale));
     }
 
     public boolean hasGuiProfiles() {
@@ -150,7 +148,6 @@ public final class FontTweaksSettings {
         // At 1px, GUI 2 and 4 have a naturally aligned pixel grid.
         // Avoid overwriting their original glyph bitmap.
         if (effectivePixelBlockSize(guiScale) == 1 && (guiScale == 2 || guiScale == 4)) return 0;
-        if (guiScale == 3 && !gui3DotCorrection) return 0;
         return effectivePixelBlockSize(guiScale);
     }
 
@@ -299,11 +296,18 @@ public final class FontTweaksSettings {
             activePreset = FontTweaksPresets.CUSTOM;
         }
         if (guiScaleProfiles == null) guiScaleProfiles = new java.util.LinkedHashMap<>();
+        // v0.12 used separate GUI4 and GUI5+ profiles. GUI4 is now the
+        // authoritative 4+ profile. If no GUI4 profile exists, preserve the
+        // older GUI5+ values instead of discarding the only saved settings.
+        if (guiScaleProfiles.get("4") == null && guiScaleProfiles.get("5") != null) {
+            guiScaleProfiles.put("4", guiScaleProfiles.get("5"));
+        }
+        guiScaleProfiles.remove("5");
         guiScaleProfiles.entrySet().removeIf(entry -> {
             if (entry.getValue() == null || entry.getKey() == null) return true;
             try {
                 int scale = Integer.parseInt(entry.getKey());
-                return scale < 1 || scale > 5;
+                return scale < 1 || scale > 4;
             } catch (NumberFormatException exception) {
                 return true;
             }

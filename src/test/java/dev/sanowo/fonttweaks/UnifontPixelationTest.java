@@ -136,7 +136,7 @@ class UnifontPixelationTest {
         assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, settings));
     }
 
-    @Test void nativeGuiTwoAndFourAtOnePxAndGuiThreeCorrectionSwitch() {
+    @Test void nativeGuiTwoAndFourAtOnePxAndGuiThreeCorrectionAlwaysFollowsProcessing() {
         FontTweaksSettings cfg = new FontTweaksSettings();
         cfg.pixelBlockSize = 1;
         assertEquals(0, cfg.pixelRasterSignature(2));
@@ -147,11 +147,8 @@ class UnifontPixelationTest {
         cfg.pixelBlockSize = 2;
         assertEquals(2, cfg.pixelRasterSignature(3));
         assertEquals(2, cfg.pixelRasterSignature(2));
-        cfg.gui3DotCorrection = false;
-        assertEquals(0, cfg.pixelRasterSignature(3));
-        assertEquals(2, cfg.pixelRasterSignature(4));
-        cfg.gui3DotCorrection = true;
         assertEquals(2, cfg.pixelRasterSignature(3));
+        assertEquals(2, cfg.pixelRasterSignature(4));
         cfg.pixelationEnabled = false;
         assertEquals(0, cfg.pixelRasterSignature(3));
     }
@@ -172,7 +169,7 @@ class UnifontPixelationTest {
         assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 4));
         cfg.pixelBlockSize = 2;
         assertNotSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 3));
-        cfg.gui3DotCorrection = false;
+        cfg.pixelationEnabled = false;
         assertSame(original, PixelatedGlyphBitmap.process(original, new int[16], 0, cfg, 3));
     }
 

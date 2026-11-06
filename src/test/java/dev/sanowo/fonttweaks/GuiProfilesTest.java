@@ -56,12 +56,13 @@ class GuiProfilesTest {
     }
 
     @Test
-    void guiFiveAndAboveShareOneProfileAndAutoIsPreserved() {
+    void guiFourAndAboveShareOneProfileAndAutoIsPreserved() {
         FontTweaksSettings cfg = new FontTweaksSettings();
-        cfg.setProfilePixelSize(5, FontTweaksSettings.AUTO_PIXEL_SIZE);
-        cfg.setProfileExistingFont(5, true);
-        assertSame(cfg.profileFor(5), cfg.profileFor(6));
-        assertSame(cfg.profileFor(5), cfg.profileFor(20));
+        cfg.setProfilePixelSize(4, FontTweaksSettings.AUTO_PIXEL_SIZE);
+        cfg.setProfileExistingFont(4, true);
+        assertSame(cfg.profileFor(4), cfg.profileFor(5));
+        assertSame(cfg.profileFor(4), cfg.profileFor(6));
+        assertSame(cfg.profileFor(4), cfg.profileFor(20));
         assertEquals(0, cfg.profileFor(6).pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize(6));
         assertSame(FontTweaksFonts.PIXELMPLUS,
@@ -77,11 +78,41 @@ class GuiProfilesTest {
         assertEquals(0, cfg.pixelRasterSignature(2));
         assertEquals(2, cfg.pixelRasterSignature(3));
         assertEquals(0, cfg.pixelRasterSignature(4));
-        cfg.gui3DotCorrection = false;
-        assertEquals(0, cfg.pixelRasterSignature(3));
-        assertEquals(0, cfg.pixelRasterSignature(4));
         cfg.setProfilePixelSize(4, 3);
         assertEquals(3, cfg.pixelRasterSignature(4));
+    }
+
+    @Test
+    void oldGuiFiveProfileMigratesToFourWhenNoFourExists() {
+        Gson gson = new Gson();
+        FontTweaksSettings legacy = gson.fromJson(
+                "{\"guiScaleProfiles\":{\"5\":{\"pixelBlockSize\":3,\"useExistingFont\":true," +
+                "\"unifontProcessing\":false,\"replaceEnglish\":true}}}",
+                FontTweaksSettings.class);
+        legacy.sanitize();
+        assertEquals(1, legacy.guiScaleProfiles.size());
+        assertTrue(legacy.guiScaleProfiles.containsKey("4"));
+        assertFalse(legacy.guiScaleProfiles.containsKey("5"));
+        assertSame(legacy.profileFor(4), legacy.profileFor(6));
+        assertEquals(3, legacy.profileFor(4).pixelBlockSize);
+        assertTrue(legacy.profileFor(4).useExistingFont);
+        assertFalse(legacy.unifontProcessingAt(7));
+        assertTrue(legacy.replaceEnglishAt(5));
+    }
+
+    @Test
+    void oldGuiFourProfileTakesPriorityOverConflictingGuiFive() {
+        Gson gson = new Gson();
+        FontTweaksSettings legacy = gson.fromJson(
+                "{\"guiScaleProfiles\":{\"4\":{\"pixelBlockSize\":1,\"useExistingFont\":false}," +
+                "\"5\":{\"pixelBlockSize\":3,\"useExistingFont\":true}}}",
+                FontTweaksSettings.class);
+        legacy.sanitize();
+        assertFalse(legacy.guiScaleProfiles.containsKey("5"));
+        assertEquals(1, legacy.profileFor(4).pixelBlockSize);
+        assertEquals(1, legacy.profileFor(12).pixelBlockSize);
+        assertFalse(legacy.profileFor(8).useExistingFont);
+        assertEquals(4, FontTweaksSettings.profileScale(200));
     }
 
     @Test
