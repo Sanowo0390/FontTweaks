@@ -30,36 +30,6 @@ import java.util.function.Supplier;
 public final class FontTweaksYaclScreen {
     private FontTweaksYaclScreen() {}
 
-    /** Simple unified selection: old separate font and compact-GUI toggles are now one menu. */
-    private enum FontChoice implements NameableEnum {
-        DEFAULT("fonttweaks.font.standard"),
-        MISAKI("fonttweaks.font.misaki"),
-        PIXELMPLUS("fonttweaks.font.pixelmplus"),
-        AUTO("fonttweaks.font.automatic");
-
-        private final String label;
-        FontChoice(String label) { this.label = label; }
-
-        @Override
-        public Component getDisplayName() {
-            return Component.translatable(label);
-        }
-
-        static FontChoice fromSettings(FontTweaksSettings cfg) {
-            if (cfg.guiScaleDependentFont) return AUTO;
-            if (!cfg.resourcePackEnabled) return DEFAULT;
-            if ("misaki".equals(cfg.resourcePackFont)) return MISAKI;
-            if ("auto".equals(cfg.resourcePackFont)) return AUTO; // legacy
-            return PIXELMPLUS;
-        }
-
-        void apply(FontTweaksSettings cfg) {
-            cfg.guiScaleDependentFont = this == AUTO;
-            cfg.resourcePackEnabled = this == MISAKI || this == PIXELMPLUS;
-            cfg.resourcePackFont = this == MISAKI ? "misaki" : "pixelmplus12";
-        }
-    }
-
     /** YACL enum controller with an explicit Auto choice (config value 0). */
     private enum PixelSizeChoice implements NameableEnum {
         AUTO(0, "fonttweaks.ui.dot.auto"),
@@ -121,6 +91,32 @@ public final class FontTweaksYaclScreen {
                 .build();
     }
 
+    /** Every GUI scale has its own independent YACL group. GUI 5 also handles 6+. */
+    private static OptionGroup profileGroup(FontTweaksSettings cfg, int scale) {
+        GuiScaleProfile profile = cfg.profileFor(scale);
+        OptionGroup.Builder group = OptionGroup.createBuilder()
+                .name(Component.translatable("fonttweaks.ui.profile." + scale))
+                .option(Option.<PixelSizeChoice>createBuilder()
+                        .name(Component.translatable("fonttweaks.ui.dot_count"))
+                        .description(illustrated("fonttweaks.ui.desc.profile_dots"))
+                        .binding(PixelSizeChoice.ONE,
+                                () -> PixelSizeChoice.fromPixels(profile.pixelBlockSize),
+                                value -> cfg.setProfilePixelSize(scale, value.pixels))
+                        .controller(option -> EnumControllerBuilder.create(option)
+                                .enumClass(PixelSizeChoice.class))
+                        .build())
+                .option(toggle("fonttweaks.ui.existing_font",
+                        "fonttweaks.ui.desc.existing_font", false,
+                        () -> profile.useExistingFont,
+                        value -> cfg.setProfileExistingFont(scale, value)));
+        if (scale == 3) {
+            group.option(toggle("fonttweaks.gui3_correction",
+                    "fonttweaks.ui.desc.gui3_correction", true,
+                    () -> cfg.gui3DotCorrection, value -> cfg.gui3DotCorrection = value));
+        }
+        return group.build();
+    }
+
     public static Screen create(Screen parent) {
         FontTweaksSettings cfg = FontTweaksSettings.get();
         Minecraft initialClient = Minecraft.getInstance();
@@ -129,47 +125,25 @@ public final class FontTweaksYaclScreen {
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("fonttweaks.ui.title"))
-                // Fonts tab: pixel effects and font replacement in one place.
+                // Main purpose first: independent GUI-scale pixel/font profiles.
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("fonttweaks.ui.tab.fonts"))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("fonttweaks.ui.group.pixels"))
-                                .option(Option.<Boolean>createBuilder()
-                                        .name(Component.translatable("fonttweaks.ui.pixel_toggle"))
-                                        .description(illustrated("fonttweaks.ui.desc.pixel_toggle"))
-                                        .binding(true, () -> cfg.pixelationEnabled,
-                                                value -> cfg.pixelationEnabled = value)
-                                        .controller(BooleanControllerBuilder::create)
-                                        .build())
-                                .option(Option.<PixelSizeChoice>createBuilder()
-                                        .name(Component.translatable("fonttweaks.ui.dot_count"))
-                                        .description(illustrated("fonttweaks.ui.desc.pixel_auto"))
-                                        .binding(PixelSizeChoice.ONE,
-                                                () -> PixelSizeChoice.fromPixels(cfg.pixelBlockSize),
-                                                value -> cfg.pixelBlockSize = value.pixels)
-                                        .controller(option -> EnumControllerBuilder.create(option)
-                                                .enumClass(PixelSizeChoice.class))
-                                        .build())
-                                .option(toggle("fonttweaks.gui3_correction",
-                                        "fonttweaks.ui.desc.gui3_correction", true,
-                                        () -> cfg.gui3DotCorrection,
-                                        value -> cfg.gui3DotCorrection = value))
-                                .build())
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("fonttweaks.ui.group.fonts"))
-                                .option(Option.<FontChoice>createBuilder()
-                                        .name(Component.translatable("fonttweaks.ui.font_choice"))
-                                        .description(illustrated("fonttweaks.ui.desc.font_choice"))
-                                        .binding(FontChoice.DEFAULT,
-                                                () -> FontChoice.fromSettings(cfg),
-                                                value -> value.apply(cfg))
-                                        .controller(option -> EnumControllerBuilder.create(option)
-                                                .enumClass(FontChoice.class))
-                                        .build())
+                                .option(toggle("fonttweaks.ui.pixel_toggle",
+                                        "fonttweaks.ui.desc.pixel_toggle", true,
+                                        () -> cfg.pixelationEnabled,
+                                        value -> cfg.pixelationEnabled = value))
                                 .option(toggle("fonttweaks.ui.font_english",
                                         "fonttweaks.ui.desc.font_english", false,
-                                        () -> cfg.replaceEnglish, value -> cfg.replaceEnglish = value))
+                                        () -> cfg.replaceEnglish,
+                                        value -> cfg.replaceEnglish = value))
                                 .build())
+                        .group(profileGroup(cfg, 1))
+                        .group(profileGroup(cfg, 2))
+                        .group(profileGroup(cfg, 3))
+                        .group(profileGroup(cfg, 4))
+                        .group(profileGroup(cfg, 5))
                         .build())
                 // Text tab: font sizes and letter/line spacing share one category.
                 .category(ConfigCategory.createBuilder()
