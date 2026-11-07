@@ -101,7 +101,7 @@ class UnifontPixelationTest {
         restored.sanitize();
         assertEquals(2, restored.pixelBlockSize);
         assertEquals(2, restored.profileFor(3).pixelBlockSize);
-        assertFalse(gson.toJson(restored).contains("\\"pixelBlockSize\\":0"));
+        assertFalse(gson.toJson(restored).contains(String.valueOf((char) 34) + "pixelBlockSize" + String.valueOf((char) 34) + ":0"));
     }
 
     @Test void productionPixelationUsesFixedGuiThreeAtlasInsteadOfLiveGuiScale() {
