@@ -68,13 +68,13 @@ class FontSelectionTest {
                 FontTweaksFonts.select(FontDescription.DEFAULT, '語', cfg, 2, false));
     }
 
-    @Test void automaticDotModeKeepsGuiThreeRasterButUsesMisakiAtGuiTwo() {
+    @Test void twoPixelDotModeKeepsGuiThreeRasterButUsesLegacyMisakiAtGuiTwo() {
         FontTweaksSettings cfg = new FontTweaksSettings();
         cfg.pixelationEnabled = true;
-        cfg.pixelBlockSize = FontTweaksSettings.AUTO_PIXEL_SIZE;
-        cfg.guiScaleDependentFont = true;
+        cfg.pixelBlockSize = 2;
+        cfg.guiScaleDependentFont = true; // Legacy font auto-switch, not dot-size Auto.
         cfg.resourcePackEnabled = false;
-        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
+        assertEquals(2, cfg.pixelBlockSize);
         assertEquals(2, cfg.effectivePixelBlockSize());
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
@@ -82,9 +82,7 @@ class FontSelectionTest {
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 3, false));
-        // Switching the GUI scale does not modify the persisted selector.
-        assertEquals(FontTweaksSettings.AUTO_PIXEL_SIZE, cfg.pixelBlockSize);
-        // The fallback is separately controlled, not forced by selecting Auto.
+        assertEquals(2, cfg.pixelBlockSize);
         cfg.guiScaleDependentFont = false;
         assertSame(FontDescription.DEFAULT,
                 FontTweaksFonts.select(FontDescription.DEFAULT, '日', cfg, 2, false));
