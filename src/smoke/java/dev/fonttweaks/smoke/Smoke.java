@@ -61,12 +61,11 @@ public final class Smoke implements PreLaunchEntrypoint {
    else if(result!=variants[signature])throw new AssertionError("Variant rebaked on switch");
   }
   if(bakes[0]!=5)throw new AssertionError("Expected five lazy bakes, got "+bakes[0]);
-  enabled.setBoolean(cfg,true);pixels.setInt(cfg,0);
-  if(get.invoke(supplier)!=variants[2]||bakes[0]!=5)throw new AssertionError("Auto must reuse 2px");
+  // Supported variants are now only native plus explicit 1/2/3/4px.
   // A real font reload creates a new DelayedBake: no stale texture survives.
   Object replacement=ctor.newInstance(owner,glyph);
-  if(get.invoke(replacement)==variants[2]||bakes[0]!=6)throw new AssertionError("New atlas reused stale glyph");
-  System.out.println("FONT_VARIANTS_SMOKE native+1/2/3/4 cached across switches; Auto reuses 2; new atlas rebakes");
+  if(get.invoke(replacement)==variants[4]||bakes[0]!=6)throw new AssertionError("New atlas reused stale glyph");
+  System.out.println("FONT_VARIANTS_SMOKE native+1/2/3/4 cached across switches; new atlas rebakes");
  }
  static void spacingProbe() throws Exception {
   ClassLoader loader=Thread.currentThread().getContextClassLoader();
